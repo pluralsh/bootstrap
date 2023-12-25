@@ -10,7 +10,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   condition: external-dns.enabled
 - name: cert-manager
-  version: v1.11.0
+  version: v1.11.5
   repository: https://charts.jetstack.io
   condition: cert-manager.enabled
 - name: plural-certmanager-webhook
