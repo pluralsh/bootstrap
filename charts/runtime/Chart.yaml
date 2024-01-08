@@ -6,7 +6,7 @@ version: 0.1.17
 appVersion: "0.1.0"
 dependencies:
 - name: external-dns
-  version: 6.28.6
+  version: 6.29.0
   repository: https://charts.bitnami.com/bitnami
   condition: external-dns.enabled
 - name: cert-manager
