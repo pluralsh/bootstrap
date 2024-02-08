@@ -9,7 +9,7 @@ resource "random_password" "password" {
 module "pg" {
   count = var.create_db ? 1 : 0
   source  = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version = "18.2.0"
+  version = "19.0.0"
 
   name                 = local.db_name
   random_instance_name = false
