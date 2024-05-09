@@ -3,7 +3,8 @@ serviceAccount:
   name: cert-manager
   annotations:
     plural.sh/dummy: 'ignore'
-  # azure.workload.identity/client-id: 027c5496-d46b-40d3-8f92-a0f44dcf3500 # uncomment and update for azure
+    # eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT-ID:role/plrl-console-eks-certmanager-extdns" # uncomment and update for aws
+    # azure.workload.identity/client-id: XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX # uncomment and update for azure
 
 securityContext:
   fsGroup: 1000

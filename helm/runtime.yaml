@@ -21,7 +21,8 @@ external-dns:
     name: externaldns
     annotations:
       plural.sh/dummy: ignore
-      # azure.workload.identity/client-id: 027c5496-d46b-40d3-8f92-a0f44dcf3500 # uncomment and update for azure
+      # eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT-ID:role/plrl-console-eks-certmanager-extdns" # uncomment and update for aws
+      # azure.workload.identity/client-id: XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXXXXX # uncomment and update for azure
 
   podLabels:
     azure.workload.identity/use: "true"
@@ -33,9 +34,41 @@ external-dns:
   domainFilters:
   - az.plural.sh # <- you need to change this
 
-  # For azure
-  # azure:
-  #   useWorkloadIdentityExtension: true
-  #   resourceGroup: <YOUR_RESOURCE_GROUP>
-  #   tenantId: <YOUR_TENANT_ID>
-  #   subscriptionId: <YOUR_SUBSCRIPTION_ID>
+# For azure
+# azure:
+#   useWorkloadIdentityExtension: true
+#   resourceGroup: <YOUR_RESOURCE_GROUP>
+#   tenantId: <YOUR_TENANT_ID>
+#   subscriptionId: <YOUR_SUBSCRIPTION_ID>
+
+# For aws
+# ingress-nginx:
+#   controller:
+#     service:
+#       annotations:
+#         service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+#         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+#         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+#         service.beta.kubernetes.io/aws-load-balancer-type: external
+#         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+#         service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+#         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+#     config:
+#       compute-full-forwarded-for: 'true'
+#       use-forwarded-headers: 'true'
+#       use-proxy-protocol: 'true'
+
+# ingress-nginx-private:
+#   controller:
+#     service:
+#       annotations:
+#         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+#         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+#         service.beta.kubernetes.io/aws-load-balancer-type: external
+#         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+#         service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+#         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+#     config:
+#       compute-full-forwarded-for: 'true'
+#       use-forwarded-headers: 'true'
+#       use-proxy-protocol: 'true'
