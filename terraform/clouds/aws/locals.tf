@@ -4,6 +4,6 @@ locals {
   cluster_ready = {
     cluster = module.eks
     addons = module.eks_blueprints_addons
-  } 
+  }
   monitoring_role_name = var.monitoring_role == "" ? "${var.cluster_name}-PluralRDSMonitoringRole" : var.monitoring_role
 }
