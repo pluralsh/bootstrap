@@ -54,6 +54,7 @@ resource "plural_service_deployment" "apps" {
         repoUrl  = local.context.spec.configuration.console.repo_url 
     }
     protect = true
+    templated = true
 
     depends_on = [ kubernetes_namespace.infra ]
 }

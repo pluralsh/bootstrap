@@ -60,7 +60,7 @@ resource "helm_release" "runtime" {
   namespace        = "plural-runtime"
   chart            = "runtime"
   repository       = "https://pluralsh.github.io/bootstrap"
-  version          = "0.1.18"
+  version          = "0.1.22"
   create_namespace = true
   timeout          = 300
   wait             = false
@@ -76,7 +76,7 @@ resource "helm_release" "console" {
   namespace        = "plrl-console"
   chart            = "console"
   repository       = "https://pluralsh.github.io/console"
-  version          = "0.3.12"
+  version          = "0.3.18"
   create_namespace = true
   timeout          = 600
   wait             = true
