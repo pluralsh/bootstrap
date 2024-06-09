@@ -1,5 +1,5 @@
 module "mgmt" {
-    source       = "../bootstrap/terraform/clouds/linode"
+    source       = "../terraform/modules/mgmt"
     cluster_name = "{{ .Cluster }}"
     region       = "{{ .Region }}"
 }

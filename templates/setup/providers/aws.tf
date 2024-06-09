@@ -1,4 +1,4 @@
 module "mgmt" {
-    source        = "../bootstrap/terraform/clouds/aws"
+    source        = "../terraform/modules/mgmt"
     cluster_name  = "{{ .Cluster }}"
 }

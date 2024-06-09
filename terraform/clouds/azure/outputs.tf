@@ -18,3 +18,7 @@ output "db_url" {
 output "ready" {
     value = module.aks
 }
+
+output "identity" {
+    value = azurerm_user_assigned_identity.stacks.client_id
+}

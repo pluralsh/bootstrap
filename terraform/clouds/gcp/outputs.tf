@@ -18,3 +18,7 @@ output "db_url" {
 output "ready" {
     value = module.gke
 }
+
+output "identity" {
+  value = module.console-workload-identity.gcp_service_account_email
+}

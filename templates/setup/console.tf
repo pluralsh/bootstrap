@@ -76,7 +76,7 @@ resource "helm_release" "console" {
   namespace        = "plrl-console"
   chart            = "console"
   repository       = "https://pluralsh.github.io/console"
-  version          = "0.3.18"
+  version          = "0.3.25"
   create_namespace = true
   timeout          = 600
   wait             = true
@@ -85,4 +85,8 @@ resource "helm_release" "console" {
   ]
 
   depends_on = [ module.mgmt.cluster, helm_release.runtime, module.mgmt.db_url ]
+}
+
+output "identity" {
+  value = module.mgmt.identity 
 }

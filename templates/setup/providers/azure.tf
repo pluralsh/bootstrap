@@ -1,5 +1,5 @@
 module "mgmt" {
-    source              = "../bootstrap/terraform/clouds/azure"
+    source              = "../terraform/modules/mgmt"
     resource_group_name = "{{ .Project }}"
     cluster_name        = "{{ .Cluster }}"
     location            = "{{ .Region }}"

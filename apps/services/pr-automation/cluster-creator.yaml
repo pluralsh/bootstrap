@@ -1,0 +1,34 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: PrAutomation
+metadata:
+  name: cluster-creator
+spec:
+  name: cluster-creator
+  documentation: |
+    Sets up a PR to provision a cluster for a fleet + stage
+  creates:
+    templates:
+    - source: templates/clusters/stack.yaml
+      destination: "apps/clusters/{{ context.cloud }}/stacks/{{ context.name }}.yaml"
+      external: false
+    - source: templates/clusters/cluster.yaml
+      destination: "apps/clusters/{{ context.cloud }}/clusters/{{ context.name }}.yaml"
+      external: false
+  scmConnectionRef:
+    name: github  # you'll need to add this ScmConnection manually before this is functional
+  title: "Adding {{ context.cloud }} cluster: {{ context.name }}"
+  message: "Adding {{ context.cloud }} cluster {{ context.name }} and registering it with Plural"
+  identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
+  configuration:
+  - name: name
+    type: STRING
+    documentation: name for this cluster
+  - name: cloud
+    type: STRING
+    documentation: one of [aws,gcp,azure]
+  - name: fleet
+    type: STRING
+    documentation: a name for this specific fleet
+  - name: tier
+    type: STRING
+    documentation: one of [dev, prod]
