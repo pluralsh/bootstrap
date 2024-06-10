@@ -70,7 +70,7 @@ data "aws_iam_policy_document" "admin" {
 
 module "assumable_role_loki" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version                       = "5.37.0"
+  version                       = "5.37.2"
   create_role                   = true
   role_name                     = "${var.cluster_name}-${var.loki_service_account}"
   oidc_fully_qualified_subjects = ["system:serviceaccount:${var.namespace}:${var.loki_service_account}"]
