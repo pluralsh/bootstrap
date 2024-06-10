@@ -4,7 +4,7 @@ dependencies:
   version: 6.38.0
 - name: cert-manager
   repository: https://charts.jetstack.io
-  version: v1.13.3
+  version: v1.13.6
 - name: plural-certmanager-webhook
   repository: ""
   version: 0.1.7
@@ -17,5 +17,5 @@ dependencies:
 - name: flux2
   repository: https://fluxcd-community.github.io/helm-charts
   version: 2.12.4
-digest: sha256:b715121c4e16945eaed36a0aac31129e3142fcc15f1175f83256cac41408190c
-generated: "2024-04-20T21:14:20.067691421Z"
+digest: sha256:18b6fc902065ac6a51c260f5fa93e297c68ac6566b8788ab8af3ce820e2b1d61
+generated: "2024-06-10T19:53:49.56067096Z"
