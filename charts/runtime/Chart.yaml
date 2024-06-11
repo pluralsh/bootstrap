@@ -17,11 +17,11 @@ dependencies:
   version: 0.1.7
   condition: plural-certmanager-webhook.enabled
 - name: ingress-nginx
-  version: 4.9.1
+  version: 4.10.1
   repository: https://kubernetes.github.io/ingress-nginx
   condition: ingress-nginx.enabled
 - name: ingress-nginx
-  version: 4.9.1
+  version: 4.10.1
   repository: https://kubernetes.github.io/ingress-nginx
   alias: ingress-nginx-private
   condition: ingress-nginx-private.enabled
