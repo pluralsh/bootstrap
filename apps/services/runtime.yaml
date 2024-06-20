@@ -20,7 +20,7 @@ spec:
     valuesFiles:
     - certmanager.yaml
     repository:
-      namespace: plural-runtime
+      namespace: infra
       name: cert-manager
   clusterRef:
     kind: Cluster
@@ -48,7 +48,7 @@ spec:
     valuesFiles:
     - flux.yaml
     repository:
-      namespace: plural-runtime
+      namespace: infra
       name: flux
   clusterRef:
     kind: Cluster
