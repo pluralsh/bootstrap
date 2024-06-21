@@ -11,6 +11,8 @@ module "eks" {
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.public_subnets
 
+  create_kms_key = false
+
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = merge(var.node_group_defaults,
     {ami_release_version = data.aws_ssm_parameter.eks_ami_release_version.value})

@@ -19,11 +19,11 @@ spec:
     namespace: infra
   git:
     ref: main
-    folder: terraform/modules/cluster/{{ context.cloud }}
+    folder: terraform/modules/clusters/{{ context.cloud }}
   environment:
   - name: TF_VAR_cluster
     value: {{ context.name }}
   - name: TF_VAR_fleet
-    value: {{ contex.fleet }}
+    value: {{ context.fleet }}
   - name: TF_VAR_tier
     value: {{ context.tier }}

@@ -16,6 +16,7 @@ resource "plural_cluster" "this" {
         iam = {
           load_balancer = module.addons.gitops_metadata.aws_load_balancer_controller_iam_role_arn
           cluster_autoscaler = module.addons.gitops_metadata.cluster_autoscaler_iam_role_arn
+          external_dns = module.externaldns_irsa_role.iam_role_arn
         }
     })
 

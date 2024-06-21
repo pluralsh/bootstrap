@@ -14,6 +14,9 @@ spec:
     - source: templates/clusters/cluster.yaml
       destination: "apps/clusters/{{ context.cloud }}/clusters/{{ context.name }}.yaml"
       external: false
+    - source: templates/clusters/clusters.yaml
+      destination: "apps/services/clusters.yaml"
+      external: false
   scmConnectionRef:
     name: github  # you'll need to add this ScmConnection manually before this is functional
   title: "Adding {{ context.cloud }} cluster: {{ context.name }}"
@@ -24,11 +27,18 @@ spec:
     type: STRING
     documentation: name for this cluster
   - name: cloud
-    type: STRING
-    documentation: one of [aws,gcp,azure]
+    type: ENUM
+    documentation: the cloud you'll host on
+    values:
+    - aws
+    - gcp
+    - azure
   - name: fleet
     type: STRING
-    documentation: a name for this specific fleet
+    documentation: a name for the fleet you want this cluster to belong to
   - name: tier
-    type: STRING
-    documentation: one of [dev, prod]
+    type: ENUM
+    documentation: what tier to place this cluster in
+    values:
+    - dev
+    - prd
