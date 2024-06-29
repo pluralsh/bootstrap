@@ -2,7 +2,7 @@ apiVersion: v2
 name: runtime
 description: Sets up the basic dependencies needed to get a network stack running
 type: application
-version: 0.1.22
+version: 0.1.23
 appVersion: "0.1.0"
 dependencies:
 - name: external-dns
