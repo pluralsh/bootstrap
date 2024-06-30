@@ -86,3 +86,7 @@ resource "helm_release" "console" {
 
   depends_on = [ module.mgmt.cluster, helm_release.runtime, module.mgmt.db_url ]
 }
+
+output "identity" {
+  value = module.mgmt.identity 
+}

@@ -5,5 +5,6 @@ locals {
     cluster = module.eks
     addons = module.eks_blueprints_addons
   }
+  vpc_name = var.vpc_name == "" ? "${var.cluster_name}-vpc" : var.vpc_name
   monitoring_role_name = var.monitoring_role == "" ? "${var.cluster_name}-PluralRDSMonitoringRole" : var.monitoring_role
 }

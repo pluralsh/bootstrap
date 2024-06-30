@@ -233,3 +233,7 @@ output "db_url" {
 output "ready" {
     value = local.cluster_ready
 }
+
+output "identity" {
+  value = module.assumable_role_stacks.iam_role_arn
+}

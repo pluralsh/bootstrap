@@ -5,6 +5,7 @@ metadata:
   name: cert-manager
   namespace: infra
 spec:
+  version: 0.0.1
   namespace: cert-manager
   git:
     folder: helm-values
@@ -19,7 +20,7 @@ spec:
     valuesFiles:
     - certmanager.yaml
     repository:
-      namespace: plural-runtime
+      namespace: infra
       name: cert-manager
   clusterRef:
     kind: Cluster
@@ -32,6 +33,7 @@ metadata:
   name: flux
   namespace: infra
 spec:
+  version: 0.0.1
   namespace: flux
   git:
     folder: helm-values
@@ -46,7 +48,7 @@ spec:
     valuesFiles:
     - flux.yaml
     repository:
-      namespace: plural-runtime
+      namespace: infra
       name: flux
   clusterRef:
     kind: Cluster
@@ -59,6 +61,7 @@ metadata:
   name: runtime
   namespace: infra
 spec:
+  version: 0.0.1
   namespace: plural-runtime
   git:
     folder: helm-values

@@ -1,0 +1,7 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: Cluster
+metadata:
+  name: {{ context.name }}
+  namespace: infra
+spec:
+  handle: {{ context.name }}

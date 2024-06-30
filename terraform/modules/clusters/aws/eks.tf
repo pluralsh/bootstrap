@@ -2,7 +2,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
 
-  cluster_name    = var.cluster_name
+  cluster_name    = var.cluster
   cluster_version = var.kubernetes_version
 
   cluster_endpoint_public_access = var.public
@@ -11,15 +11,13 @@ module "eks" {
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.public_subnets
 
-  create_kms_key = false
-
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = merge(var.node_group_defaults,
     {ami_release_version = data.aws_ssm_parameter.eks_ami_release_version.value})
 
   eks_managed_node_groups = var.managed_node_groups
 
-  create_cloudwatch_log_group = var.create_cloudwatch_log_group
+  create_cloudwatch_log_group = false
 }
 
 data "aws_ssm_parameter" "eks_ami_release_version" {

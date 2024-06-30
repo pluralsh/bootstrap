@@ -1,41 +1,29 @@
-variable "cluster_name" {
-  type    = string
+variable "cluster" {
+  type = string
   default = "plural"
 }
 
-variable "db_name" {
-  type    = string
-  default = ""
-}
-
-variable "db_storage" {
-  type = number
-  default = 20
-}
-
-variable "postgres_vsn" {
+variable "fleet" {
   type = string
-  default = "14"
 }
 
-variable "create_db" {
-  type    = bool
+variable "tier" {
+  type = string
+}
+
+variable "region" {
+  type = string
+  default = "us-east-2"
+}
+
+variable "public" {
+  type = bool
   default = true
 }
 
 variable "kubernetes_version" {
-  type    = string
-  default = "1.27"
-}
-
-variable "public" {
-  type    = bool
-  default = true
-}
-
-variable "vpc_name" {
-  type    = string
-  default = ""
+  type = string
+  default = "1.28"
 }
 
 variable "vpc_cidr" {
@@ -51,20 +39,6 @@ variable "private_subnets" {
 variable "public_subnets" {
   type    = list(string)
   default = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
-}
-
-variable "deletion_protection" {
-  type    = bool
-  default = true
-}
-
-variable "backup_retention_period" {
-  type = number
-  default = 7
-}
-
-variable "db_instance_class" {
-  default = "db.t4g.large"
 }
 
 variable "node_group_defaults" {
@@ -96,14 +70,4 @@ variable "managed_node_groups" {
       desired_size    = 3
     }
   }
-}
-
-variable "create_cloudwatch_log_group" {
-  type = bool
-  default = false
-}
-
-variable "monitoring_role" {
-  type = string
-  default = ""
 }

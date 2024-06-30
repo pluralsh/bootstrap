@@ -1,0 +1,29 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: InfrastructureStack
+metadata:
+  name: cluster-{{ context.name }}
+spec:
+  name: cluster-{{ context.name }}
+  detach: false
+  type: TERRAFORM
+  approval: true
+  manageState: true
+  actor: console@plural.sh
+  configuration:
+    version: '1.8'
+  repositoryRef:
+    name: infra
+    namespace: infra
+  clusterRef:
+    name: mgmt
+    namespace: infra
+  git:
+    ref: main
+    folder: terraform/modules/clusters/{{ context.cloud }}
+  environment:
+  - name: TF_VAR_cluster
+    value: {{ context.name }}
+  - name: TF_VAR_fleet
+    value: {{ context.fleet }}
+  - name: TF_VAR_tier
+    value: {{ context.tier }}
