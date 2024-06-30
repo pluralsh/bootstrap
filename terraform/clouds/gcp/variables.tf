@@ -15,7 +15,7 @@ variable "deletion_protection" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.27.13-gke.1000000"
+  default = "1.27"
 }
 
 variable "node_pools" {
