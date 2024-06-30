@@ -1,5 +1,5 @@
 module "mgmt" {
-    source       = "../terraform/modules/mgmt"
+    source       = "./cluster"
     cluster_name = "{{ .Cluster }}"
     region       = "{{ .Region }}"
 }

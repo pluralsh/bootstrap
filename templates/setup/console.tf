@@ -2,24 +2,24 @@
 resource "null_resource" "console" {
   provisioner "local-exec" {
     command = "plural cd control-plane-values --name {{ .Cluster }} --dsn \"${module.mgmt.db_url}\" --domain {{ .Subdomain }} --file console.yaml"
-    working_dir = "${path.module}/../helm-values"
+    working_dir = "${path.module}/../../helm-values"
   }
 }
 
 data "local_sensitive_file" "certmanager" {
-  filename = "${path.module}/../helm-values/certmanager.yaml"
+  filename = "${path.module}/../../helm-values/certmanager.yaml"
 }
 
 data "local_sensitive_file" "flux" {
-  filename = "${path.module}/../helm-values/flux.yaml"
+  filename = "${path.module}/../../helm-values/flux.yaml"
 }
 
 data "local_sensitive_file" "runtime" {
-  filename = "${path.module}/../helm-values/runtime.yaml"
+  filename = "${path.module}/../../helm-values/runtime.yaml"
 }
 
 data "local_sensitive_file" "console" {
-  filename = "${path.module}/../helm-values/console.yaml"
+  filename = "${path.module}/../../helm-values/console.yaml"
   depends_on = [ null_resource.console ]
 }
 
