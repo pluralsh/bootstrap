@@ -25,81 +25,88 @@ THis follows a generate-once approach, as in we'll generate the working defaults
 A plural installation repo will have a folder structure like this:
 
 ```
-bootstrap/ -> git submodule pointing to https://github.com/pluralsh/bootstrap.git
-clusters/ - the base setup to get a management cluster going
-- mgmt.tf
-- provider.tf
-- ...
-helm-values/ - git crypted helm values to be used for app installs
-- ${app}.yaml - value overrides
-- ${app}-defaults.yaml - default values we generate on install
-apps/ - setup for apps within your cluster fleet
-- repositories/ - contains all helm repositories you want to register for deployments
-- services/ - contains specification for all services you want to create w/in your cluster fleet
-- terraform/
-  - ${app}.tf - entrypoint for a given app
-  - ${app}/ - submodule for individual app terraform
+helm-values/ # git crypted helm values to be used for app installs
+- ${app}.yaml # value overrides
+- ${app}-defaults.yaml # default values we generate on install
+
+apps/ # setup for apps within your cluster fleet
+- repositories/ # contains all helm repositories you want to register for deployments
+- services/ # contains specification for all services you want to create w/in your cluster fleet
+- ... feel free to add other subfolders here or wherever you want to list yaml resources
+
+terraform/
+  - mgmt # module for setting up your management cluster
+  - modules
+  - - clusters
+  - - - {cloud} # we've crafted some reusable modules for setting up clusters on most major clouds, feel free to use these in stacks or wherever
+  - ${app}/ - submodule for individual app's terraform
 ```
 
 You're free to extend this as you'd like, although if you use the plural marketplace that structure will be expected.  You can also deploy services w/ manifests in other repos, this is meant to serve as a base to define the core infrastructure and get you started in a sane way.
 
-
 ## Add a workload cluster to your fleet
 
-There are generally two methods for managing workload clusters within your fleet.  You can either use terraform directly, leveraging the modules we've provided you as a sane starting point with whatever tweaks you might need, or you can use our Cluster API integration.  There are two main differences:
+There are many ways to set up a workload cluster.  We've given you some baseline terraform to work from in the `terraform/modules/clusters` folders.  You can easily deploy these using stacks documented [here](https://docs.plural.sh/stacks/overview).
 
-* terraform is more familiar and provides more fine grained control/easier integration with surrounding cloud resources and IAM systems
-* CAPI provides a seamless gitops flow and a consolidated API to create clusters w/o much development effort at all
+We've actually also set this up for you via a PR automation, which you can find at the `/pr/automations` url in your newly created console.  This will trigger a PR with the follownig resources:
 
-Creating CAPI clusters is documented on https://docs.plural.sh. To create a terraform based cluster, we recommend defining the cloud resources in your `/clusters` folder, eg in a new file named `workloads.tf` like so:
+* `InfrastructureStack` to create the underlying physical cluster
+* `Cluster` to reference that cluster via CRD and enable future crds to point to it for `ServiceDeployment` and so forth.
 
-```tf
-module "prod" {
-  source       = "../bootstrap/terraform/clouds/aws" // replace aws with gcp/azure/etc for other clouds
-  cluster_name = "boot-prod"
-  vpc_name     = "plural-prod"
-  create_db    = false
-  providers = {
-    helm = helm.prod
-  }
-}
+If you chose to create a cluster using your own automation, adding a cluster can be done simply with the `plural` cli using:
 
-
-// setting up the helm provider is necessary for AWS as it'll install a few core resources via helm by default, ignore for AKS/GKE
-data "aws_eks_cluster_auth" "prod" {
-  name = module.prod.cluster.cluster_name
-
-  depends_on = [ module.prod.cluster ]
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = module.prod.cluster.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.prod.cluster.cluster_certificate_authority_data)
-    token                  = data.aws_eks_cluster_auth.prod.token
-  }
-  alias = "prod"
-}
+```sh
+plural cd clusters boottrap --name {name}
 ```
 
-Then in your `apps/terraform` folder, we'd recommend adding a `clusters.tf` file with a simple module invocation like:
+To reference it in other GitOps resources, add a `Cluster` CRD like:
 
-```tf
-module "prod" {
-  source       = "../../bootstrap/terraform/modules/eks-byok"
-  cluster_name = "boot-prod"
-  cluster_handle = "boot-prod"
-  tags = {
-    role = "workload"
-    stage = "dev"
-  }
-}
+```yaml
+apiVersion: deployments.plural.sh/v1alpha1
+kind: Cluster
+metadata:
+  name: <name>
+spec:
+  handle: <name> # must be set to reference the cluster
+  tags:
+    some: tag # if you want to add tags to the cluster
+  metadata:
+    arbitrary:
+      yaml: metadata # any arbitrary metadata you might want to add for service templating (see https://docs.plural.sh/deployments/templating)
 ```
 
-This will register the cluster in your instance of the plural console.  You need to put it in the separate terraform stack because that's where the plural terraform provider has actually been fully initialized.  There's of course plenty of flexibility as to how you'd want to organize this especially for larger scale usecases, but this should serve most organizations well.  
+## Installing Low-Level K8s Operators
 
-One other common pattern we anticipate is for separate suborganizations each sharing a company wide Plural console to register it w/in their own git repos defining independent stacks for their own cluster sets (removing the need for a consistent network layer terraform can execute on and the security challenges that evokes).  In that world you'd just need to configure the Plural terraform provider from the start and can still utilize our wrapper modules as done above.
+Plural provides a number of very useful tools for fleet-wide deployment. If you need to install operators like cert-manager or Istio, we'd recommend using our `GlobalService` resource.  You can find more documentation about [here](https://docs.plural.sh/deployments/operator/global-service).
 
+Here's an example for deploying externaldns:
+
+```yaml
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: externaldns
+spec:
+  tags:
+    tier: dev # only target clusters with tier => dev tag pairs
+  template:
+    namespace: externaldns
+    repositoryRef:
+      kind: GitRepository
+      name: infra
+      namespace: infra
+    git:
+      ref: main
+      folder: helm-values # or wherever else you want to store the helm values
+    helm:
+      version: 6.31.4
+      chart: externaldns
+      valuesFiles:
+        - externaldns.yaml.liquid # use a liquid extension to enable templating in this file
+      repository:
+        namespace: infra
+        name: externaldns
+```
 
 ## Fleet Setup
 
