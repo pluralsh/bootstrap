@@ -35,7 +35,7 @@ variable "public" {
 
 variable "vpc_name" {
   type    = string
-  default = ""
+  default = "plrl-mgmt"
 }
 
 variable "vpc_cidr" {
