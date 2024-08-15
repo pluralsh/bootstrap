@@ -28,6 +28,10 @@ terraform {
       source = "hashicorp/local"
       version = "2.5.1"
     }
+    plural = {
+      source = "pluralsh/plural"
+      version = ">= 0.2.0"
+    }
   }
 }
 
@@ -59,4 +63,8 @@ provider "helm" {
     cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.cluster.token
   }
+}
+
+provider "plural" {
+  use_cli = true # If you want to have a Plural stack manage your console, comment this out and use the `actor` field
 }
