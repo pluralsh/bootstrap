@@ -1,6 +1,6 @@
 resource "plural_cluster" "mgmt" {
     handle = "mgmt"
-    name   = "[[ .Cluster ]]"
+    name   = "[[ .CloudCluster ]]"
     
     kubeconfig = {
       host                   = module.mgmt.cluster.endpoint
