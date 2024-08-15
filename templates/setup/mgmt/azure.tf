@@ -1,6 +1,6 @@
 resource "plural_cluster" "mgmt" {
     handle = "mgmt"
-    name   = "{{ .Cluster }}"
+    name   = "[[ .Cluster ]]"
     
     kubeconfig = {
       host                   = module.mgmt.cluster.cluster_fqdn
