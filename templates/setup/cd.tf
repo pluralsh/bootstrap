@@ -16,20 +16,6 @@ resource "plural_git_repository" "infra" {
     decrypt     = true
 }
 
-resource "plural_service_deployment" "helm-repositories" {
-    name = "helm-repositories"
-    namespace = "infra"
-    repository = {
-        id = plural_git_repository.infra.id
-        ref = "main"
-        folder = "apps/repositories"
-    }
-    cluster = {
-        id = data.plural_cluster.mgmt.id
-    }
-    protect = true
-}
-
 resource "plural_service_deployment" "apps" {
     name = "apps"
     namespace = "infra"
@@ -41,9 +27,7 @@ resource "plural_service_deployment" "apps" {
     cluster = {
         id = data.plural_cluster.mgmt.id
     }
-    configuration = {
-        repoUrl  = local.context.spec.configuration.console.repo_url 
-    }
+    
     protect = true
     templated = true
 }

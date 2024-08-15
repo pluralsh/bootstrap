@@ -1,11 +1,9 @@
-
 apiVersion: deployments.plural.sh/v1alpha1
 kind: ServiceDeployment
 metadata:
   name: cert-manager
   namespace: infra
 spec:
-  version: 0.0.1
   namespace: cert-manager
   git:
     folder: helm-values
@@ -17,15 +15,14 @@ spec:
   helm:
     version: "v1.13.3"
     chart: cert-manager
+    url: https://charts.jetstack.io
     valuesFiles:
     - certmanager.yaml
-    repository:
-      namespace: infra
-      name: cert-manager
   clusterRef:
     kind: Cluster
     name: mgmt
     namespace: infra
+{{ if not .Cloud }}
 ---
 apiVersion: deployments.plural.sh/v1alpha1
 kind: ServiceDeployment
@@ -33,7 +30,6 @@ metadata:
   name: flux
   namespace: infra
 spec:
-  version: 0.0.1
   namespace: flux
   git:
     folder: helm-values
@@ -45,11 +41,9 @@ spec:
   helm:
     version: "2.12.2"
     chart: flux2
+    url: https://fluxcd-community.github.io/helm-charts
     valuesFiles:
     - flux.yaml
-    repository:
-      namespace: infra
-      name: flux
   clusterRef:
     kind: Cluster
     name: mgmt
@@ -61,7 +55,6 @@ metadata:
   name: runtime
   namespace: infra
 spec:
-  version: 0.0.1
   namespace: plural-runtime
   git:
     folder: helm-values
@@ -73,6 +66,7 @@ spec:
   helm:
     version: "0.x.x"
     chart: runtime
+    url: https://pluralsh.github.io/bootstrap
     valuesFiles:
     - runtime.yaml
     repository:
@@ -82,3 +76,4 @@ spec:
     kind: Cluster
     name: mgmt
     namespace: infra
+{{ end }}
