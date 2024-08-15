@@ -1,10 +1,10 @@
 apiVersion: deployments.plural.sh/v1alpha1
 kind: ServiceDeployment
 metadata:
-  name: runtime
+  name: cert-manager
   namespace: infra
 spec:
-  namespace: plural-runtime
+  namespace: cert-manager
   git:
     folder: helm-values
     ref: main
@@ -13,11 +13,11 @@ spec:
     name: infra
     namespace: infra
   helm:
-    version: "0.x.x"
-    chart: runtime
-    url: https://pluralsh.github.io/bootstrap
+    version: "v1.13.3"
+    chart: cert-manager
+    url: https://charts.jetstack.io
     valuesFiles:
-    - runtime.yaml
+    - certmanager.yaml
   clusterRef:
     kind: Cluster
     name: mgmt
