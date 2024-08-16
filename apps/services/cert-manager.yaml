@@ -13,7 +13,7 @@ spec:
     name: infra
     namespace: infra
   helm:
-    version: "v1.13.3"
+    version: "v1.x.x"
     chart: cert-manager
     url: https://charts.jetstack.io
     valuesFiles:
