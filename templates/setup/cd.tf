@@ -22,7 +22,7 @@ resource "plural_service_deployment" "apps" {
     repository = {
         id = plural_git_repository.infra.id
         ref = "main"
-        folder = "apps/services"
+        folder = "setup"
     }
     cluster = {
         id = data.plural_cluster.mgmt.id
