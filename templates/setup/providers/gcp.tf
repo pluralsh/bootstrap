@@ -3,4 +3,5 @@ module "mgmt" {
     project_id    = "{{ .Project }}"
     cluster_name  = "{{ .Cluster }}"
     region        = "{{ .Region }}"
+    create_db     = {{ .RequireDB }}
 }

@@ -33,6 +33,10 @@ terraform {
       source = "hashicorp/local"
       version = "2.5.1"
     }
+    plural = {
+      source = "pluralsh/plural"
+      version = ">= 0.2.16"
+    }
   }
 }
 
@@ -62,4 +66,8 @@ provider "helm" {
     client_certificate     = base64decode(module.mgmt.cluster.client_certificate)
     client_key             = base64decode(module.mgmt.cluster.client_key)
   }
+}
+
+provider "plural" {
+  use_cli = true # If you want to have a Plural stack manage your console, comment this out and use the `actor` field
 }

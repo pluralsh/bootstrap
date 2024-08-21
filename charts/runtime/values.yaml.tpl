@@ -1,3 +1,4 @@
+{{ if not .Cloud }}
 external-dns:
   extraArgs:
     plural-cluster: {{ .Cluster }}
@@ -19,6 +20,28 @@ pluralToken: {{ .Config.Token }}
 acmeEAB:
   kid: {{ .Acme.KeyId }}
   secret: {{ .Acme.HmacKey }}
+{{ end }}
+
+{{ if .Cloud }}
+
+ownerEmail: {{ .Config.Email }}
+
+
+external-dns:
+  enabled: false
+
+plural-certmanager-webhook:
+  enabled: false
+
+operator:
+  enabled: false
+
+application:
+  enabled: false
+
+plural:
+  enabled: false
+{{ end }}
 
 {{ if eq .Provider "aws" }}
 ingress-nginx:

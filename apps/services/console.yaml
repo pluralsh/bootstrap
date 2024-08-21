@@ -15,11 +15,9 @@ spec:
   helm:
     version: "0.x.x"
     chart: console
+    url: https://pluralsh.github.io/console
     valuesFiles:
     - console.yaml
-    repository:
-      namespace: infra
-      name: console
   clusterRef:
     kind: Cluster
     name: mgmt

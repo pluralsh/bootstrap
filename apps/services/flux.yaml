@@ -1,10 +1,10 @@
 apiVersion: deployments.plural.sh/v1alpha1
 kind: ServiceDeployment
 metadata:
-  name: runtime
+  name: flux
   namespace: infra
 spec:
-  namespace: plural-runtime
+  namespace: flux
   git:
     folder: helm-values
     ref: main
@@ -13,11 +13,11 @@ spec:
     name: infra
     namespace: infra
   helm:
-    version: "0.x.x"
-    chart: runtime
-    url: https://pluralsh.github.io/bootstrap
+    version: "2.12.2"
+    chart: flux2
+    url: https://fluxcd-community.github.io/helm-charts
     valuesFiles:
-    - runtime.yaml
+    - flux.yaml
   clusterRef:
     kind: Cluster
     name: mgmt
