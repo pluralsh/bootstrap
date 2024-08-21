@@ -29,10 +29,7 @@ helm-values/ # git crypted helm values to be used for app installs
 - ${app}.yaml # value overrides
 - ${app}-defaults.yaml # default values we generate on install
 
-apps/ # setup for apps within your cluster fleet
-- repositories/ # contains all helm repositories you want to register for deployments
-- services/ # contains specification for all services you want to create w/in your cluster fleet
-- ... feel free to add other subfolders here or wherever you want to list yaml resources
+setup/ # setup for apps within your cluster fleet, this is the root service-of-services that bootstraps everything recursively
 
 terraform/
   - mgmt # module for setting up your management cluster
