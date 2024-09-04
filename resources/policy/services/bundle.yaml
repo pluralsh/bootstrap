@@ -1,31 +1,15 @@
-## Used to sync a policy bundle into you're cluster, uncomment and chose the subfolder that you'd prefer
-# apiVersion: deployments.plural.sh/v1alpha1
-# kind: ServiceDeployment
-# metadata:
-#   name: gatekeeper-bundle
-#   namespace: policy
-# spec:
-#   namespace: policy
-#   git:
-#     folder: policy/bundles
-#     ref: main
-#   kustomize:
-#     path: cis-k8s-v1.5.1
-#   repositoryRef:
-#     kind: GitRepository
-#     name: bootstrap
-#     namespace: policy
-#   clusterRef:
-#     kind: Cluster
-#     name: mgmt
-#     namespace: infra
-# ---
-# apiVersion: deployments.plural.sh/v1alpha1
-# kind: GlobalService
-# metadata:
-#  name: gatekeeper-bundle
-#  namespace: policy
-# spec:
-#  serviceRef:
-#    name: gatekeeper-bundle
-#    namespace: policy
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: policy-bundle
+spec:
+  template:
+    name: policy-bundle
+    namespace: policy
+    git:
+      folder: resources/policy/bundles/{{ context.bundle }}
+      ref: main
+    repositoryRef:
+      kind: GitRepository
+      name: infra
+      namespace: infra

@@ -6,7 +6,7 @@ metadata:
 spec:
   namespace: infra
   git:
-    folder: apps/clusters
+    folder: services/clusters
     ref: main
   repositoryRef:
     kind: GitRepository

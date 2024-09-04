@@ -1,0 +1,28 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: kps-mgmt
+  namespace: infra
+spec:
+  namespace: monitoring
+  git:
+    folder: helm/prometheus
+    ref: main
+  configurationRef:
+    name: basic-auth-prom
+    namespace: infra
+  repositoryRef:
+    kind: GitRepository
+    name: infra
+    namespace: infra
+  helm:
+    url: https://prometheus-community.github.io/helm-charts
+    version: x.x.x
+    chart: kube-prometheus-stack
+    valuesFiles:
+    - kps-mgmt.yaml
+    - kps-mgmt.yaml.liquid
+  clusterRef:
+    kind: Cluster
+    name: {{ context.cluster }}
+    namespace: infra

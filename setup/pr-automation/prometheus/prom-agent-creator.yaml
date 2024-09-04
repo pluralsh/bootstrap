@@ -1,0 +1,34 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: PrAutomation
+metadata:
+  name: prom-agent-creator
+spec:
+  name: prom-agent-creator
+  documentation: |
+    Sets up a prometheus agent for shipping metrics, pairs with `prom-creator`
+  creates:
+    templates:
+    - source: resources/monitoring/helm
+      destination: "helm/prometheus"
+      external: false
+    - source: resources/monitoring/mgmt.yaml
+      destination: "bootstrap/monitoring/mgmt.yaml"
+      external: false
+  scmConnectionRef:
+    name: github  # you'll need to add this ScmConnection manually before this is functional
+  title: "Setup prometheus agent for metrics shipping"
+  message: "Setup prometheus agent for metrics shipping"
+  identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
+  configuration:
+  - name: cluster
+    type: STRING
+    documentation: CRD name for this cluster, use `mgmt` to place it in the management cluster
+  - name: prometheusHost
+    type: STRING
+    documentation: the FQDN of your prometheus instance
+  - name: tagName
+    type: STRING
+    documentation: The cluster tag name you want to use to control the global service for installation of prometheus agent
+  - name: tagValue
+    type: STRING
+    documentation: The cluster tag value you want to use to control the global service for installation of prometheus agent 

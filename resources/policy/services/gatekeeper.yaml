@@ -1,27 +1,13 @@
 apiVersion: deployments.plural.sh/v1alpha1
-kind: ServiceDeployment
-metadata:
-  name: gatekeeper
-  namespace: policy
-spec:
-  namespace: policy
-  helm:
-    version: 3.15.1
-    chart: gatekeeper
-    repository:
-      name: gatekeeper
-      namespace: policy
-  clusterRef:
-    kind: Cluster
-    name: mgmt
-    namespace: infra
----
-apiVersion: deployments.plural.sh/v1alpha1
 kind: GlobalService
 metadata:
  name: gatekeeper
  namespace: policy
 spec:
- serviceRef:
-   name: gatekeeper
-   namespace: policy
+  template:
+    name: gatekeeper
+    namespace: policy
+    helm:
+      url: https://open-policy-agent.github.io/gatekeeper/charts
+      version: 3.15.1
+      chart: gatekeeper

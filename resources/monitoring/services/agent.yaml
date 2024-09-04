@@ -1,43 +1,41 @@
 apiVersion: deployments.plural.sh/v1alpha1
 kind: ServiceDeployment
 metadata:
-  name: kps-agent-fleet
-  namespace: monitoring
+  name: kps-agent
+  namespace: infra
 spec:
-  namespace: monitoring
+  namespace: prometheus
   git:
-    folder: helm-values
-    ref: logstack
+    folder: helm/prometheus
+    ref: main
   configurationRef:
-    name: basic-auth-prom-agent
-    namespace: monitoring
+    name: basic-auth-prom
+    namespace: infra
   repositoryRef:
     kind: GitRepository
-    name: monitoring
-    namespace: monitoring
+    name: infra
+    namespace: infra
   helm:
-    version: 57.1.0
+    url: https://prometheus-community.github.io/helm-charts
+    version: x.x.x
     chart: kube-prometheus-stack
     valuesFiles:
     - kps-agent.yaml
     - kps-agent.yaml.liquid
-    repository:
-      name: prometheus-community
-      namespace: monitoring
   clusterRef:
     kind: Cluster
-    name: boot-staging
+    name: {{ context.cluster }}
     namespace: infra
 ---
 # make global so it's also deployed on the other clusters
 apiVersion: deployments.plural.sh/v1alpha1
 kind: GlobalService
 metadata:
-  name: kps-agent-fleet
-  namespace: monitoring
+  name: kps-agent
+  namespace: infra
 spec:
   tags:
-    stage: dev
+    {{ context.tagName }}: {{ context.tagValue }}
   serviceRef:
-    name: kps-agent-fleet
-    namespace: monitoring
+    name: kps-agent
+    namespace: infra

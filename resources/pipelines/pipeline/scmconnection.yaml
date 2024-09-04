@@ -1,7 +1,0 @@
-apiVersion: deployments.plural.sh/v1alpha1
-kind: ScmConnection
-metadata:
-  name: gh-test
-spec:
-  name: gh-test
-  type: GITHUB

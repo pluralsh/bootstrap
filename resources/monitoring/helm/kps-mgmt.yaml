@@ -68,58 +68,10 @@ additionalScrapeConfigs:
       - opencost.monitoring
       type: 'A'
       port: 9003
+
 grafana:
-  enabled: true
-  fullnameOverride: kps-grafana
-  envValueFrom:
-    LOKI_DATASOURCE_PASSWORD:
-      secretKeyRef:
-        name: basic-auth-loki
-        key: password
-  admin:
-    password: admin # placeholder will get overwritten
-    user: admin
-  datasources.yaml:
-    apiVersion: 1
-    deleteDatasources:
-    - name: Loki
-      orgId: 1
-  service:
-    type: ClusterIP
-  ingress:
-    enabled: true
-    path: /.*
-    annotations:
-      kubernetes.io/tls-acme: "true"
-      kubernetes.io/ingress.class: "nginx"
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-      nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
-      nginx.ingress.kubernetes.io/use-regex: "true"
-    hosts:
-    - grafana.boot-aws.onplural.sh
-    tls:
-    - hosts:
-      - grafana.boot-aws.onplural.sh
-      secretName: grafana-tls
-  sidecar:
-    dashboards:
-      enabled: true
-      label: grafana_dashboard
-      labelValue: "1"
-      provider:
-        name: sidecar
-        allowUiUpdates: true
-        foldersFromFilesStructure: true
-      searchNamespace: ALL
-      folderAnnotation: k8s-sidecar-target-directory
-      annotations: 
-        k8s-sidecar-target-directory: "/tmp/dashboards/kubernetes"
-    datasources:
-      enabled: true
-      searchNamespace: ALL
-    plugins:
-      enabled: false
-      searchNamespace: ALL
+  enabled: false
+
 prometheus:
   enabled: true
   ingress:
@@ -133,11 +85,11 @@ prometheus:
       nginx.ingress.kubernetes.io/auth-secret: basic-auth-prom
       nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required'
     hosts:
-      - prometheus.boot-aws.onplural.sh
+      - {{ context.prometheusHost }}
     tls:
       - secretName: prometheus-tls
         hosts:
-          - prometheus.boot-aws.onplural.sh
+          - {{ context.prometheusHost }}
     servicePort: 9090
     pathType: Prefix
     paths:
