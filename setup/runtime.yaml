@@ -1,0 +1,24 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: runtime
+  namespace: infra
+spec:
+  namespace: plural-runtime
+  git:
+    folder: helm-values
+    ref: main
+  repositoryRef:
+    kind: GitRepository
+    name: infra
+    namespace: infra
+  helm:
+    version: "0.x.x"
+    chart: runtime
+    url: https://pluralsh.github.io/bootstrap
+    valuesFiles:
+    - runtime.yaml
+  clusterRef:
+    kind: Cluster
+    name: mgmt
+    namespace: infra
