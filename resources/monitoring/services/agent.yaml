@@ -1,12 +1,12 @@
 apiVersion: deployments.plural.sh/v1alpha1
 kind: ServiceDeployment
 metadata:
-  name: kps-agent
+  name: vmetrics-agent
   namespace: infra
 spec:
-  namespace: prometheus
+  namespace: monitoring
   git:
-    folder: helm/prometheus
+    folder: helm/monitoring
     ref: main
   configurationRef:
     name: basic-auth-prom
@@ -16,12 +16,11 @@ spec:
     name: infra
     namespace: infra
   helm:
-    url: https://prometheus-community.github.io/helm-charts
-    version: x.x.x
-    chart: kube-prometheus-stack
+    url: https://victoriametrics.github.io/helm-charts/
+    version: 0.25.9
+    chart: victoria-metrics-k8s-stack
     valuesFiles:
-    - kps-agent.yaml
-    - kps-agent.yaml.liquid
+    - agent.yaml.liquid
   clusterRef:
     kind: Cluster
     name: {{ context.cluster }}

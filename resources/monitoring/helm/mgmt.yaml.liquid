@@ -1,0 +1,71 @@
+vmcluster:
+  enabled: true
+
+  spec:
+    vminsert:
+      extraArgs:
+        maxLabelsPerTimeseries: '50'
+
+    vmstorage:
+      resources:
+        limits:
+          cpu: "1"
+          memory: 5Gi
+
+victoria-metrics-operator:
+  enabled: false
+
+prometheus-node-exporter:
+  enabled: false
+
+vmagent:
+  enabled: false
+
+vmsingle:
+  enabled: false
+
+grafana:
+  enabled: false
+
+kubeApiServer:
+  enabled: false
+
+fullnameOverride: vm-cluster
+
+extraObjects:
+- apiVersion: operator.victoriametrics.com/v1beta1
+  kind: VMAuth
+  metadata:
+    name: vm-auth
+  spec:
+    selectAllByDefault: true
+    ingress:
+      class_name: nginx # <-- change this to your ingress-controller
+      host: {{ context.host }}
+      tlsHosts:
+      - {{ context.host }}
+      tlsSecretName: vmetrics-tls
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+- apiVersion: operator.victoriametrics.com/v1beta1
+  kind: VMUser
+  {% raw %}
+  metadata:
+    name: {{ configuration.user }}
+  spec:
+    password: {{ configuration.password }}
+  {% endraw %}
+    targetRefs:
+    - crd:
+        kind: VMCluster/vminsert
+        name: vm-cluster
+        namespace: monitoring
+      paths: 
+      - "/insert/.*"
+    - crd:
+        kind: VMCluster/vmselect
+        name: vm-cluster
+        namespace: monitoring
+      paths: 
+      - "/select/.*"
+    

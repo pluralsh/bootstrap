@@ -5,11 +5,11 @@ metadata:
 spec:
   name: prom-creator
   documentation: |
-    Sets up a prometheus instance for metrics storage, pairs with prom-agent-creator to ship metrics from workload clusters
+    Sets up a victoria metrics prometheus instance for metrics storage, pairs with prom-agent-creator to ship metrics from workload clusters
   creates:
     templates:
     - source: resources/monitoring/helm
-      destination: "helm/prometheus"
+      destination: "helm/monitoring"
       external: false
     - source: resources/monitoring/mgmt.yaml
       destination: "bootstrap/monitoring/mgmt.yaml"
@@ -23,6 +23,6 @@ spec:
   - name: cluster
     type: STRING
     documentation: CRD name for this cluster, use `mgmt` to place it in the management cluster
-  - name: prometheusHost
+  - name: host
     type: STRING
-    documentation: the FQDN you want prometheus to be hosted on, you'll need external-dns and cert manager already configured
+    documentation: the FQDN you want victoria metrics prometheus to be hosted on, you'll need external-dns and cert manager already configured

@@ -1,15 +1,15 @@
 apiVersion: deployments.plural.sh/v1alpha1
 kind: PrAutomation
 metadata:
-  name: prom-agent-creator
+  name: metrics-agent-creator
 spec:
-  name: prom-agent-creator
+  name: metrics-agent-creator
   documentation: |
-    Sets up a prometheus agent for shipping metrics, pairs with `prom-creator`
+    Sets up a victoria metrics agent for shipping metrics, pairs with `prom-creator`
   creates:
     templates:
     - source: resources/monitoring/helm
-      destination: "helm/prometheus"
+      destination: "helm/monitoring"
       external: false
     - source: resources/monitoring/mgmt.yaml
       destination: "bootstrap/monitoring/mgmt.yaml"
@@ -23,9 +23,9 @@ spec:
   - name: cluster
     type: STRING
     documentation: CRD name for this cluster, use `mgmt` to place it in the management cluster
-  - name: prometheusHost
+  - name: host
     type: STRING
-    documentation: the FQDN of your prometheus instance
+    documentation: the FQDN of your victoria metrics prometheus instance
   - name: tagName
     type: STRING
     documentation: The cluster tag name you want to use to control the global service for installation of prometheus agent
