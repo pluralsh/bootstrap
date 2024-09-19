@@ -2,12 +2,12 @@ apiVersion: v2
 name: runtime
 description: Sets up the basic dependencies needed to get a network stack running
 type: application
-version: 0.1.24
+version: 0.1.25
 appVersion: "0.1.0"
 dependencies:
 - name: external-dns
-  version: 6.38.0
-  repository: https://charts.bitnami.com/bitnami
+  version: 8.3.8
+  repository: oci://registry-1.docker.io/bitnamicharts
   condition: external-dns.enabled
 - name: cert-manager
   version: v1.13.6
