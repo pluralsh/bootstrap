@@ -1,0 +1,28 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: PrAutomation
+metadata:
+  name: prom-creator
+spec:
+  name: prom-creator
+  documentation: |
+    Sets up a victoria metrics prometheus instance for metrics storage, pairs with prom-agent-creator to ship metrics from workload clusters
+  creates:
+    templates:
+    - source: resources/monitoring/helm
+      destination: "helm/monitoring"
+      external: false
+    - source: resources/monitoring/mgmt.yaml
+      destination: "bootstrap/monitoring/mgmt.yaml"
+      external: false
+  scmConnectionRef:
+    name: github  # you'll need to add this ScmConnection manually before this is functional
+  title: "Setup a prometheus cluster for fleetwide metrics"
+  message: "Setup a prometheus cluster for fleetwide metrics in {{ context.cluster }}"
+  identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
+  configuration:
+  - name: cluster
+    type: STRING
+    documentation: CRD name for this cluster, use `mgmt` to place it in the management cluster
+  - name: host
+    type: STRING
+    documentation: the FQDN you want victoria metrics prometheus to be hosted on, you'll need external-dns and cert manager already configured

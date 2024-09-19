@@ -12,6 +12,5 @@ We'd generally recommend vendoring this into a repo your org owns, and rewiring 
 
 The main areas you'd likely need to customize are:
 
-* `services/gitrepository.yaml` - you'll change the url for this git repository, if it'll require auth it is often easier to set it up in the ui, then reference the repo in CRD form
 * `services/bundle.yaml` - if you'd like to opt into a policy bundle or modify the bundle to use
 * `policyies/bundles/*` - all policies are configured to dryrun enforcement by default, that can be changed to warn or deny depending on your strictness levels

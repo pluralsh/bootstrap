@@ -1,0 +1,40 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: vmetrics-agent
+  namespace: infra
+spec:
+  namespace: monitoring
+  git:
+    folder: helm/monitoring
+    ref: main
+  configurationRef:
+    name: basic-auth-prom
+    namespace: infra
+  repositoryRef:
+    kind: GitRepository
+    name: infra
+    namespace: infra
+  helm:
+    url: https://victoriametrics.github.io/helm-charts/
+    version: 0.25.9
+    chart: victoria-metrics-k8s-stack
+    valuesFiles:
+    - agent.yaml.liquid
+  clusterRef:
+    kind: Cluster
+    name: {{ context.cluster }}
+    namespace: infra
+---
+# make global so it's also deployed on the other clusters
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: kps-agent
+  namespace: infra
+spec:
+  tags:
+    {{ context.tagName }}: {{ context.tagValue }}
+  serviceRef:
+    name: kps-agent
+    namespace: infra

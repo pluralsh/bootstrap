@@ -1,19 +1,15 @@
 apiVersion: deployments.plural.sh/v1alpha1
-kind: ServiceDeployment
+kind: GlobalService
 metadata:
   name: opa-constraints
-  namespace: policy
 spec:
-  namespace: policy
-  templated: false
-  git:
-    folder: resources/policy/constraints
-    ref: main
-  repositoryRef:
-    kind: GitRepository
-    name: bootstrap
+  template:
+    name: opa-constraints
     namespace: policy
-  clusterRef:
-    kind: Cluster
-    name: mgmt
-    namespace: infra
+    git:
+      folder: resources/policy/constraints
+      ref: main
+    repositoryRef:
+      kind: GitRepository
+      name: infra
+      namespace: policy

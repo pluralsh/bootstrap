@@ -1,0 +1,28 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: PrAutomation
+metadata:
+  name: gatekeeper-setup
+spec:
+  name: gatekeeper-setup
+  documentation: |
+    Sets up OPA gatekeeper and installs a pre-baked policy bundle
+  creates:
+    templates:
+    - source: resources/policy/services
+      destination: "bootstrap/policy"
+      external: false
+  scmConnectionRef:
+    name: github  # you'll need to add this ScmConnection manually before this is functional
+  title: "Setup OPA gatekeeper and install the {{ context.bundle }} policy bundle"
+  message: "Setup OPA gatekeeper and install the {{ context.bundle }} policy bundle"
+  identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
+  configuration:
+  - name: bundle
+    type: ENUM
+    values:
+    - asm-policy-v0.0.1
+    - cis-k8s-v1.5.1
+    - policy-essentials-v2022
+    - psp-v2022
+    - pss-baseline-v2022
+    documentation: A policy bundle you'd like to install

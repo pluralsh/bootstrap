@@ -1,0 +1,27 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: vmetrics-server
+  namespace: infra
+spec:
+  namespace: monitoring
+  git:
+    folder: helm/monitoring
+    ref: main
+  configurationRef:
+    name: basic-auth-prom
+    namespace: infra
+  repositoryRef:
+    kind: GitRepository
+    name: infra
+    namespace: infra
+  helm:
+    url: https://victoriametrics.github.io/helm-charts/
+    version: 0.25.9
+    chart: victoria-metrics-k8s-stack
+    valuesFiles:
+    - mgmt.yaml.liquid
+  clusterRef:
+    kind: Cluster
+    name: {{ context.cluster }}
+    namespace: infra

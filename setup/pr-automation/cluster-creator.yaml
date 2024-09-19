@@ -9,13 +9,13 @@ spec:
   creates:
     templates:
     - source: templates/clusters/stack.yaml
-      destination: "apps/clusters/{{ context.cloud }}/stacks/{{ context.name }}.yaml"
+      destination: "services/clusters/{{ context.cloud }}/stacks/{{ context.name }}.yaml"
       external: false
     - source: templates/clusters/cluster.yaml
-      destination: "apps/clusters/{{ context.cloud }}/clusters/{{ context.name }}.yaml"
+      destination: "services/clusters/{{ context.cloud }}/clusters/{{ context.name }}.yaml"
       external: false
     - source: templates/clusters/clusters.yaml
-      destination: "apps/services/clusters.yaml"
+      destination: "bootstrap/clusters.yaml"
       external: false
   scmConnectionRef:
     name: github  # you'll need to add this ScmConnection manually before this is functional
