@@ -1,0 +1,17 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: blobstores
+  namespace: infra
+spec:
+  namespace: infra
+  git:
+    folder: services/blobstores
+    ref: main
+  repositoryRef:
+    kind: GitRepository
+    name: infra
+    namespace: infra
+  clusterRef:
+    name: mgmt
+    namespace: infra

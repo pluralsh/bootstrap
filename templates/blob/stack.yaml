@@ -1,0 +1,25 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: InfrastructureStack
+metadata:
+  name: blobstore-{{ context.name }}
+spec:
+  name: blobstore-{{ context.name }}
+  detach: false
+  type: TERRAFORM
+  approval: true
+  manageState: true
+  actor: console@plural.sh
+  configuration:
+    version: '1.8'
+  repositoryRef:
+    name: infra
+    namespace: infra
+  clusterRef:
+    name: mgmt
+    namespace: infra
+  git:
+    ref: main
+    folder: terraform/modules/blob/{{ context.type }}
+  variables:
+    region: {{ context.region }}
+    bucket_name: {{ context.name }}
