@@ -69,11 +69,16 @@ module "externaldns_irsa_role" {
 
   role_name                  = "${module.eks.cluster_name}-externaldns"
   attach_external_dns_policy = true
+  attach_cert_manager_policy = true
 
   oidc_providers = {
     main = {
       provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["plural-runtime:external-dns"]
+      namespace_service_accounts = [
+        "plural-runtime:external-dns", 
+        "external-dns:external-dns", 
+        "cert-manager:cert-manager"
+      ]
     }
   }
 }
