@@ -60,7 +60,7 @@ resource "helm_release" "runtime" {
   namespace        = "plural-runtime"
   chart            = "runtime"
   repository       = "https://pluralsh.github.io/bootstrap"
-  version          = "0.1.22"
+  version          = "0.1.26"
   create_namespace = true
   timeout          = 300
   wait             = false
