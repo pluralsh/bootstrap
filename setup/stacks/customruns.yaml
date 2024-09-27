@@ -1,0 +1,62 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: CustomStackRun
+metadata:
+  name: force-unlock
+spec:
+  name: force-unlock
+  documentation: "force release a terraform lock if present"
+  commands:
+  - cmd: terraform
+    args: [init]
+  - cmd: terraform
+    args:
+    - force-unlock
+    - '-force'
+    - "{{ context.lockId }}"
+  configuration:
+  - name: lockId
+    type: STRING
+    documentation: the lock id to release
+---
+apiVersion: deployments.plural.sh/v1alpha1
+kind: CustomStackRun
+metadata:
+  name: state-rm
+spec:
+  name: state-rm
+  documentation: "remove a resource from tf state"
+  commands:
+  - cmd: terraform
+    args: [init]
+  - cmd: terraform
+    args:
+    - state
+    - rm
+    - "{{ context.resource }}"
+  configuration:
+  - name: resource
+    type: STRING
+    documentation: the resource path to remove
+---
+apiVersion: deployments.plural.sh/v1alpha1
+kind: CustomStackRun
+metadata:
+  name: import
+spec:
+  name: import
+  documentation: "import a resource into tf state"
+  commands:
+  - cmd: terraform
+    args: [init]
+  - cmd: terraform
+    args:
+    - import
+    - "{{ context.resource }}"
+    - "{{ context.identifier }}"
+  configuration:
+  - name: resource
+    type: STRING
+    documentation: the resource path to import
+  - name: identifier
+    type: STRING
+    documentation: the provider-specific identifier to import
