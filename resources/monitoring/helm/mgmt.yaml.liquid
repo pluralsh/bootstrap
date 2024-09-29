@@ -2,6 +2,7 @@ vmcluster:
   enabled: true
 
   spec:
+    retentionPeriod: 7d
     vminsert:
       extraArgs:
         maxLabelsPerTimeseries: '50'
@@ -11,6 +12,13 @@ vmcluster:
         limits:
           cpu: "1"
           memory: 5Gi
+
+      storage:
+        volumeClaimTemplate:
+          spec:
+            resources:
+              requests:
+                storage: 50Gi
 
 victoria-metrics-operator:
   enabled: false
