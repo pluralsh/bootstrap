@@ -2,6 +2,10 @@
 
 This repo defines the core terraform code needed to bootstrap a Plural management cluster.  It is intended to be cloned in a users infra repo and then owned by their DevOps team from there.  We do our best to adhere to the standard terraform setup for k8s within the respective cloud, while also installing necessary add-ons as needed (eg load balancer controller and autoscaler for AWS).
 
+> [!TIP]
+> If you want a guided walkthrough of how to use your new repo and get started with a Plural-based GitOps workflow, our [how-to guide](https://docs.plural.sh/how-to) is an amazing place to start!
+
+
 ## General Architecture
 
 There are three main resources created by these templates:
@@ -12,13 +16,6 @@ There are three main resources created by these templates:
 
 Our defaults are meant to be tweaked, feel free to reference the documentation of the underlying modules if you want to make a cluster private, or modify our CIDR range defaults if you want to VPC peer.
 
-When used in a plural installation repo, the process is basically:
-
-* create a git submodule in the installation repo pointing to the https://github.com/pluralsh/bootstrap.git repository
-* template and copy base terraform files into their respective folders (`/clusters` for cluster infra and `/apps` for app setup)
-* execute the terraform in sequence from there
-
-THis follows a generate-once approach, as in we'll generate the working defaults and any customizations from there are left to the user.  This makes it much easier to reimplement our setup for a company's security or scalability preferences rather than worrying about an upstream change.  If you ever want to sync from upstream, you can simply `cd bootstrap && git pull` to fetch the most recent changes.
 
 ## Installation repo folder structure
 
@@ -29,7 +26,9 @@ helm-values/ # git crypted helm values to be used for app installs
 - ${app}.yaml # value overrides
 - ${app}-defaults.yaml # default values we generate on install
 
-setup/ # setup for apps within your cluster fleet, this is the root service-of-services that bootstraps everything recursively
+bootstrap/ # setup for apps within your cluster fleet, this is the root service-of-services that bootstraps everything recursively
+
+resources/ # additional third party setup manifests for common k8s add-on concerns like observability and policy enforcement.
 
 terraform/
   - mgmt # module for setting up your management cluster
@@ -109,6 +108,8 @@ spec:
 
 There's a few common things you'll often need to solve when managing kubernetes.  We've collected a lot of tested setups that you can adapt into your own environments.  In particular, we've provided resources for setting up:
 
-* monitoring - full loki + prometheus agent setup and how to connect them both to your instance of the console
+* monitoring - full victoria metrics cluster + agent setup and how to connect them both to your instance of the console
 * OPA policy management - example yaml setup for OPA Gatekeeper and various constraints to meet common important benchmarks.
 * pipelines - a full PR Automation pipeline setup inclusive of using global services as well that should help testdrive some of the more advanced change management capabilities of the platform.
+
+Most of these live in the generated `resources` folder and the most mature will have a pre-built Pr Automation already created for you to install them.
