@@ -23,7 +23,7 @@ variable "public" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.28"
+  default = "1.29"
 }
 
 variable "vpc_cidr" {
