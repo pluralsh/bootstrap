@@ -27,5 +27,11 @@ resource "plural_cluster" "this" {
       token                  = data.aws_eks_cluster_auth.cluster.token
     }
 
-    depends_on = [ module.vpc ]
+    depends_on = [ 
+      module.vpc,
+      module.addons,
+      module.ebs_csi_irsa_role, 
+      module.vpc_cni_irsa_role, 
+      module.externaldns_irsa_role 
+    ]
 }
