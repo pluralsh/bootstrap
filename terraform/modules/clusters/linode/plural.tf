@@ -11,6 +11,7 @@ resource "plural_cluster" "this" {
   tags = {
     tier  = var.tier
     fleet = var.fleet
+    role = "workload"
   }
 
   kubeconfig = {

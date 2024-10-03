@@ -10,6 +10,7 @@ resource "plural_cluster" "this" {
     tags   = {
         fleet = var.fleet
         tier = var.tier
+        role = "workload"
     }
 
     metadata = jsonencode({
