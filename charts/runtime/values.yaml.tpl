@@ -41,9 +41,14 @@ application:
 
 plural:
   enabled: false
+
+ingress-nginx:
+  enabled: false
+ingress-nginx-private:
+  enabled: false
 {{ end }}
 
-{{ if eq .Provider "aws" }}
+{{ if and (eq .Provider "aws") (not .Cloud) }}
 ingress-nginx:
   controller:
     service:
