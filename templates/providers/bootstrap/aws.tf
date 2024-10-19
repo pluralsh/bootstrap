@@ -68,3 +68,12 @@ provider "helm" {
 provider "plural" {
   use_cli = true # If you want to have a Plural stack manage your console, comment this out and use the `actor` field
 }
+
+## useful outputs dumped here, can be moved to a separate file post-generate
+output "cloudwatch_iam_arn" {
+  value = module.mgmt.cloudwatch_iam_arn
+}
+
+output "vpc_id" {
+  value = module.mgmt.vpc.vpc_id
+}

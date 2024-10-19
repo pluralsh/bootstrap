@@ -60,8 +60,8 @@ module "assumable_role_cloudwatch_exporter" {
   role_name        = "${var.cluster_name}-cloudwatch-exporter"
   provider_url     = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   role_policy_arns = [aws_iam_policy.cloudwatch.arn]
-  oidc_fully_qualified_subjects = [
-    "system:serviceaccount:monitoring:cloudwatch-exporter",
+  oidc_subjects_with_wildcards = [
+    "system:serviceaccount:monitoring:cloudwatch-exporter*",
   ]
 }
 

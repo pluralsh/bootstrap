@@ -237,3 +237,7 @@ output "ready" {
 output "identity" {
   value = module.assumable_role_stacks.iam_role_arn
 }
+
+output "cloudwatch_iam_arn" {
+  value = module.assumable_role_cloudwatch_exporter.iam_role_arn
+}
