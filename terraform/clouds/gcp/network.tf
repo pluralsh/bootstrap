@@ -43,4 +43,5 @@ resource "google_service_networking_connection" "postgres" {
   network                 = module.gcp-network.network_id
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_alloc[0].name]
+  update_on_creation_fail = true
 }
