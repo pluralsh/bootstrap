@@ -43,3 +43,6 @@ spec:
     values:
     - dev
     - prd
+  - name: branch
+    type: STRING
+    documentation: name for the current branch
