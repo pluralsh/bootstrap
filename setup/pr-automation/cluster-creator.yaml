@@ -22,6 +22,7 @@ spec:
   title: "Adding {{ context.cloud }} cluster: {{ context.name }}"
   message: "Adding {{ context.cloud }} cluster {{ context.name }} and registering it with Plural"
   identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
+  branch: [[ or .Context.Branch "main" ]]
   configuration:
   - name: name
     type: STRING

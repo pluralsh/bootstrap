@@ -18,7 +18,7 @@ spec:
     name: mgmt
     namespace: infra
   git:
-    ref: main
+    ref: {{ context.branch | default "main" }}
     folder: terraform/modules/blob/{{ context.type }}
   variables:
     region: {{ context.region }}

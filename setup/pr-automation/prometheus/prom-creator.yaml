@@ -19,6 +19,7 @@ spec:
   title: "Setup a prometheus cluster for fleetwide metrics"
   message: "Setup a prometheus cluster for fleetwide metrics in {{ context.cluster }}"
   identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
+  branch: [[ or .Context.Branch "main" ]]
   configuration:
   - name: cluster
     type: STRING

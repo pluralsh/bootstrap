@@ -18,7 +18,7 @@ spec:
     name: mgmt
     namespace: infra
   git:
-    ref: main
+    ref: {{ context.branch | default "main" }}
     folder: terraform/modules/clusters/{{ context.cloud }}
   environment:
   - name: TF_VAR_cluster
