@@ -32,6 +32,7 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
   private_dns_zone_id    = azurerm_private_dns_zone.postgres[0].id
   administrator_login    = "console"
   administrator_password = random_password.password.result
+  public_network_access_enabled = false
 
   storage_mb = var.postgres_disk
   sku_name   = var.postgres_sku
