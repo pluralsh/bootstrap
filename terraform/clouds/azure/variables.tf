@@ -69,7 +69,7 @@ variable "db_sku" {
 
 variable "workload_identity_enabled" {
   type = bool
-  default = false
+  default = true
 }
 
 variable "postgres_dns_zone" {
