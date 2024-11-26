@@ -1,7 +1,13 @@
 # Variable passthrough to the GCP module in order
 # to enable TF_VAR_xxx environment variable usage.
-variable "network" { type = string }
-variable "subnetwork" { type = string }
+variable "network" {
+  type = string
+  nullable = true
+}
+variable "subnetwork" {
+  type = string
+  nullable = true
+}
 
 module "mgmt" {
     source        = "./cluster"
