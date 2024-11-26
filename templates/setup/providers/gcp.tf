@@ -2,11 +2,14 @@
 # to enable TF_VAR_xxx environment variable usage.
 variable "network" {
   type = string
-  nullable = true
+  description = "The VPC network created to host the cluster in"
+  default     = "plural-network"
 }
+
 variable "subnetwork" {
   type = string
-  nullable = true
+  description = "The subnetwork created to host the cluster in"
+  default     = "plural-subnet"
 }
 
 module "mgmt" {
