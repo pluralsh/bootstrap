@@ -13,7 +13,7 @@ spec:
     name: infra
     namespace: infra
   helm:
-    version: "2.12.2"
+    version: "2.14.0"
     chart: flux2
     url: https://fluxcd-community.github.io/helm-charts
     valuesFiles:
