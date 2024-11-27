@@ -6,7 +6,6 @@ terraform {
     resource_group_name = "{{ .Project }}"
     container_name = "{{ .Bucket }}"
     key = "{{ .Cluster }}/apps/terraform.tfstate"
-    use_oidc = true
   }
 
   required_providers {
