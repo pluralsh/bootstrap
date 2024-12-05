@@ -19,6 +19,7 @@ spec:
   title: "Setup prometheus agent for metrics shipping"
   message: "Setup prometheus agent for metrics shipping"
   identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
+  branch: [[ or .Context.Branch "main" ]]
   configuration:
   - name: cluster
     type: STRING
