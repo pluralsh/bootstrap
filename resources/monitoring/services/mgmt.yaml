@@ -7,7 +7,7 @@ spec:
   namespace: monitoring
   git:
     folder: helm/monitoring
-    ref: main
+    ref: [[ or .Context.Branch "main" ]]
   configurationRef:
     name: basic-auth-prom
     namespace: infra

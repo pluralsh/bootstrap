@@ -16,6 +16,7 @@ spec:
   title: "Setup OPA gatekeeper and install the {{ context.bundle }} policy bundle"
   message: "Setup OPA gatekeeper and install the {{ context.bundle }} policy bundle"
   identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
+  branch: [[ or .Context.Branch "main" ]]
   configuration:
   - name: bundle
     type: ENUM

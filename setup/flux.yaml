@@ -7,7 +7,7 @@ spec:
   namespace: flux
   git:
     folder: helm-values
-    ref: main
+    ref: [[ or .Context.Branch "main" ]]
   repositoryRef:
     kind: GitRepository
     name: infra

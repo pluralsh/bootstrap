@@ -8,7 +8,7 @@ spec:
     namespace: policy
     git:
       folder: resources/policy/bundles/{{ context.bundle }}
-      ref: main
+      ref: [[ or .Context.Branch "main" ]]
     repositoryRef:
       kind: GitRepository
       name: infra
