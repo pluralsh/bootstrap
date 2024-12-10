@@ -1,0 +1,25 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GitRepository
+metadata:
+  name: scaffolds
+  namespace: infra
+spec:
+  url: https://github.com/pluralsh/scaffolds.git
+---
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: catalogs
+  namespace: infra
+spec:
+  repositoryRef:
+    kind: GitRepository
+    name: scaffolds
+    namespace: infra
+  git:
+    folder: setup/catalogs
+    ref: main
+  clusterRef:
+    kind: Cluster
+    name: mgmt
+    namespace: infra
