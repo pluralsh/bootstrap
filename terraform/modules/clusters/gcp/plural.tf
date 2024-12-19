@@ -1,5 +1,3 @@
-data "google_client_config" "default" {}
-
 resource "plural_cluster" "this" {
     handle = var.cluster
     name   = var.cluster

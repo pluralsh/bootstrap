@@ -1,6 +1,6 @@
 module "gke" {
   source  = "terraform-google-modules/kubernetes-engine/google"
-  version = "~> 29.0"
+  version = "~> 33.0"
 
   kubernetes_version     = var.kubernetes_version
   project_id             = var.project_id
