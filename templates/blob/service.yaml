@@ -7,7 +7,7 @@ spec:
   namespace: infra
   git:
     folder: services/blobstores
-    ref: main
+    ref: {{ context.branch | default "main" }}
   repositoryRef:
     kind: GitRepository
     name: infra
