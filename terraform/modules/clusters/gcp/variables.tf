@@ -13,6 +13,7 @@ variable "tier" {
 
 variable "region" {
   type = string
+  description = "The region to host the cluster in"
   default = "us-east-2"
 }
 
@@ -44,12 +45,6 @@ variable "node_pools_tags" {
 variable "project_id" {
   type = string
   default = "pluralsh-test-384515"
-}
-
-variable "region" {
-  type = string
-  description = "The region to host the cluster in"
-  default     = "us-central1"
 }
 
 variable "network" {

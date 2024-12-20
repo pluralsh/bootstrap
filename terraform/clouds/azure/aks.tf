@@ -1,6 +1,6 @@
 module "aks" {
   source = "Azure/aks/azurerm"
-  version = "7.5.0"
+  version = "9.2.0"
 
   kubernetes_version   = var.kubernetes_version
   cluster_name         = var.cluster_name

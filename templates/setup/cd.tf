@@ -1,9 +1,15 @@
 locals {
   context = yamldecode(data.local_sensitive_file.context.content)
+  workspace = yamldecode(data.local_sensitive_file.workspace.content)
+  branch = local.workspace.spec.context.Branch == null ? "main" : local.workspace.spec.context.Branch
 }
 
 data "local_sensitive_file" "context" {
   filename = "${path.module}/../../context.yaml"
+}
+
+data "local_sensitive_file" "workspace" {
+  filename = "${path.module}/../../workspace.yaml"
 }
 
 data "plural_cluster" "mgmt" {
@@ -21,7 +27,7 @@ resource "plural_service_deployment" "apps" {
     namespace = "infra"
     repository = {
         id = plural_git_repository.infra.id
-        ref = "main"
+        ref = local.branch
         folder = "bootstrap"
     }
     cluster = {
