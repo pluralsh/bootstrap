@@ -5,16 +5,9 @@ terraform {
     google = {
       source  = "hashicorp/google"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = ">= 2.10"
-    }
     plural = {
       source = "pluralsh/plural"
       version = ">= 0.2.9"
-    }
-    local = {
-        source = "hashicorp/local"
     }
   }
 }
