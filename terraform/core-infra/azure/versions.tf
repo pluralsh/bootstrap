@@ -2,27 +2,23 @@ terraform {
   required_version = ">= 1.0"
 
   required_providers {
-    google = {
-      source  = "hashicorp/google"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = ">= 2.10"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">=3.51.0, < 4.0"
     }
     plural = {
       source = "pluralsh/plural"
       version = ">= 0.2.9"
     }
-    local = {
-        source = "hashicorp/local"
-    }
   }
 }
 
-provider "google" {
-  region = var.region
+provider "azurerm" {
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 }
-
-data "google_client_config" "default" {}
 
 provider "plural" { }
