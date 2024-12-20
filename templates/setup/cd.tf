@@ -1,7 +1,7 @@
 locals {
   context = yamldecode(data.local_sensitive_file.context.content)
   workspace = yamldecode(data.local_sensitive_file.workspace.content)
-  branch = local.workspace.spec.context.Branch == null ? "main" : local.workspace.spec.context.Branch
+  branch = lookup(local.workspace.spec.context, "Branch", "main")
 }
 
 data "local_sensitive_file" "context" {
