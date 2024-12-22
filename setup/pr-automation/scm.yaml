@@ -1,8 +1,8 @@
-# You will need to manually create the github scm connection this refers to
+# You will need to manually create the SCM connection this refers to in the Plural Console UI
 # apiVersion: deployments.plural.sh/v1alpha1
 # kind: ScmConnection
 # metadata:
-#   name: github
+#   name: plural
 # spec:
-#   name: github
+#   name: plural
 #   type: GITHUB
