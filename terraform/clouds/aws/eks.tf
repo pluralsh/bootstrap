@@ -1,3 +1,13 @@
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_session_context" "current" {
+  # This data source provides information on the IAM source role of an STS assumed role
+  # For non-role ARNs, this data source simply passes the ARN through issuer ARN
+  # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
+  # Ref https://github.com/hashicorp/terraform-provider-aws/issues/28381
+  arn = try(data.aws_caller_identity.current[0].arn, "")
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
@@ -12,6 +22,11 @@ module "eks" {
   control_plane_subnet_ids = module.vpc.public_subnets
 
   create_kms_key = true
+
+  kms_key_administrators = concat([
+    module.assumable_role_stacks.iam_role_arn,
+    try(data.aws_iam_session_context.current[0].issuer_arn, "")
+  ], var.additional_kms_administrators)
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = merge(var.node_group_defaults,
