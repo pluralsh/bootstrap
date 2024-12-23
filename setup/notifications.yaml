@@ -1,0 +1,22 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: NotificationRouter
+metadata:
+  name: deployments
+spec:
+  events:
+  - stack.run
+  - pr.create
+  - pr.close
+  sinks:
+  - name: plural
+    namespace: infra
+---
+apiVersion: deployments.plural.sh/v1alpha1
+kind: NotificationSink
+metadata:
+  name: plural
+spec:
+  type: PLURAL
+  name: plural
+  bindings:
+  - groupName: general
