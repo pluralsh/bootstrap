@@ -5,12 +5,19 @@ data "aws_iam_session_context" "current" {
   # For non-role ARNs, this data source simply passes the ARN through issuer ARN
   # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
   # Ref https://github.com/hashicorp/terraform-provider-aws/issues/28381
-  arn = try(data.aws_caller_identity.current[0].arn, "")
+  arn = data.aws_caller_identity.current.arn
+}
+
+data "aws_partition" "current" {}
+
+locals {
+  cluster_admin_policy = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  stacks_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${var.cluster_name}-plrl-stacks"
 }
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  version = "~> 20.0"
 
   cluster_name    = var.cluster_name
   cluster_version = var.kubernetes_version
@@ -23,9 +30,28 @@ module "eks" {
 
   create_kms_key = true
 
+  # You'll need to set this to false to allow Plural stacks to manage this cluster
+  enable_cluster_creator_admin_permissions = true
+  
+  access_entries = {
+    stacks = {
+      principal_arn = local.stacks_arn
+      type          = "STANDARD"
+
+      policy_associations = {
+        admin = {
+          policy_arn = local.cluster_admin_policy
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
   kms_key_administrators = concat([
-    module.assumable_role_stacks.iam_role_arn,
-    try(data.aws_iam_session_context.current[0].issuer_arn, "")
+    # UNCOMMENT local.stacks_arn,
+    data.aws_iam_session_context.current.issuer_arn
   ], var.additional_kms_administrators)
 
   # EKS Managed Node Group(s)
