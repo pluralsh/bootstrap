@@ -873,4 +873,15 @@ entries:
     urls:
     - https://github.com/pluralsh/bootstrap/releases/download/runtime-chart-v0.1.1/runtime-0.1.1.tgz
     version: 0.1.1
-generated: "2024-09-19T04:49:36.320994192Z"
+  stateless:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-12-30T17:53:28.153519642Z"
+    description: A Helm chart to deploy a basic stateless application
+    digest: 5b1b0c0abbff35b6167c11d4a0be147c81da471ad11e3946572ad7622b0374c7
+    name: stateless
+    type: application
+    urls:
+    - https://github.com/pluralsh/bootstrap/releases/download/stateless-chart-v0.1.0/stateless-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-12-30T17:53:28.15360997Z"
