@@ -107,3 +107,8 @@ variable "monitoring_role" {
   type = string
   default = ""
 }
+
+variable "additional_kms_administrators" {
+  type = list(string)
+  default = [ ]
+}

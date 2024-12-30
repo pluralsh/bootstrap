@@ -1,0 +1,22 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: InfrastructureStack
+metadata:
+  name: mgmt
+spec:
+  name: mgmt
+  detach: false
+  type: TERRAFORM
+  approval: true
+  manageState: false
+  actor: console@plural.sh
+  repositoryRef:
+    name: infra
+    namespace: infra
+  clusterRef:
+    name: mgmt
+    namespace: infra
+  variables:
+    use_cli: false
+  git:
+    ref: main
+    folder: terraform/mgmt

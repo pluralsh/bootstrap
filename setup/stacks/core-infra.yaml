@@ -1,16 +1,14 @@
 apiVersion: deployments.plural.sh/v1alpha1
 kind: InfrastructureStack
 metadata:
-  name: cluster-{{ context.name }}
+  name: core-infra
 spec:
-  name: cluster-{{ context.name }}
+  name: core-infra
   detach: false
   type: TERRAFORM
   approval: true
   manageState: true
   actor: console@plural.sh
-  configuration:
-    version: '1.8'
   repositoryRef:
     name: infra
     namespace: infra
@@ -18,9 +16,8 @@ spec:
     name: mgmt
     namespace: infra
   variables:
-    cluster: {{ context.name }}
-    fleet: {{ context.fleet }}
-    tier: {{ context.tier }}
+    region: [[ .Region ]]
+    cluster_name: [[ .Cluster ]]
   git:
-    ref: {{ context.branch | default "main" }}
-    folder: terraform/modules/clusters/{{ context.cloud }}
+    ref: main
+    folder: terraform/core-infra

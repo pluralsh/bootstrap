@@ -44,5 +44,10 @@ provider "helm" {
 }
 
 provider "plural" {
-  use_cli = true # If you want to have a Plural stack manage your console, comment this out and use the `actor` field
+  use_cli = var.use_cli # If you want to have a Plural stack manage your console, comment this out and use the `actor` field
+}
+
+variable "use_cli" {
+  type = bool
+  default = true
 }
