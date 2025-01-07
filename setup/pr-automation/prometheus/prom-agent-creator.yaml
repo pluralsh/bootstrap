@@ -15,7 +15,7 @@ spec:
       destination: "bootstrap/monitoring/mgmt.yaml"
       external: false
   scmConnectionRef:
-    name: github  # you'll need to add this ScmConnection manually before this is functional
+    name: plural  # you'll need to add this ScmConnection manually before this is functional
   title: "Setup prometheus agent for metrics shipping"
   message: "Setup prometheus agent for metrics shipping"
   identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
