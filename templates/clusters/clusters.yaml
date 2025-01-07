@@ -7,7 +7,7 @@ spec:
   namespace: infra
   git:
     folder: services/clusters
-    ref: {{ context.branch | default "main" }}
+    ref: main
   repositoryRef:
     kind: GitRepository
     name: infra

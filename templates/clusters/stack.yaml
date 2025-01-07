@@ -22,5 +22,5 @@ spec:
     fleet: {{ context.fleet }}
     tier: {{ context.tier }}
   git:
-    ref: {{ context.branch | default "main" }}
+    ref: main
     folder: terraform/modules/clusters/{{ context.cloud }}
