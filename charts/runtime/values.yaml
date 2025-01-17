@@ -85,6 +85,7 @@ ingress-nginx-private:
         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
         service.beta.kubernetes.io/aws-load-balancer-type: external
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
     admissionWebhooks:
       enabled: false
@@ -154,6 +155,7 @@ ingress-nginx:
         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
         service.beta.kubernetes.io/aws-load-balancer-type: external
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
     config:
       worker-shutdown-timeout: 240s
