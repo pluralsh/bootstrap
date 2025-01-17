@@ -12,7 +12,7 @@ spec:
       destination: "bootstrap/policy"
       external: false
   scmConnectionRef:
-    name: github  # you'll need to add this ScmConnection manually before this is functional
+    name: plural  # you'll need to add this ScmConnection manually before this is functional
   title: "Setup OPA gatekeeper and install the {{ context.bundle }} policy bundle"
   message: "Setup OPA gatekeeper and install the {{ context.bundle }} policy bundle"
   identifier: [[ .Identifier ]] # REPLACEME with your own repo slug
