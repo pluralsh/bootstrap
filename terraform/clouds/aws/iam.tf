@@ -43,7 +43,9 @@ resource "aws_iam_policy" "eks_upgrade_insights" {
         {
           "Action": [
             "eks:ListInsights",
-            "eks:DescribeInsight"
+            "eks:DescribeInsight",
+            "eks:ListAddons",
+            "eks:DescribeAddon"
           ],
           "Effect": "Allow",
           "Resource": "*"
