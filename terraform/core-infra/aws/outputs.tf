@@ -1,9 +1,13 @@
+locals {
+  config = jsondecode(plural_service_context.mgmt.configuration)
+}
+
 output "plural_service_context" {
-    value = {
-        vpc_id          = plural_service_context.mgmt.configuration["vpc_id"]
-        subnet_ids      = plural_service_context.mgmt.configuration["subnet_ids"]
-        private_subnets = plural_service_context.mgmt.configuration["private_subnets"]
-        public_subnets  = plural_service_context.mgmt.configuration["public_subnets"]
-        vpc_cidr        = plural_service_context.mgmt.configuration["vpc_cidr"]
-    }
+  value = {
+    region       = local.config.region
+    cluster_name = local.config.cluster_name
+    vpc_id       = local.config.vpc_id
+    subnet_ids   = local.config.subnet_ids
+    vpc_cidr     = local.config.vpc_cidr
+  }
 }
