@@ -18,6 +18,12 @@ resource "plural_cluster" "this" {
           load_balancer = module.addons.gitops_metadata.aws_load_balancer_controller_iam_role_arn
           cluster_autoscaler = module.addons.gitops_metadata.cluster_autoscaler_iam_role_arn
           external_dns = module.externaldns_irsa_role.iam_role_arn
+          cert_manager = module.externaldns_irsa_role.iam_role_arn
+        }
+
+        network = {
+          private_subnets = local.vpc.private_subnets
+          public_subnets  = local.vpc.public_subnets
         }
     })
 
@@ -28,7 +34,6 @@ resource "plural_cluster" "this" {
     }
 
     depends_on = [ 
-      module.vpc,
       module.addons,
       module.ebs_csi_irsa_role, 
       module.vpc_cni_irsa_role, 

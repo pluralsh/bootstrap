@@ -1,3 +1,11 @@
+data "plural_service_context" "network" {
+  name = "plrl/vpc/${var.tier}"
+}
+
+locals {
+  vpc = jsondecode(data.plural_service_context.network.configuration)
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
@@ -7,9 +15,9 @@ module "eks" {
 
   cluster_endpoint_public_access = var.public
 
-  vpc_id                   = module.vpc.vpc_id
-  subnet_ids               = module.vpc.private_subnets
-  control_plane_subnet_ids = module.vpc.public_subnets
+  vpc_id                   = local.vpc.vpc_id
+  subnet_ids               = local.vpc.private_subnets
+  control_plane_subnet_ids = local.vpc.public_subnets
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = merge(var.node_group_defaults,
