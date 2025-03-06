@@ -4,5 +4,6 @@
 # metadata:
 #   name: plural
 # spec:
+#   default: true
 #   name: plural
 #   type: GITHUB
