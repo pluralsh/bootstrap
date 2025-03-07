@@ -15,7 +15,7 @@ variable "create_db" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.29.7"
+  default = "1.30.9"
 }
 
 variable "create_resource_group" {
