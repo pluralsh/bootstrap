@@ -9,13 +9,14 @@ module "eks_blueprints_addons" {
 
   eks_addons = {
     aws-ebs-csi-driver = {
-      most_recent = true
+      most_recent              = true
       service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
       configuration_values = jsonencode({
         defaultStorageClass = {
           enabled = true
         }
       })
+    }
     coredns = {
       most_recent = true
     }
