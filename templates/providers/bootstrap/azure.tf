@@ -51,6 +51,9 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+
+  subscription_id = "{{ .Context.SubscriptionId }}"
+  tenant_id = "{{ .Context.TenantId }}"
 }
 
 provider "kubernetes" {
