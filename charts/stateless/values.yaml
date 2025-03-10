@@ -114,5 +114,5 @@ sidecars: []
 
 serviceMonitor:
   enabled: false
-  port: 9090
+  port: metrics
   path: '/metrics'
