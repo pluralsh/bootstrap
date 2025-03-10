@@ -11,8 +11,11 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    {{ if .Values.additionalPorts }}
-      {{- .Values.additionalPorts | toYaml | nindent 4 }}
+    {{ range $port := .Values.additionalPorts }}
+    - port: {{ .Values.containerPort }}
+      targetPort: {{ .Values.containerPort }}
+      protocol: {{ $port.protocol }}
+      name: {{ $port.name }}
     {{ end }}
   selector:
     {{- include "stateless.selectorLabels" . | nindent 4 }}
