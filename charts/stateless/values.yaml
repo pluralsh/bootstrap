@@ -107,3 +107,12 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+additionalPorts: []
+
+sidecars: []
+
+serviceMonitor:
+  enabled: false
+  port: 9090
+  path: '/metrics'
