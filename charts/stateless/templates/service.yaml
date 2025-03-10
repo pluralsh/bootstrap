@@ -12,8 +12,8 @@ spec:
       protocol: TCP
       name: http
     {{ range $port := .Values.additionalPorts }}
-    - port: {{ .Values.containerPort }}
-      targetPort: {{ .Values.containerPort }}
+    - port: {{ $port.containerPort }}
+      targetPort: {{ $port.containerPort }}
       protocol: {{ $port.protocol }}
       name: {{ $port.name }}
     {{ end }}
