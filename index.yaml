@@ -984,6 +984,16 @@ entries:
   stateless:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2025-03-10T21:28:01.714732828Z"
+    description: A Helm chart to deploy a basic stateless application
+    digest: ba561f9fb8111bc1c9e73cb3c6611afd410f01684d18bd95e41bb767913a8684
+    name: stateless
+    type: application
+    urls:
+    - https://github.com/pluralsh/bootstrap/releases/download/stateless-chart-v0.1.2/stateless-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2025-03-10T21:12:41.282100204Z"
     description: A Helm chart to deploy a basic stateless application
     digest: 672d013f00c1be07cd4f4f3780590ad3d65597186e70610e34c42baa549006ca
@@ -1002,4 +1012,4 @@ entries:
     urls:
     - https://github.com/pluralsh/bootstrap/releases/download/stateless-chart-v0.1.0/stateless-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-10T21:12:41.282177098Z"
+generated: "2025-03-10T21:28:01.714812727Z"
