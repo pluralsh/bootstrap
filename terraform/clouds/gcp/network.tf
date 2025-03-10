@@ -3,7 +3,7 @@ module "gcp-network" {
   version = ">= 7.5"
 
   project_id   = var.project_id
-  network_name = var.network
+  network_name = "${var.cluster_name}-${var.network}"
 
   subnets = [
     {

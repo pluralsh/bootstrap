@@ -3,6 +3,7 @@ terraform {
 
   backend "azurerm" {
     storage_account_name = "{{ .Context.StorageAccount }}"
+    subscription_id = "{{ .Context.SubscriptionId }}"
     resource_group_name = "{{ .Project }}"
     container_name = "{{ .Bucket }}"
     key = "{{ .Cluster }}/bootstrap/terraform.tfstate"
@@ -50,6 +51,9 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+
+  subscription_id = "{{ .Context.SubscriptionId }}"
+  tenant_id = "{{ .Context.TenantId }}"
 }
 
 provider "kubernetes" {
