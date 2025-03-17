@@ -1,3 +1,11 @@
+data "plural_service_context" "network" {
+  name = "plrl/vpc/${var.tier}"
+}
+
+locals {
+  vpc = jsondecode(data.plural_service_context.network.configuration)
+}
+
 module "gke" {
   source  = "terraform-google-modules/kubernetes-engine/google"
   version = "~> 33.0"
@@ -8,10 +16,10 @@ module "gke" {
   regional               = true
   grant_registry_access  = true
   region                 = var.region
-  network                = module.gcp-network.network_name
-  subnetwork             = module.gcp-network.subnets_names[0]
-  ip_range_pods          = var.ip_range_pods_name
-  ip_range_services      = var.ip_range_services_name
+  network                = local.vpc.network_name
+  subnetwork             = local.vpc.subnets_names[0]
+  ip_range_pods          = local.vpc.ip_range_pods_name
+  ip_range_services      = local.vpc.ip_range_services_name
   create_service_account = true
   deletion_protection    = false
   node_pools             = var.node_pools
