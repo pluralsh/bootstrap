@@ -3,6 +3,7 @@ terraform {
 
   backend "azurerm" {
     storage_account_name = "{{ .Context.StorageAccount }}"
+    subscription_id = "{{ .Context.SubscriptionId }}"
     resource_group_name = "{{ .Project }}"
     container_name = "{{ .Bucket }}"
     key = "{{ .Cluster }}/apps/terraform.tfstate"
