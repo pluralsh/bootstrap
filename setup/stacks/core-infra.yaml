@@ -16,6 +16,7 @@ spec:
     name: mgmt
     namespace: infra
   variables:
+    project: [[ .Project ]]
     region: [[ .Region ]]
     cluster_name: [[ .Cluster ]]
   git:

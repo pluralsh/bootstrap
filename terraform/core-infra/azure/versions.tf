@@ -21,4 +21,4 @@ provider "azurerm" {
   }
 }
 
-provider "plural" { }
+provider "plural" {}
