@@ -5,7 +5,6 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
     }
-
     plural = {
       source = "pluralsh/plural"
       version = ">= 0.2.9"
@@ -18,4 +17,4 @@ provider "aws" {
 }
 
 
-provider "plural" { }
+provider "plural" {}
