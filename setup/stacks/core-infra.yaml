@@ -19,6 +19,26 @@ spec:
     project: [[ .Project ]]
     region: [[ .Region ]]
     cluster_name: [[ .Cluster ]]
+  [[ if eq .Provider "azure" ]]
+  environment:
+    - name: ARM_USE_OIDC
+      value: "true"
+    - name: ARM_USE_CLI
+      value: "false"
+    - name: ARM_OIDC_TOKEN_FILE_PATH
+      value: "/var/run/secrets/azure/tokens/azure-identity-token"
+    - name: ARM_CLIENT_ID
+      value: {{ .StacksIdentity }}
+    - name: ARM_TENANT_ID
+      value: [[ .Context.TenantId ]]
+    - name: ARM_SUBSCRIPTION_ID
+      value: [[ .Context.SubscriptionId ]]
+  jobSpec:
+    namespace: plrl-deploy-operator
+    labels:
+      azure.workload.identity/use: "true"
+    serviceAccount: "stacks"
+  [[ end ]]
   git:
     ref: main
     folder: terraform/core-infra
