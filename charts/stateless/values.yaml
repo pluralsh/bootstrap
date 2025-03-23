@@ -10,7 +10,11 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+# env is a list of kubernetes container environment variables to be added to the pod
 env: []
+
+# secrets are a key-value map of secrets to be mounted into the pod
+secrets: ~
 
 imagePullSecrets: []
 nameOverride: ""
