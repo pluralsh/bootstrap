@@ -1,0 +1,5 @@
+dummy: 'true'
+{% for secret in configuration %}
+secrets:
+  {{ secret[0] }}: "{{ secret[1] }}"
+{% endfor %}

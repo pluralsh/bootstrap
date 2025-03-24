@@ -39,6 +39,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          - secretRef:  
+              name: {{ include "stateless.fullname" . }}-secret-env
           {{ if .Values.env }}
           env:
           {{ toYaml .Values.env | nindent 12 }}
