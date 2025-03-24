@@ -14,7 +14,8 @@ resource "plural_service_context" "pg" {
   configuration = jsonencode({
     region       = var.region
     network_name = var.network_name
-    subnet_name  = var.pg_subnet_name
     network_id   = data.azurerm_virtual_network.plural.id
+    subnet_name  = var.pg_subnet_name
+    subnet_id    = data.azurerm_subnet.pg.id
   })
 }
