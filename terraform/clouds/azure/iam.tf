@@ -38,7 +38,7 @@ resource "azurerm_federated_identity_credential" "stacks" {
 
 data "azurerm_subscription" "current" {}
 
-resource "plural_service_context" "mgmt" {
+resource "plural_service_context" "identity" {
   name = "plrl/azure/identity"
   configuration = jsonencode({
     azurerm_subscription = data.azurerm_subscription.current.id
