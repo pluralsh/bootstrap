@@ -20,6 +20,7 @@ spec:
     region: [[ .Region ]]
     cluster_name: [[ .Cluster ]]
   [[ if eq .Provider "azure" ]]
+    resource_group_name: [[ .Project ]]
   environment:
     - name: ARM_USE_OIDC
       value: "true"
