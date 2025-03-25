@@ -41,8 +41,8 @@ data "azurerm_subscription" "current" {}
 resource "plural_service_context" "identity" {
   name = "plrl/azure/identity"
   configuration = jsonencode({
-    azurerm_subscription = data.azurerm_subscription.current.id
-    tenant_id            = azurerm_user_assigned_identity.stacks.tenant_id
-    client_id            = azurerm_user_assigned_identity.stacks.client_id
+    subscription_id = data.azurerm_subscription.current.id
+    tenant_id       = azurerm_user_assigned_identity.stacks.tenant_id
+    client_id       = azurerm_user_assigned_identity.stacks.client_id
   })
 }
