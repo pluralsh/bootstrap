@@ -5,13 +5,3 @@ metadata:
   namespace: plrl-deploy-operator
   annotations:
     azure.workload.identity/client-id: {{ .StacksIdentity }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: apps-credentials
-  namespace: apps
-stringData:
-  subscription-id: "{{ .Manifest.Context.SubscriptionId }}"
-  tenant-id: "{{ .Manifest.Context.TenantId }}"
-  client-id: "{{ .StacksIdentity }}"

@@ -14,8 +14,6 @@ resource "azurerm_role_assignment" "aks-network-identity-ssi" {
   depends_on = [module.aks, azurerm_virtual_network.network]
 }
 
-
-
 resource "azurerm_user_assigned_identity" "stacks" {
   resource_group_name = local.resource_group.name
   location            = local.resource_group.location
@@ -32,8 +30,19 @@ resource "azurerm_role_assignment" "stacks-ssi" {
 resource "azurerm_federated_identity_credential" "stacks" {
   name                = "${var.cluster_name}-stacks"
   resource_group_name = local.resource_group.name
-  audience            = ["api://AzureADTokenExchange"]
+  audience = ["api://AzureADTokenExchange"]
   issuer              = module.aks.oidc_issuer_url
   parent_id           = azurerm_user_assigned_identity.stacks.id
   subject             = "system:serviceaccount:plrl-deploy-operator:stacks"
+}
+
+data "azurerm_subscription" "current" {}
+
+resource "plural_service_context" "mgmt" {
+  name = "plrl/azure/identity"
+  configuration = jsonencode({
+    azurerm_subscription = data.azurerm_subscription.current.id
+    tenant_id            = azurerm_user_assigned_identity.stacks.tenant_id
+    client_id            = azurerm_user_assigned_identity.stacks.client_id
+  })
 }
