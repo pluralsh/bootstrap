@@ -25,11 +25,3 @@ variable "postgres_cidrs" {
   type = list(string)
   default = ["10.52.16.0/24"]
 }
-
-variable "postgres_dns_zone" {
-  default = "plrl.postgres.database.azure.com"
-}
-
-variable "network_link_name" {
-  default = "plrl.postgres.com"
-}
