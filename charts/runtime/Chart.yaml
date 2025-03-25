@@ -2,7 +2,7 @@ apiVersion: v2
 name: runtime
 description: Sets up the basic dependencies needed to get a network stack running
 type: application
-version: 0.1.29
+version: 0.1.30
 appVersion: "0.1.0"
 dependencies:
 - name: external-dns
@@ -17,7 +17,7 @@ dependencies:
   version: 0.1.7
   condition: plural-certmanager-webhook.enabled
 - name: ingress-nginx
-  version: 4.12.0
+  version: 4.12.1
   repository: https://kubernetes.github.io/ingress-nginx
   condition: ingress-nginx.enabled
 - name: ingress-nginx
