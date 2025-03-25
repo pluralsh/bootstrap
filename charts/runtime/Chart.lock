@@ -1,7 +1,7 @@
 dependencies:
 - name: external-dns
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 8.3.8
+  version: 8.3.12
 - name: cert-manager
   repository: https://charts.jetstack.io
   version: v1.13.6
@@ -17,5 +17,5 @@ dependencies:
 - name: flux2
   repository: https://fluxcd-community.github.io/helm-charts
   version: 2.12.4
-digest: sha256:89d8a3eb0abdd6c097abbf7c57d8f559ef85d44b0deb9c6b0f74a723782e767e
-generated: "2025-03-25T09:04:42.910309-04:00"
+digest: sha256:0f6afefe8c88e2c14b3d917bb16305c1a8b7d79b25fda6569575733644dff14f
+generated: "2025-03-25T22:21:53.580812291Z"
