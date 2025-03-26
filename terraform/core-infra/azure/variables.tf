@@ -11,6 +11,10 @@ variable "region" {
   default = "us-east-2"
 }
 
+variable "postgres_dns_zone" {
+  default = "plrl.postgres.database.azure.com"
+}
+
 variable "network_cidrs" {
   type = list(string)
   default = ["10.52.0.0/16"]
