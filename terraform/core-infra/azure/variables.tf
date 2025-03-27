@@ -11,6 +11,18 @@ variable "region" {
   default = "us-east-2"
 }
 
+variable "subscription_id" {
+  type = string
+}
+
+variable "tenant_id" {
+  type = string
+}
+
+variable "client_id" {
+  type = string
+}
+
 variable "postgres_dns_zone" {
   default = "plrl.postgres.database.azure.com"
 }

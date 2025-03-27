@@ -21,6 +21,9 @@ spec:
     cluster_name: [[ .Cluster ]]
   [[ if eq .Provider "azure" ]]
     resource_group_name: [[ .Project ]]
+    subscription_id: [[ .Context.SubscriptionId ]]
+    tenant_id: [[ .Context.TenantId ]]
+    client_id:  {{ .StacksIdentity }}
   environment:
     - name: ARM_USE_OIDC
       value: "true"
