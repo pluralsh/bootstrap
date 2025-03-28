@@ -41,7 +41,7 @@ resource "azurerm_subnet" "dev_pg" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "dev_pg" {
-  name                  = "pg.dev.postgres.com"
+  name                  = "dev.postgres.com"
   resource_group_name   = data.azurerm_resource_group.default.name
   private_dns_zone_name = data.azurerm_private_dns_zone.postgres.name
   virtual_network_id    = azurerm_virtual_network.dev.id
@@ -96,7 +96,7 @@ resource "azurerm_subnet" "prod_pg" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "prod_pg" {
-  name                  = "pg.prod.postgres.com"
+  name                  = "prod.postgres.com"
   resource_group_name   = data.azurerm_resource_group.default.name
   private_dns_zone_name = data.azurerm_private_dns_zone.postgres.name
   virtual_network_id    = azurerm_virtual_network.prod.id
