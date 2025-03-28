@@ -63,10 +63,6 @@ variable "postgres_sku" {
   default = "GP_Standard_D4s_v3"
 }
 
-variable "db_sku" {
-  default = "GP_Gen5_2"
-}
-
 variable "workload_identity_enabled" {
   type = bool
   default = true

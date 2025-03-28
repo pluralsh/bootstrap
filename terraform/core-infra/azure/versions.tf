@@ -19,6 +19,13 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+
+  use_cli = false
+  use_oidc = true
+  oidc_token_file_path = "/var/run/secrets/azure/tokens/azure-identity-token"
+  subscription_id = var.subscription_id
+  tenant_id = var.tenant_id
+  client_id = var.client_id
 }
 
-provider "plural" { }
+provider "plural" {}
