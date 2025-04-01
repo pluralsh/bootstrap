@@ -6,6 +6,11 @@ variable "resource_group_name" {
   type = string
 }
 
+variable "network_name" {
+  type = string
+  default = "plural"
+}
+
 variable "region" {
   type = string
   default = "us-east-2"

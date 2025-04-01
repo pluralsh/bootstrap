@@ -7,6 +7,38 @@ data "azurerm_private_dns_zone" "postgres" {
   resource_group_name = data.azurerm_resource_group.default.name
 }
 
+data "azurerm_virtual_network" "plural" {
+  name = var.network_name
+  resource_group_name = data.azurerm_resource_group.default.name
+}
+
+data "azurerm_subnet" "plural_sn" {
+  name = "${var.network_name}-sn"
+  resource_group_name = data.azurerm_resource_group.default.name
+  virtual_network_name = data.azurerm_virtual_network.plural.name
+}
+
+data "azurerm_subnet" "plural_pg" {
+  name = "${var.network_name}-pg"
+  resource_group_name = data.azurerm_resource_group.default.name
+  virtual_network_name = data.azurerm_virtual_network.plural.name
+}
+
+resource "plural_service_context" "plural" {
+  name = "plrl/network/plural"
+  configuration = jsonencode({
+    location       = data.azurerm_virtual_network.plural.location
+    network_name   = data.azurerm_virtual_network.plural.name
+    network_id     = data.azurerm_virtual_network.plural.id
+    sn_subnet_name = data.azurerm_subnet.plural_sn.name
+    sn_subnet_id   = data.azurerm_subnet.plural_sn.id
+    pg_subnet_name = data.azurerm_subnet.plural_pg.name
+    pg_subnet_id   = data.azurerm_subnet.plural_pg.id
+    dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
+    dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
+  })
+}
+
 resource "azurerm_virtual_network" "dev" {
   name                = "dev"
   resource_group_name = data.azurerm_resource_group.default.name
