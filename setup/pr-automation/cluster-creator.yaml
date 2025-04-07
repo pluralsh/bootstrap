@@ -42,4 +42,4 @@ spec:
     documentation: what tier to place this cluster in
     values:
     - dev
-    - prd
+    - prod
