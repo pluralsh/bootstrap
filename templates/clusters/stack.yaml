@@ -21,6 +21,13 @@ spec:
     cluster: {{ context.name }}
     fleet: {{ context.fleet }}
     tier: {{ context.tier }}
+  {% if context.cloud == 'azure' %}
+  jobSpec:
+    namespace: plrl-deploy-operator
+    labels:
+      azure.workload.identity/use: "true"
+    serviceAccount: "stacks"
+  {% endif %}
   git:
     ref: main
     folder: terraform/modules/clusters/{{ context.cloud }}
