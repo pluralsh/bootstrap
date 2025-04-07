@@ -4,7 +4,7 @@ module "aks" {
 
   kubernetes_version   = var.kubernetes_version
   cluster_name         = var.cluster
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = data.azurerm_resource_group.default.name
   prefix               = var.cluster
   os_disk_size_gb      = 60
   sku_tier             = "Standard"
