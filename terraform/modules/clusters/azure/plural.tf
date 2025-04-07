@@ -10,7 +10,6 @@ resource "plural_service_context" "cluster" {
   name = "plrl/clusters/${var.cluster}"
 
   configuration = jsonencode({
-    region       = var.region
     cluster_name = var.cluster
   })
 }

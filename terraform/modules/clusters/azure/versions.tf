@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">=3.51.0, < 4.0"
     }
+    azapi = {
+      source  = "azure/azapi"
+      version = ">= 1.4.0, < 2.0"
+    }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = ">= 2.10"
@@ -27,6 +31,15 @@ provider "azurerm" {
     }
   }
 
+  use_cli = false
+  use_oidc = true
+  oidc_token_file_path = "/var/run/secrets/azure/tokens/azure-identity-token"
+  subscription_id = local.identity["subscription_id"]
+  tenant_id = local.identity["tenant_id"]
+  client_id = local.identity["client_id"]
+}
+
+provider "azapi" {
   use_cli = false
   use_oidc = true
   oidc_token_file_path = "/var/run/secrets/azure/tokens/azure-identity-token"

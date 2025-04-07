@@ -11,20 +11,14 @@ variable "tier" {
   type = string
 }
 
-variable "region" {
-  type = string
-  description = "The region to host the cluster in"
-  default = "us-east-2"
-}
-
 variable "kubernetes_version" {
   type = string
-  default = "1.28.9-gke.1000000"
+  default = "1.30.9"
 }
 
 variable "resource_group_name" {
   type = string
-  default = "pluralsh-test-384515"
+  default = "plural"
 }
 
 variable "workload_identity_enabled" {
