@@ -43,3 +43,10 @@ spec:
     values:
     - dev
     - prod
+  - name: resourceGroup
+    type: STRING
+    documentation: Azure resource group that you would like to use.
+    condition:
+      field: cloud
+      operation: EQ
+      value: 'azure'

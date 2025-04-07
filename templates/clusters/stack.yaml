@@ -22,6 +22,7 @@ spec:
     fleet: {{ context.fleet }}
     tier: {{ context.tier }}
   {% if context.cloud == 'azure' %}
+    resource_group_name: {{ context.resourceGroup }}
   jobSpec:
     namespace: plrl-deploy-operator
     labels:
