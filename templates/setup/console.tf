@@ -76,7 +76,7 @@ resource "helm_release" "console" {
   namespace        = "plrl-console"
   chart            = "console"
   repository       = "https://pluralsh.github.io/console"
-  version          = "0.3.79"
+  version          = "0.3.84"
   create_namespace = true
   timeout          = 600
   wait             = true
