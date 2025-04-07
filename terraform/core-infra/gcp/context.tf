@@ -3,12 +3,17 @@ data "google_container_cluster" "mgmt" {
   location = var.region
 }
 
+locals {
+  short_network_name = basename(data.google_container_cluster.mgmt.network)
+  short_subnetwork_name = basename(data.google_container_cluster.mgmt.subnetwork)
+}
+
 data "google_compute_network" "network" {
-  name = data.google_container_cluster.mgmt.network
+  name = local.short_network_name
 }
 
 data "google_compute_subnetwork" "subnetwork" {
-  name = data.google_container_cluster.mgmt.subnetwork
+  name = local.short_subnetwork_name
 }
 
 resource "plural_service_context" "mgmt" {
