@@ -7,7 +7,7 @@ module "gcp-network" {
 
   subnets = [
     {
-      subnet_name   = var.subnetwork
+      subnet_name   = local.subnetwork_name
       subnet_ip     = var.subnet_cidr
       subnet_region = var.region
     },

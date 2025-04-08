@@ -57,7 +57,7 @@ variable "network" {
 variable "subnetwork" {
   type        = string
   description = "The subnetwork created to host the cluster in"
-  default     = "plural"
+  default     = "plural-core"
 }
 
 variable "subnet_cidr" {
