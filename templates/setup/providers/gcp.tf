@@ -3,13 +3,13 @@
 variable "network" {
   type = string
   description = "The VPC network created to host the cluster in"
-  default     = "plural-network"
+  default     = "plural-core"
 }
 
 variable "subnetwork" {
   type = string
   description = "The subnetwork created to host the cluster in"
-  default     = "plural-subnet"
+  default     = "plural-core"
 }
 
 module "mgmt" {

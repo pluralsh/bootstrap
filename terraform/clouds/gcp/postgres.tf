@@ -8,8 +8,8 @@ resource "random_password" "password" {
 
 module "pg" {
   count = var.create_db ? 1 : 0
-  source  = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version = "~> 22.0"
+  source  = "terraform-google-modules/sql-db/google//modules/postgresql"
+  version = "~> 25.2"
 
   name                 = local.db_name
   random_instance_name = false
