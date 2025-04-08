@@ -3,7 +3,7 @@ module "gcp-network" {
   version = ">= 7.5"
 
   project_id   = var.project_id
-  network_name = "${var.cluster_name}-${var.network}"
+  network_name = local.network_name
 
   subnets = [
     {
@@ -34,7 +34,7 @@ resource "google_compute_global_address" "private_ip_alloc" {
   address_type  = "INTERNAL"
   prefix_length = 16
   network       = module.gcp-network.network_id
-  project       = var.project_id 
+  project       = var.project_id
 }
 
 
