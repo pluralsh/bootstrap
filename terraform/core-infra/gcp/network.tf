@@ -9,7 +9,7 @@ module "network_dev" {
 
   subnets = [
     {
-      subnet_name   = "plural-dev-subnet"
+      subnet_name = format("%s-plural-dev", var.cluster_name)
       subnet_ip     = var.subnet_cidr
       subnet_region = var.region
     },
@@ -38,7 +38,7 @@ module "network_prod" {
 
   subnets = [
     {
-      subnet_name   = "plural-prod-subnet"
+      subnet_name = format("%s-plural-prod", var.cluster_name)
       subnet_ip     = var.subnet_cidr
       subnet_region = var.region
     },

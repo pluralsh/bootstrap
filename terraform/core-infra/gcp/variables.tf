@@ -29,11 +29,11 @@ variable "services_cidr" {
 variable "ip_range_pods_name" {
   type        = string
   description = "The secondary ip range to use for pods"
-  default     = "ip-range-pods"
+  default     = "plural-pods"
 }
 
 variable "ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for services"
-  default     = "ip-range-svc"
+  default     = "plural-services"
 }
