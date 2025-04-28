@@ -3,19 +3,20 @@ terraform {
 
   required_providers {
     google = {
-      source  = "hashicorp/google"
+      source = "hashicorp/google"
     }
     plural = {
-      source = "pluralsh/plural"
+      source  = "pluralsh/plural"
       version = ">= 0.2.9"
     }
   }
 }
 
 provider "google" {
-  region = var.region
+  project = var.project
+  region  = var.region
 }
 
 data "google_client_config" "default" {}
 
-provider "plural" { }
+provider "plural" {}

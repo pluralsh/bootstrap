@@ -1,35 +1,39 @@
-variable "region" {
+variable "project" {
   type = string
+}
+
+variable "region" {
+  type    = string
   default = "us-east-2"
 }
 
 variable "cluster_name" {
-    type = string
+  type = string
 }
 
 variable "subnet_cidr" {
-  type = string
+  type    = string
   default = "10.0.16.0/20"
 }
 
 variable "pods_cidr" {
-  type = string
+  type    = string
   default = "10.16.0.0/12"
 }
 
 variable "services_cidr" {
-  type = string
+  type    = string
   default = "10.1.0.0/20"
 }
 
 variable "ip_range_pods_name" {
-  type = string
+  type        = string
   description = "The secondary ip range to use for pods"
-  default     = "ip-range-pods"
+  default     = "plural-pods"
 }
 
 variable "ip_range_services_name" {
-  type = string
+  type        = string
   description = "The secondary ip range to use for services"
-  default     = "ip-range-svc"
+  default     = "plural-services"
 }
