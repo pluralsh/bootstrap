@@ -24,6 +24,15 @@ resource "plural_cluster" "cluster" {
       role = "workload"
     }
 
+    metadata = jsonencode({
+      subscription_id = local.identity["subscription_id"]
+      tenant_id       = local.identity["tenant_id"]
+      
+      iam = {
+        external_dns = azurerm_user_assigned_identity.dns.client_id
+      }
+    })
+
     kubeconfig = {
       host =  module.aks.cluster_fqdn
       cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
