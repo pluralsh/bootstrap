@@ -2,7 +2,10 @@ data "plural_service_context" "network" {
   name = "plrl/vpc/${var.tier}"
 }
 
+data "google_client_config" "current" {}
+
 locals {
+  project_id = data.google_client_config.current.project
   vpc = jsondecode(data.plural_service_context.network.configuration)
 }
 
@@ -11,7 +14,7 @@ module "gke" {
   version = "~> 33.0"
 
   kubernetes_version     = var.kubernetes_version
-  project_id             = var.project_id
+  project_id             = local.project_id
   name                   = var.cluster
   regional               = true
   grant_registry_access  = true
