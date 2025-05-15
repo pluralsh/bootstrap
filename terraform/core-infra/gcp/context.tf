@@ -25,5 +25,6 @@ resource "plural_service_context" "mgmt" {
     subnetwork   = data.google_container_cluster.mgmt.subnetwork
     cidr         = data.google_compute_subnetwork.subnetwork.ip_cidr_range
     project_id   = var.project
+    cloud        = "gcp"
   })
 }
