@@ -3,6 +3,5 @@ resource "plural_service_context" "mgmt" {
   configuration = jsonencode({
     region       = var.region
     cluster_name = var.cluster_name
-    cloud        = "azure"
   })
 }
