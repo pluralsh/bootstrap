@@ -1,9 +1,19 @@
+locals {
+  db_name = "${var.db_name_prefix}-${random_string.random.result}"
+}
+
 resource "random_password" "password" {
   length      = 20
   min_lower   = 1
   min_numeric = 1
   min_upper   = 1
   special     = false
+}
+
+resource "random_string" "random" {
+  length  = 8
+  upper   = false
+  special = false
 }
 
 resource "azurerm_private_dns_zone" "postgres" {
@@ -24,7 +34,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
 
 resource "azurerm_postgresql_flexible_server" "postgres" {
   count = var.create_db ? 1 : 0
-  name                   = var.db_name
+  name                   = local.db_name
   resource_group_name    = local.resource_group.name
   location               = local.resource_group.location
   version                = "13"
