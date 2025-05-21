@@ -32,6 +32,10 @@ variable "postgres_dns_zone" {
   default = "plrl.postgres.database.azure.com"
 }
 
+variable "mysql_dns_zone" {
+  default = "plrl.mysql.database.azure.com"
+}
+
 variable "network_cidrs" {
   type = list(string)
   default = ["10.52.0.0/16"]

@@ -7,6 +7,11 @@ data "azurerm_private_dns_zone" "postgres" {
   resource_group_name = data.azurerm_resource_group.default.name
 }
 
+data "azurerm_private_dns_zone" "mysql" {
+  name                = var.mysql_dns_zone
+  resource_group_name = data.azurerm_resource_group.default.name
+}
+
 data "azurerm_virtual_network" "plural" {
   name                = var.network_name
   resource_group_name = data.azurerm_resource_group.default.name
@@ -107,10 +112,16 @@ resource "plural_service_context" "dev" {
     sn_subnet_id      = azurerm_subnet.dev_sn.id
     pg_subnet_name    = azurerm_subnet.dev_pg.name
     pg_subnet_id      = azurerm_subnet.dev_pg.id
+    pg_dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
+    pg_dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
     mysql_subnet_name = azurerm_subnet.dev_mysql.name
     mysql_subnet_id   = azurerm_subnet.dev_mysql.id
-    dns_zone_name     = data.azurerm_private_dns_zone.postgres.name
-    dns_zone_id       = data.azurerm_private_dns_zone.postgres.id
+    mysql_dns_zone_name  = data.azurerm_private_dns_zone.mysql.name
+    mysql_dns_zone_id    = data.azurerm_private_dns_zone.mysql.id
+
+    # Kept for backwards compatibility. Use fields with pg_ prefix instead.
+    dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
+    dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
   })
 }
 
@@ -182,9 +193,15 @@ resource "plural_service_context" "prod" {
     sn_subnet_id      = azurerm_subnet.prod_sn.id
     pg_subnet_name    = azurerm_subnet.prod_pg.name
     pg_subnet_id      = azurerm_subnet.prod_pg.id
+    pg_dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
+    pg_dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
     mysql_subnet_name = azurerm_subnet.prod_mysql.name
     mysql_subnet_id   = azurerm_subnet.prod_mysql.id
-    dns_zone_name     = data.azurerm_private_dns_zone.postgres.name
-    dns_zone_id       = data.azurerm_private_dns_zone.postgres.id
+    mysql_dns_zone_name  = data.azurerm_private_dns_zone.mysql.name
+    mysql_dns_zone_id    = data.azurerm_private_dns_zone.mysql.id
+
+    # Kept for backwards compatibility. Use fields with pg_ prefix instead.
+    dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
+    dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
   })
 }
