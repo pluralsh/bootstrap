@@ -75,6 +75,15 @@ variable "postgres_dns_zone" {
 variable "network_link_name" {
   default = "plrl.postgres.com"
 }
+
+variable "mysql_dns_zone" {
+  default = "plrl.mysql.database.azure.com"
+}
+
+variable "mysql_network_link_name" {
+  default = "plrl.mysql.com"
+}
+
 variable "node_pools" {
   type = map(any)
   default = {
