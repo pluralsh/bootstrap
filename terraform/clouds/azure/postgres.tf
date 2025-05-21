@@ -21,7 +21,7 @@ resource "azurerm_private_dns_zone" "mysql" {
   resource_group_name = local.resource_group.name
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
+resource "azurerm_private_dns_zone_virtual_network_link" "mysql" {
   name                  = var.mysql_network_link_name
   private_dns_zone_name = azurerm_private_dns_zone.mysql.name
   virtual_network_id    = azurerm_virtual_network.network.id
