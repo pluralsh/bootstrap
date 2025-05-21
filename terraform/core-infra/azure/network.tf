@@ -102,6 +102,13 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dev_pg" {
   virtual_network_id    = azurerm_virtual_network.dev.id
 }
 
+resource "azurerm_private_dns_zone_virtual_network_link" "dev_mysql" {
+  name                  = "dev.mysql.com"
+  resource_group_name   = data.azurerm_resource_group.default.name
+  private_dns_zone_name = data.azurerm_private_dns_zone.mysql.name
+  virtual_network_id    = azurerm_virtual_network.dev.id
+}
+
 resource "plural_service_context" "dev" {
   name = "plrl/network/dev"
   configuration = jsonencode({
@@ -180,6 +187,13 @@ resource "azurerm_private_dns_zone_virtual_network_link" "prod_pg" {
   name                  = "prod.postgres.com"
   resource_group_name   = data.azurerm_resource_group.default.name
   private_dns_zone_name = data.azurerm_private_dns_zone.postgres.name
+  virtual_network_id    = azurerm_virtual_network.prod.id
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "prod_mysql" {
+  name                  = "prod.mysql.com"
+  resource_group_name   = data.azurerm_resource_group.default.name
+  private_dns_zone_name = data.azurerm_private_dns_zone.mysql.name
   virtual_network_id    = azurerm_virtual_network.prod.id
 }
 
