@@ -81,7 +81,7 @@ variable "mysql_dns_zone" {
 }
 
 variable "mysql_network_link_name" {
-  default = "plrl.postgres.com"
+  default = "plrl.mysql.com"
 }
 
 variable "node_pools" {
