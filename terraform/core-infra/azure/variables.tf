@@ -46,3 +46,8 @@ variable "postgres_cidrs" {
   type = list(string)
   default = ["10.52.16.0/24"]
 }
+
+variable "mysql_cidrs" {
+  type = list(string)
+  default = ["10.52.17.0/24"]
+}

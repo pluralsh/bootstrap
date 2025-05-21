@@ -8,19 +8,19 @@ data "azurerm_private_dns_zone" "postgres" {
 }
 
 data "azurerm_virtual_network" "plural" {
-  name = var.network_name
+  name                = var.network_name
   resource_group_name = data.azurerm_resource_group.default.name
 }
 
 data "azurerm_subnet" "plural_sn" {
-  name = "${var.network_name}-sn"
-  resource_group_name = data.azurerm_resource_group.default.name
+  name                 = "${var.network_name}-sn"
+  resource_group_name  = data.azurerm_resource_group.default.name
   virtual_network_name = data.azurerm_virtual_network.plural.name
 }
 
 data "azurerm_subnet" "plural_pg" {
-  name = "${var.network_name}-pg"
-  resource_group_name = data.azurerm_resource_group.default.name
+  name                 = "${var.network_name}-pg"
+  resource_group_name  = data.azurerm_resource_group.default.name
   virtual_network_name = data.azurerm_virtual_network.plural.name
 }
 
@@ -72,6 +72,24 @@ resource "azurerm_subnet" "dev_pg" {
   }
 }
 
+resource "azurerm_subnet" "dev_mysql" {
+  name                 = "dev-mysql"
+  resource_group_name  = data.azurerm_resource_group.default.name
+  virtual_network_name = azurerm_virtual_network.dev.name
+  address_prefixes     = var.mysql_cidrs
+  service_endpoints = ["Microsoft.Storage"]
+
+  delegation {
+    name = "fs"
+    service_delegation {
+      name = "Microsoft.DBforMySQL/flexibleServers"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+      ]
+    }
+  }
+}
+
 resource "azurerm_private_dns_zone_virtual_network_link" "dev_pg" {
   name                  = "dev.postgres.com"
   resource_group_name   = data.azurerm_resource_group.default.name
@@ -82,15 +100,17 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dev_pg" {
 resource "plural_service_context" "dev" {
   name = "plrl/network/dev"
   configuration = jsonencode({
-    location       = azurerm_virtual_network.dev.location
-    network_name   = azurerm_virtual_network.dev.name
-    network_id     = azurerm_virtual_network.dev.id
-    sn_subnet_name = azurerm_subnet.dev_sn.name
-    sn_subnet_id   = azurerm_subnet.dev_sn.id
-    pg_subnet_name = azurerm_subnet.dev_pg.name
-    pg_subnet_id   = azurerm_subnet.dev_pg.id
-    dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
-    dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
+    location          = azurerm_virtual_network.dev.location
+    network_name      = azurerm_virtual_network.dev.name
+    network_id        = azurerm_virtual_network.dev.id
+    sn_subnet_name    = azurerm_subnet.dev_sn.name
+    sn_subnet_id      = azurerm_subnet.dev_sn.id
+    pg_subnet_name    = azurerm_subnet.dev_pg.name
+    pg_subnet_id      = azurerm_subnet.dev_pg.id
+    mysql_subnet_name = azurerm_subnet.dev_mysql.name
+    mysql_subnet_id   = azurerm_subnet.dev_mysql.id
+    dns_zone_name     = data.azurerm_private_dns_zone.postgres.name
+    dns_zone_id       = data.azurerm_private_dns_zone.postgres.id
   })
 }
 
@@ -127,6 +147,24 @@ resource "azurerm_subnet" "prod_pg" {
   }
 }
 
+resource "azurerm_subnet" "prod_mysql" {
+  name                 = "prod-mysql"
+  resource_group_name  = data.azurerm_resource_group.default.name
+  virtual_network_name = azurerm_virtual_network.prod.name
+  address_prefixes     = var.mysql_cidrs
+  service_endpoints = ["Microsoft.Storage"]
+
+  delegation {
+    name = "fs"
+    service_delegation {
+      name = "Microsoft.DBforMySQL/flexibleServers"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+      ]
+    }
+  }
+}
+
 resource "azurerm_private_dns_zone_virtual_network_link" "prod_pg" {
   name                  = "prod.postgres.com"
   resource_group_name   = data.azurerm_resource_group.default.name
@@ -137,14 +175,16 @@ resource "azurerm_private_dns_zone_virtual_network_link" "prod_pg" {
 resource "plural_service_context" "prod" {
   name = "plrl/network/prod"
   configuration = jsonencode({
-    location       = azurerm_virtual_network.prod.location
-    network_name   = azurerm_virtual_network.prod.name
-    network_id     = azurerm_virtual_network.prod.id
-    sn_subnet_name = azurerm_subnet.prod_sn.name
-    sn_subnet_id   = azurerm_subnet.prod_sn.id
-    pg_subnet_name = azurerm_subnet.prod_pg.name
-    pg_subnet_id   = azurerm_subnet.prod_pg.id
-    dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
-    dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
+    location          = azurerm_virtual_network.prod.location
+    network_name      = azurerm_virtual_network.prod.name
+    network_id        = azurerm_virtual_network.prod.id
+    sn_subnet_name    = azurerm_subnet.prod_sn.name
+    sn_subnet_id      = azurerm_subnet.prod_sn.id
+    pg_subnet_name    = azurerm_subnet.prod_pg.name
+    pg_subnet_id      = azurerm_subnet.prod_pg.id
+    mysql_subnet_name = azurerm_subnet.prod_mysql.name
+    mysql_subnet_id   = azurerm_subnet.prod_mysql.id
+    dns_zone_name     = data.azurerm_private_dns_zone.postgres.name
+    dns_zone_id       = data.azurerm_private_dns_zone.postgres.id
   })
 }
