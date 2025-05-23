@@ -1,0 +1,8 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: UpgradeInsights
+metadata:
+  name: this
+spec:
+  distro: EKS
+  clusterName: {{ cluster.name }}
+  interval: 5m

@@ -1,0 +1,18 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: upgrade-insights
+  namespace: infra
+spec:
+  distro: EKS
+  template:
+    name: upgrade-insights
+    namespace: plrl-deploy-operator
+    git:
+      ref: main
+      folder: resources/upgradeinsights/eks
+    repositoryRef:
+      kind: GitRepository
+      name: infra
+      namespace: infra
+    
