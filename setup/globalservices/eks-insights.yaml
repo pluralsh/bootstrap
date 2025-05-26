@@ -10,7 +10,7 @@ spec:
     namespace: plrl-deploy-operator
     git:
       ref: main
-      folder: resources/upgradeinsights/eks
+      folder: services/upgradeinsights/eks
     repositoryRef:
       kind: GitRepository
       name: infra
