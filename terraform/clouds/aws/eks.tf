@@ -12,7 +12,7 @@ data "aws_partition" "current" {}
 
 locals {
   cluster_admin_policy = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  stacks_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${var.cluster_name}-plrl-stacks"
+  stacks_arn           = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${var.cluster_name}-plrl-stacks"
 }
 
 module "eks" {
@@ -32,7 +32,7 @@ module "eks" {
 
   # You'll need to set this to false to allow Plural stacks to manage this cluster
   enable_cluster_creator_admin_permissions = true
-  
+
   access_entries = {
     stacks = {
       principal_arn = local.stacks_arn
@@ -50,19 +50,16 @@ module "eks" {
   }
 
   kms_key_administrators = concat([
-    # UNCOMMENT local.stacks_arn,
     data.aws_iam_session_context.current.issuer_arn
   ], var.additional_kms_administrators)
 
   # EKS Managed Node Group(s)
-  eks_managed_node_group_defaults = merge(var.node_group_defaults,
-    {ami_release_version = data.aws_ssm_parameter.eks_ami_release_version.value})
-
+  eks_managed_node_group_defaults = var.node_group_defaults
   eks_managed_node_groups = var.managed_node_groups
 
   create_cloudwatch_log_group = var.create_cloudwatch_log_group
-}
 
-data "aws_ssm_parameter" "eks_ami_release_version" {
-  name = "/aws/service/eks/optimized-ami/${var.kubernetes_version}/amazon-linux-2/recommended/release_version"
+  depends_on = [
+    module.vpc,
+  ]
 }

@@ -1,21 +1,4 @@
 // Permissions for the stacks
-resource "aws_iam_role" "stacks_role" {
-  name = "${var.cluster_name}-plrl-stacks"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "pods.eks.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
 resource "aws_iam_policy" "stacks" {
   name_prefix = "stacks"
   description = "stacks permissions for ${var.cluster_name}"
@@ -31,6 +14,27 @@ resource "aws_iam_policy" "stacks" {
       ]
     }
   POLICY
+}
+
+resource "aws_iam_role" "stacks_role" {
+  name = "${var.cluster_name}-plrl-stacks"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowEksAuthToAssumeRoleForPodIdentity"
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "stacks_policy_attach" {
@@ -53,11 +57,15 @@ resource "aws_iam_role" "eks_insights_role" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action = "sts:AssumeRole"
+        Sid    = "AllowEksAuthToAssumeRoleForPodIdentity"
         Effect = "Allow"
         Principal = {
           Service = "pods.eks.amazonaws.com"
         }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
       }
     ]
   })
@@ -105,11 +113,15 @@ resource "aws_iam_role" "cloudwatch_exporter_role" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action = "sts:AssumeRole"
+        Sid    = "AllowEksAuthToAssumeRoleForPodIdentity"
         Effect = "Allow"
         Principal = {
           Service = "pods.eks.amazonaws.com"
         }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
       }
     ]
   })

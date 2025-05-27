@@ -15,7 +15,7 @@ variable "deletion_protection" {
 
 variable "kubernetes_version" {
   type    = string
-  default = "1.30"
+  default = "1.32"
 }
 
 variable "node_pools" {
