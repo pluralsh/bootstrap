@@ -58,8 +58,4 @@ module "eks" {
   eks_managed_node_groups = var.managed_node_groups
 
   create_cloudwatch_log_group = var.create_cloudwatch_log_group
-
-  depends_on = [
-    module.vpc,
-  ]
 }
