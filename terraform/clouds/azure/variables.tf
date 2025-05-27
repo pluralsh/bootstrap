@@ -3,7 +3,7 @@ variable "cluster_name" {
     default = "plural"
 }
 
-variable "db_name" {
+variable "db_name_prefix" {
   type = string
   default = "plural"
 }
