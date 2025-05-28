@@ -1,9 +1,10 @@
 # You will need to manually create the SCM connection this refers to in the Plural Console UI
-# apiVersion: deployments.plural.sh/v1alpha1
-# kind: ScmConnection
-# metadata:
-#   name: plural
-# spec:
-#   default: true
-#   name: plural
-#   type: GITHUB
+
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ScmConnection
+metadata:
+  name: plural
+spec:
+  default: true
+  name: plural
+  type: GITHUB
