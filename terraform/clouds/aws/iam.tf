@@ -1,21 +1,4 @@
 // Permissions for the stacks
-resource "aws_iam_policy" "stacks" {
-  name_prefix = "stacks"
-  description = "stacks permissions for ${var.cluster_name}"
-  policy      = <<-POLICY
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Action": "*",
-          "Resource": "*"
-        }
-      ]
-    }
-  POLICY
-}
-
 resource "aws_iam_role" "stacks_role" {
   name = "${var.cluster_name}-plrl-stacks"
 
@@ -39,7 +22,7 @@ resource "aws_iam_role" "stacks_role" {
 
 resource "aws_iam_role_policy_attachment" "stacks_policy_attach" {
   role       = aws_iam_role.stacks_role.name
-  policy_arn = aws_iam_policy.stacks.arn
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 resource "aws_eks_pod_identity_association" "stacks_pod_identity" {
