@@ -28,7 +28,7 @@ resource "helm_release" "certmanager" {
   namespace        = "cert-manager"
   chart            = "cert-manager"
   repository       = "https://charts.jetstack.io"
-  version          = "v1.13.6"
+  version          = "v1.17.2"
   create_namespace = true
   timeout          = 300
   wait             = true
@@ -44,7 +44,7 @@ resource "helm_release" "flux" {
   namespace        = "flux"
   chart            = "flux2"
   repository       = "https://fluxcd-community.github.io/helm-charts"
-  version          = "2.12.4"
+  version          = "2.15.0"
   create_namespace = true
   timeout          = 300
   wait             = false
@@ -60,7 +60,7 @@ resource "helm_release" "runtime" {
   namespace        = "plural-runtime"
   chart            = "runtime"
   repository       = "https://pluralsh.github.io/bootstrap"
-  version          = "0.1.26"
+  version          = "0.1.30"
   create_namespace = true
   timeout          = 300
   wait             = false
@@ -76,7 +76,7 @@ resource "helm_release" "console" {
   namespace        = "plrl-console"
   chart            = "console"
   repository       = "https://pluralsh.github.io/console"
-  version          = "0.3.84"
+  version          = "0.3.95"
   create_namespace = true
   timeout          = 600
   wait             = true

@@ -1,36 +1,57 @@
-module "assumable_role_stacks" {
-  source           = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version          = "5.39.1"
-  create_role      = true
-  role_name        = "${var.cluster_name}-plrl-stacks"
-  provider_url     = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-  role_policy_arns = [aws_iam_policy.stacks.arn]
-  oidc_fully_qualified_subjects = [
-    "system:serviceaccount:plrl-deploy-operator:stacks",
-  ]
-}
+// Permissions for the stacks
+resource "aws_iam_role" "stacks_role" {
+  name = "${var.cluster_name}-plrl-stacks"
 
-resource "aws_iam_policy" "stacks" {
-  name_prefix = "stacks"
-  description = "stacks permissions for ${var.cluster_name}"
-  policy      = <<-POLICY
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Action": "*",
-          "Resource": "*"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowEksAuthToAssumeRoleForPodIdentity"
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
         }
-      ]
-    }
-  POLICY
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
 }
 
-resource "aws_iam_role_policy_attachment" "eks_upgrade_insights" {
-  for_each   = module.eks.eks_managed_node_groups
-  role       = each.value.iam_role_name
-  policy_arn = aws_iam_policy.eks_upgrade_insights.arn
+resource "aws_iam_role_policy_attachment" "stacks_policy_attach" {
+  role       = aws_iam_role.stacks_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+resource "aws_eks_pod_identity_association" "stacks_pod_identity" {
+  cluster_name    = module.eks.cluster_name
+  namespace       = "plrl-deploy-operator"
+  service_account = "stacks"
+  role_arn        = aws_iam_role.stacks_role.arn
+}
+
+// Permissions for the upgrade insights
+resource "aws_iam_role" "eks_insights_role" {
+  name = "${var.cluster_name}-plrl-insights"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowEksAuthToAssumeRoleForPodIdentity"
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
 }
 
 resource "aws_iam_policy" "eks_upgrade_insights" {
@@ -55,16 +76,38 @@ resource "aws_iam_policy" "eks_upgrade_insights" {
   POLICY
 }
 
-module "assumable_role_cloudwatch_exporter" {
-  source           = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version          = "5.39.1"
-  create_role      = true
-  role_name        = "${var.cluster_name}-cloudwatch-exporter"
-  provider_url     = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-  role_policy_arns = [aws_iam_policy.cloudwatch.arn]
-  oidc_subjects_with_wildcards = [
-    "system:serviceaccount:monitoring:cloudwatch-exporter*",
-  ]
+resource "aws_iam_role_policy_attachment" "eks_upgrade_insights" {
+  role       = aws_iam_role.eks_insights_role.name
+  policy_arn = aws_iam_policy.eks_upgrade_insights.arn
+}
+
+resource "aws_eks_pod_identity_association" "eks_insights_pod_identity" {
+  cluster_name    = module.eks.cluster_name
+  namespace       = "plrl-deploy-operator"
+  service_account = "deployment-operator"
+  role_arn        = aws_iam_role.eks_insights_role.arn
+}
+
+// Permissions for the cloudwatch exporter
+resource "aws_iam_role" "cloudwatch_exporter_role" {
+  name = "${var.cluster_name}-cloudwatch-exporter"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowEksAuthToAssumeRoleForPodIdentity"
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
 }
 
 resource "aws_iam_policy" "cloudwatch" {
@@ -98,4 +141,16 @@ resource "aws_iam_policy" "cloudwatch" {
       ]
     }
   POLICY
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_policy_attach" {
+  role       = aws_iam_role.cloudwatch_exporter_role.name
+  policy_arn = aws_iam_policy.cloudwatch.arn
+}
+
+resource "aws_eks_pod_identity_association" "cloudwatch_pod_identity" {
+  cluster_name    = module.eks.cluster_name
+  namespace       = "monitoring"
+  service_account = "cloudwatch-exporter"
+  role_arn        = aws_iam_role.cloudwatch_exporter_role.arn
 }
