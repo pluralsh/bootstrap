@@ -1,6 +1,6 @@
 module "eks_blueprints_addons" {
   source = "aws-ia/eks-blueprints-addons/aws"
-  version = "~> 1.12" #ensure to update this to the latest/desired version
+  version = "~> 1.21" #ensure to update this to the latest/desired version
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
@@ -21,23 +21,30 @@ module "eks_blueprints_addons" {
       most_recent = true
     }
     vpc-cni = {
-      most_recent = true
+      most_recent              = true
       service_account_role_arn = module.vpc_cni_irsa_role.iam_role_arn
     }
     kube-proxy = {
       most_recent = true
     }
+    eks-pod-identity-agent = {
+      most_recent = true
+    }
   }
 
   # mostly need this module to install the lb controller here.
-  enable_aws_load_balancer_controller    = true
-  enable_cluster_autoscaler              = true
-  enable_metrics_server                  = true
+  enable_aws_load_balancer_controller = true
+  enable_cluster_autoscaler           = true
+  enable_metrics_server               = true
+
+  depends_on = [
+    module.eks,
+  ]
 }
 
 module "vpc_cni_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.33"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.55"
 
   role_name             = "${module.eks.cluster_name}-vpc-cni"
   attach_vpc_cni_policy = true
@@ -46,22 +53,22 @@ module "vpc_cni_irsa_role" {
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn = module.eks.oidc_provider_arn
       namespace_service_accounts = ["kube-system:aws-node"]
     }
   }
 }
 
 module "ebs_csi_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.33"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.55"
 
   role_name             = "${module.eks.cluster_name}-ebs-csi"
   attach_ebs_csi_policy = true
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn = module.eks.oidc_provider_arn
       namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
     }
   }
