@@ -27,3 +27,12 @@ resource "plural_service_context" "mgmt" {
     project_id   = var.project
   })
 }
+
+resource "plural_service_context" "plural-vpc" {
+  name = "plrl/vpc/plural"
+
+  configuration = jsonencode({
+    network           = data.google_compute_network.network.name
+    subnetwork        = data.google_container_cluster.mgmt.subnetwork
+  })
+}
