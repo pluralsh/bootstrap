@@ -4,8 +4,8 @@ resource "plural_service_context" "mgmt" {
     configuration = jsonencode({
         region       = var.region
         cluster_name = var.cluster
-        network      = module.gcp-network.network_name
-        subnetwork   = module.gcp-network.subnets_names[0]
+        network      = local.vpc.network
+        subnetwork   = local.vpc.subnetwork
         cidr         = var.subnet_cidr
     })
 }

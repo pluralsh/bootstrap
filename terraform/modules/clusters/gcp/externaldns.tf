@@ -2,7 +2,6 @@ resource "google_service_account" "externaldns" {
   account_id                   = "${var.cluster}-externaldns"
   display_name                 = substr("GCP SA bound to K8S SA ${local.project_id}[external-dns]", 0, 100)
   description                  = "GCP SA bound to K8S SA ${local.project_id}[external-dns]"
-  project                      = local.project_id
   create_ignore_already_exists = true
 }
 

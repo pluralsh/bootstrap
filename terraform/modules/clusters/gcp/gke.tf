@@ -19,8 +19,8 @@ module "gke" {
   regional               = true
   grant_registry_access  = true
   region                 = var.region
-  network                = local.vpc.network_name
-  subnetwork             = local.vpc.subnets_names[0]
+  network                = local.vpc.network
+  subnetwork             = local.vpc.subnetwork
   ip_range_pods          = local.vpc.ip_range_pods_name
   ip_range_services      = local.vpc.ip_range_services_name
   create_service_account = true
