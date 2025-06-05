@@ -19,7 +19,7 @@ variable "region" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.28.9-gke.1000000"
+  default = "1.32"
 }
 
 variable "node_pools" {
@@ -42,10 +42,6 @@ variable "node_pools_tags" {
   default = { "all": [], "default-node-pool": [] }
 }
 
-variable "project_id" {
-  type = string
-  default = "pluralsh-test-384515"
-}
 
 variable "network" {
   type = string
