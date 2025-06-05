@@ -1,5 +1,10 @@
 data "google_project" "current" {}
 
+locals {
+  dev_subnet = format("%s-plural-dev", var.cluster_name)
+  prod_subnet = format("%s-plural-prod", var.cluster_name)
+}
+
 module "network_dev" {
   source  = "terraform-google-modules/network/google"
   version = ">= 7.5"
@@ -9,14 +14,14 @@ module "network_dev" {
 
   subnets = [
     {
-      subnet_name = format("%s-plural-dev", var.cluster_name)
+      subnet_name   = local.dev_subnet
       subnet_ip     = var.subnet_cidr
       subnet_region = var.region
     },
   ]
 
   secondary_ranges = {
-    plural-dev-subnet = [
+    (local.dev_subnet) = [
       {
         range_name    = var.ip_range_pods_name
         ip_cidr_range = var.pods_cidr
@@ -38,14 +43,14 @@ module "network_prod" {
 
   subnets = [
     {
-      subnet_name = format("%s-plural-prod", var.cluster_name)
+      subnet_name   = local.prod_subnet
       subnet_ip     = var.subnet_cidr
       subnet_region = var.region
     },
   ]
 
   secondary_ranges = {
-    plural-prod-subnet = [
+    (local.prod_subnet) = [
       {
         range_name    = var.ip_range_pods_name
         ip_cidr_range = var.pods_cidr

@@ -2,11 +2,16 @@ data "plural_service_context" "network" {
   name = "plrl/vpc/${var.tier}"
 }
 
+data "plural_service_context" "mgmt" {
+  name = "plrl/clusters/mgmt"
+}
+
 data "google_client_config" "current" {}
 
 locals {
-  project_id = data.google_client_config.current.project
-  vpc = jsondecode(data.plural_service_context.network.configuration)
+  mgmt       = jsondecode(data.plural_service_context.mgmt.configuration)
+  project_id = local.mgmt.project_id
+  vpc        = jsondecode(data.plural_service_context.network.configuration)
 }
 
 module "gke" {
@@ -21,8 +26,8 @@ module "gke" {
   region                 = var.region
   network                = local.vpc.network
   subnetwork             = local.vpc.subnetwork
-  ip_range_pods          = local.vpc.ip_range_pods_name
-  ip_range_services      = local.vpc.ip_range_services_name
+  ip_range_pods          = local.vpc.ip_range_pods
+  ip_range_services      = local.vpc.ip_range_services
   create_service_account = true
   deletion_protection    = false
   node_pools             = var.node_pools

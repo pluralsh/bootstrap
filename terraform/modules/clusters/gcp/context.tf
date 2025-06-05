@@ -7,5 +7,6 @@ resource "plural_service_context" "mgmt" {
         network      = local.vpc.network
         subnetwork   = local.vpc.subnetwork
         cidr         = var.subnet_cidr
+        project_id   = local.project_id
     })
 }
