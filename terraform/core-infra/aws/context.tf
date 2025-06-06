@@ -16,3 +16,13 @@ resource "plural_service_context" "mgmt" {
         vpc_cidr     = data.aws_vpc.mgmt.cidr_block
     })
 }
+
+resource "plural_service_context" "plrl-vpc" {
+  name = "plrl/vpc/plural"
+
+  configuration = jsonencode({
+    vpc_id          = one(data.aws_eks_cluster.mgmt.vpc_config).vpc_id
+    subnet_ids      = one(data.aws_eks_cluster.mgmt.vpc_config).subnet_ids
+    vpc_cidr        = data.aws_vpc.mgmt.cidr_block
+  })
+}
