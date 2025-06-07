@@ -21,6 +21,8 @@ resource "plural_cluster" "this" {
           cert_manager = module.externaldns_irsa_role.iam_role_arn
         }
 
+        vpc_id = local.vpc.vpc_id
+        
         network = {
           private_subnets = local.vpc.private_subnets
           public_subnets  = local.vpc.public_subnets
