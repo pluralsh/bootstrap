@@ -1,0 +1,50 @@
+vmagent:
+  enabled: true
+
+  additionalRemoteWrites:
+  - url: '{{ contexts["plrl/cloud/observability"].vmetrics.url }}'
+    basicAuth:
+      username: 
+        name: vm-auth
+        key: user
+      password:
+        name: vm-auth
+        key: password
+
+  spec:
+    externalLabels:
+      cluster: {{ cluster.handle }}
+
+prometheus-operator-crds:
+  enabled: true
+
+vmalert:
+  enabled: false
+
+alertmanager:
+  enabled: false
+
+vmsingle:
+  enabled: false
+
+grafana:
+  enabled: false
+
+vmcluster:
+  enabled: false
+
+kubeApiServer:
+  enabled: false
+
+victoria-metrics-operator:
+  operator:
+    enable_converter_ownership: true
+
+extraObjects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: vm-auth
+  stringData:
+    password: {{ contexts["plrl/cloud/observability"].vmetrics.password }}
+    user: {{ contexts["plrl/cloud/observability"].vmetrics.user }}

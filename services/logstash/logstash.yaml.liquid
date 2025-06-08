@@ -1,0 +1,53 @@
+apiVersion: logstash.k8s.elastic.co/v1alpha1
+kind: Logstash
+metadata:
+  name: logstash
+spec:
+  count: 1
+  version: 8.16.0
+  elasticsearchRefs:
+  - clusterName: upstream
+    secretName: upstream-es-ref
+  podTemplate:
+    containers:
+    - name: logstash
+      resources:
+        requests:
+          memory: 1Gi
+          cpu: 500m
+  pipelines:
+    - pipeline.id: main
+      config.string: |
+        input {
+          beats {
+            port => 5044
+          }
+        }
+        filter {
+          grok {
+            match => { "message" => "%{HTTPD_COMMONLOG}"}
+          }
+          geoip {
+            source => "[source][address]"
+            target => "[source]"
+          }
+        }
+        output {
+          elasticsearch {   
+            hosts => [ "${UPSTREAM_ES_HOSTS}" ]
+            user => "${UPSTREAM_ES_USER}"
+            password => "${UPSTREAM_ES_PASSWORD}"
+            index => "{{ contexts["plrl/cloud/observability"].elastic.user }}-%{+YYYY.MM.dd}"
+            manage_template => false
+          }
+        }
+  services:
+    - name: beats
+      service:
+        spec:
+          type: ClusterIP
+          ports:
+            - port: 5044
+              name: "filebeat"
+              protocol: TCP
+              targetPort: 5044
