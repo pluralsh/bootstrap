@@ -1,0 +1,29 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: elastic-operator
+  namespace: infra
+spec:
+  template:
+    namespace: elastic-system
+    helm:
+      url: https://helm.elastic.co
+      version: x.x.x
+      chart: eck-operator
+---
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: logstash
+  namespace: infra
+spec:
+  template:
+    namespace: elastic
+    repositoryRef:
+      name: infra
+      namespace: infra
+    git:
+      folder: services/logstash
+      ref: main
+    contexts:
+    - "plrl/cloud/observability"

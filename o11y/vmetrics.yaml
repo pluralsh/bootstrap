@@ -1,0 +1,23 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: vm-agent
+  namespace: infra
+spec:
+  template:
+    namespace: monitoring
+    contexts:
+    - "plrl/cloud/observability"
+    git:
+      folder: helm/vmetrics
+      ref: main
+    repositoryRef:
+      kind: GitRepository
+      name: infra
+      namespace: infra
+    helm:
+      url: https://victoriametrics.github.io/helm-charts/
+      version: 0.25.9
+      chart: victoria-metrics-k8s-stack
+      valuesFiles:
+      - agent.yaml.liquid
