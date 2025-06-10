@@ -37,7 +37,7 @@ spec:
             hosts => [ "${UPSTREAM_ES_HOSTS}" ]
             user => "${UPSTREAM_ES_USER}"
             password => "${UPSTREAM_ES_PASSWORD}"
-            index => "{{ contexts["plrl/cloud/observability"].elastic.user }}-%{+YYYY.MM.dd}"
+            index => "{{ contexts["plrl/cloud/observability"].elastic.user }}-logs-%{+YYYY.MM.dd}"
             manage_template => false
           }
         }
