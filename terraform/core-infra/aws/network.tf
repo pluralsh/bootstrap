@@ -67,6 +67,9 @@ resource "plural_service_context" "dev-vpc" {
         private_subnets = module.network-dev.private_subnets
         public_subnets  = module.network-dev.public_subnets
         vpc_cidr        = var.vpc_cidr
+        {{ if .AppDomain }}
+        ingress_dns_zone = "dev.{{ .AppDomain }}"
+        {{ end }}
     })
 }
 
@@ -79,5 +82,8 @@ resource "plural_service_context" "prod-vpc" {
         private_subnets = module.network-prod.private_subnets
         public_subnets  = module.network-prod.public_subnets
         vpc_cidr        = var.vpc_cidr
+        {{ if .AppDomain }}
+        ingress_dns_zone = "{{ .AppDomain }}"
+        {{ end }}
     })
 }

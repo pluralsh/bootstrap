@@ -25,8 +25,11 @@ resource "plural_cluster" "cluster" {
     }
 
     metadata = jsonencode({
+      tier = var.tier
+      dns_zone = try(local.network.ingress_dns_zone, "example.com")
       subscription_id = local.identity["subscription_id"]
       tenant_id       = local.identity["tenant_id"]
+      resource_group_name = data.azurerm_resource_group.default.name
       
       iam = {
         external_dns = azurerm_user_assigned_identity.dns.client_id

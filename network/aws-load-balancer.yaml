@@ -1,0 +1,25 @@
+
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: aws-load-balancer-controller
+  namespace: infra
+spec:
+  mgmt: false
+  template:
+    name: aws-load-balancer-controller
+    namespace: kube-system
+    protect: true # protect prevents deletion in the UI, but also tunes the cluster drain behavior to leave this service in-place which can help w/ cleanup
+    helm:
+      version: "1.8.2"
+      chart: aws-load-balancer-controller
+      url: https://aws.github.io/eks-charts
+      valuesFiles:
+      - loadbalancer.yaml.liquid
+    git:
+      folder: helm
+      ref: main
+    repositoryRef:
+      kind: GitRepository
+      name: infra
+      namespace: infra

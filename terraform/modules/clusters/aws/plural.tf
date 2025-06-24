@@ -14,6 +14,8 @@ resource "plural_cluster" "this" {
     }
 
     metadata = jsonencode({
+        tier = var.tier
+        dns_zone = try(local.vpc.ingress_dns_zone, "example.com")
         iam = {
           load_balancer = module.addons.gitops_metadata.aws_load_balancer_controller_iam_role_arn
           cluster_autoscaler = module.addons.gitops_metadata.cluster_autoscaler_iam_role_arn
