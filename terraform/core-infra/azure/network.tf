@@ -125,6 +125,9 @@ resource "plural_service_context" "dev" {
     mysql_subnet_id   = azurerm_subnet.dev_mysql.id
     mysql_dns_zone_name  = data.azurerm_private_dns_zone.mysql.name
     mysql_dns_zone_id    = data.azurerm_private_dns_zone.mysql.id
+  {{ if .AppDomain }}
+    ingress_dns_zone = "dev.{{ .AppDomain }}"
+  {{ end}}
 
     # Kept for backwards compatibility. Use fields with pg_ prefix instead.
     dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
@@ -213,7 +216,9 @@ resource "plural_service_context" "prod" {
     mysql_subnet_id   = azurerm_subnet.prod_mysql.id
     mysql_dns_zone_name  = data.azurerm_private_dns_zone.mysql.name
     mysql_dns_zone_id    = data.azurerm_private_dns_zone.mysql.id
-
+    {{ if .AppDomain }}
+    ingress_dns_zone = "{{ .AppDomain }}"
+    {{ end}}
     # Kept for backwards compatibility. Use fields with pg_ prefix instead.
     dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
     dns_zone_id    = data.azurerm_private_dns_zone.postgres.id

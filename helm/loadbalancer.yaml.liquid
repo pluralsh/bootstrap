@@ -1,0 +1,9 @@
+clusterName: {{ cluster.handle }}
+createIngressClassResource: false
+
+serviceAccount:
+  create: true
+  name: aws-load-balancer-controller-sa
+  annotations:
+    client.lifecycle.config.k8s.io/deletion: detach
+    eks.amazonaws.com/role-arn: {{ cluster.metadata.iam.load_balancer }}

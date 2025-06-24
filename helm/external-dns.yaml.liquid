@@ -1,0 +1,14 @@
+enabled: true
+
+provider: aws
+
+txtOwnerId: plrl-{{ cluster.handle }} # templating in the cluster handle, which is unique, to be the external-dns owner id
+
+policy: sync
+
+domainFilters:
+- {{ cluster.metadata.dns_zone }} # check terraform/modules/clusters/aws/plural.tf for where this is set
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: {{ cluster.metadata.iam.external_dns }} 

@@ -1,0 +1,41 @@
+
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: cert-manager
+  namespace: infra
+spec:
+  mgmt: false
+  template:
+    name: cert-manager
+    namespace: cert-manager
+    repositoryRef:
+      kind: GitRepository
+      name: infra
+      namespace: infra
+    git:
+      ref: main
+      folder: helm
+    helm:
+      version: "v1.x.x"
+      chart: cert-manager
+      url: https://charts.jetstack.io
+      valuesFiles:
+      - certmanager.yaml.liquid
+---
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: cluster-issuers
+  namespace: infra
+spec:
+  mgmt: false
+  template:
+    name: cluster-issuers
+    namespace: cert-manager
+    repositoryRef:
+      kind: GitRepository
+      name: infra
+    git:
+      ref: main
+      folder: services/issuers

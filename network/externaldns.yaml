@@ -1,0 +1,22 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: external-dns
+  namespace: infra
+spec:
+  mgmt: false
+  template:
+    name: external-dns
+    namespace: external-dns # note this for later
+    git:
+      ref: main
+      folder: helm
+    repositoryRef:
+      name: infra # this should point to your `plural up` repo
+      namespace: infra
+    helm:
+      version: 8.3.8
+      chart: external-dns
+      url: oci://registry-1.docker.io/bitnamicharts
+      valuesFiles:
+      - external-dns.yaml.liquid
