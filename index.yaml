@@ -3,6 +3,17 @@ entries:
   plural-operator:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2025-06-30T01:25:06.679540753Z"
+    description: A Helm chart for deploying the v1 plural operator, which is primarily
+      responsible for managing our oauth proxy injector admission controller.
+    digest: 7ecd903ddada29ee5c7b0d92d4f7eeefe7a6ebdf547b4379b3f90ef02e0dc20c
+    name: plural-operator
+    type: application
+    urls:
+    - https://github.com/pluralsh/bootstrap/releases/download/plural-operator-chart-v0.1.2/plural-operator-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2025-06-30T01:17:39.932710495Z"
     description: A Helm chart for deploying the v1 plural operator, which is primarily
       responsible for managing our oauth proxy injector admission controller.
@@ -1111,4 +1122,4 @@ entries:
     urls:
     - https://github.com/pluralsh/bootstrap/releases/download/stateless-chart-v0.1.0/stateless-0.1.0.tgz
     version: 0.1.0
-generated: "2025-06-30T01:17:39.932800532Z"
+generated: "2025-06-30T01:25:06.679639497Z"
