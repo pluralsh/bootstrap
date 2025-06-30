@@ -1,0 +1,13 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GlobalService
+metadata:
+  name: plural-operator
+  namespace: infra
+spec:
+  mgmt: false
+  template:
+    namespace: plrl
+    helm:
+      version: "x.x.x"
+      chart: plural-operator
+      url: https://pluralsh.github.io/bootstrap
