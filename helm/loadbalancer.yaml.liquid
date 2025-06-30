@@ -1,5 +1,6 @@
 clusterName: {{ cluster.handle }}
 createIngressClassResource: false
+vpcId: {{ cluster.metadata.vpc_id }}
 
 serviceAccount:
   create: true
