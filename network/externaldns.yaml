@@ -8,6 +8,7 @@ spec:
   template:
     name: external-dns
     namespace: external-dns # note this for later
+    protect: true
     git:
       ref: main
       folder: helm
