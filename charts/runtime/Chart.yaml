@@ -6,7 +6,7 @@ version: 0.1.32
 appVersion: "0.1.0"
 dependencies:
 - name: external-dns
-  version: 8.3.8
+  version: 8.3.12
   repository: oci://registry-1.docker.io/bitnamicharts
   condition: external-dns.enabled
 - name: cert-manager
