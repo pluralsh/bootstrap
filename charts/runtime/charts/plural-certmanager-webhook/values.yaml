@@ -13,8 +13,8 @@ certManager:
   serviceAccountName: cert-manager
 
 image:
-  repository: dkr.plural.sh/bootstrap/plural-certmanager-webhook
-  tag: 0.1.5
+  repository: ghcr.io/pluralsh/plural-certmanager-webhook
+  tag: 0.1.6
   pullPolicy: Always
 
 nameOverride: ""
