@@ -11,8 +11,6 @@ metadata:
     chart: {{ include "plural-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
 spec:
   selfSigned: {}
 
@@ -29,8 +27,6 @@ metadata:
     chart: {{ include "plural-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
 spec:
   secretName: {{ include "plural-webhook.rootCACertificate" . }}
   duration: 43800h # 5y
@@ -52,8 +48,6 @@ metadata:
     chart: {{ include "plural-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
 spec:
   ca:
     secretName: {{ include "plural-webhook.rootCACertificate" . }}
@@ -71,8 +65,6 @@ metadata:
     chart: {{ include "plural-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
 spec:
   secretName: {{ include "plural-webhook.servingCertificate" . }}
   duration: 8760h # 1y

@@ -7,8 +7,6 @@ metadata:
     chart: {{ include "plural-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
