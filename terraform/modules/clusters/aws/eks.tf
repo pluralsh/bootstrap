@@ -19,6 +19,17 @@ module "eks" {
   subnet_ids               = local.vpc.private_subnets
   control_plane_subnet_ids = local.vpc.public_subnets
 
+  node_security_group_additional_rules = {
+    ingress_self_all = {
+      description = "Node to node all ports/protocols"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "ingress"
+      self        = true
+    }
+  }
+
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = merge(var.node_group_defaults,
     {ami_release_version = data.aws_ssm_parameter.eks_ami_release_version.value})
