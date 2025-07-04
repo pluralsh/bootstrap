@@ -8,4 +8,4 @@ plural:
   enabled: true
   image:
     repository: dkr.plural.sh/bootstrap/plural-operator
-    tag: 0.5.5
+    tag: 0.6.0
