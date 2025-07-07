@@ -1,6 +1,6 @@
 # annoyingly need to ensure these are enabled
 resource "google_project_service" "gcr" {
-  project = var.project_id
+  project = local.project_id
   service = "artifactregistry.googleapis.com"
 
   timeouts {
@@ -12,7 +12,7 @@ resource "google_project_service" "gcr" {
 }
 
 resource "google_project_service" "container" {
-  project = var.project_id
+  project = local.project_id
   service = "container.googleapis.com"
 
   timeouts {
@@ -24,7 +24,7 @@ resource "google_project_service" "container" {
 }
 
 resource "google_project_service" "iam" {
-  project = var.project_id
+  project = local.project_id
   service = "iam.googleapis.com"
 
   timeouts {
@@ -36,7 +36,7 @@ resource "google_project_service" "iam" {
 }
 
 resource "google_project_service" "storage" {
-  project = var.project_id
+  project = local.project_id
   service = "storage.googleapis.com"
 
   timeouts {
@@ -48,7 +48,7 @@ resource "google_project_service" "storage" {
 }
 
 resource "google_project_service" "dns" {
-  project = var.project_id
+  project = local.project_id
   service = "dns.googleapis.com"
 
   timeouts {
@@ -60,7 +60,7 @@ resource "google_project_service" "dns" {
 }
 
 resource "google_project_service" "compute" {
-  project = var.project_id
+  project = local.project_id
   service = "compute.googleapis.com"
 
   timeouts {
@@ -72,7 +72,7 @@ resource "google_project_service" "compute" {
 }
 
 resource "google_project_service" "sql" {
-  project = var.project_id
+  project = local.project_id
   service = "sqladmin.googleapis.com"
 
   timeouts {
@@ -84,7 +84,7 @@ resource "google_project_service" "sql" {
 }
 
 resource "google_project_service" "servicenetworking" {
-  project = var.project_id
+  project = local.project_id
   service = "servicenetworking.googleapis.com"
 
   timeouts {
