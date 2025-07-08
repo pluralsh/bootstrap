@@ -1,5 +1,5 @@
 data "google_dns_managed_zone" "prod" {
-  name    = "{{ replace .AppDomain \".\" \"-\" }}"
+  name    = "{{ .Context.ManagedZone }}"
   project = "{{ .Project }}"
 }
 
