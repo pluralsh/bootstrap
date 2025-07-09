@@ -20,7 +20,7 @@ variable "kubernetes_version" {
 
 variable "node_pools" {
   type = list(any)
-  default = [{ name = "default-node-pool" }]
+  default = [{ name = "default-node-pool", machine_type = "n2-standard-2" }]
 }
 
 variable "node_pools_taints" {

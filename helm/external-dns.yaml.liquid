@@ -1,6 +1,14 @@
 enabled: true
 
+{% if cluster.distro == "EKS" %}
 provider: aws
+{% endif %}
+{% if cluster.distro == "AKS" %}
+provider: azure
+{% endif %}
+{% if cluster.distro == "GKE" %}
+provider: google
+{% endif %}
 
 txtOwnerId: plrl-{{ cluster.handle }} # templating in the cluster handle, which is unique, to be the external-dns owner id
 
@@ -9,6 +17,24 @@ policy: sync
 domainFilters:
 - {{ cluster.metadata.dns_zone }} # check terraform/modules/clusters/aws/plural.tf for where this is set
 
+{% if cluster.distro == "EKS" %}
 serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: {{ cluster.metadata.iam.external_dns }} 
+{% endif %}
+
+{% if cluster.distro == "AKS" %}
+serviceAccount:
+  annotations:
+    azure.workload.identity/client-id: {{ cluster.metadata.iam.external_dns }}
+
+podLabels:
+  labels:
+    azure.workload.identity/use: "true"
+{% endif %}
+
+{% if cluster.distro == "GKE" %}
+serviceAccount:
+  annotations:
+    iam.gke.io/gcp-service-account: {{ cluster.metadata.iam.external_dns }}
+{% endif %}
