@@ -13,6 +13,20 @@ data "aws_partition" "current" {}
 locals {
   cluster_admin_policy = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
   stacks_arn           = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${var.cluster_name}-plrl-stacks"
+
+  bg_taint = [
+    {
+      key    = "platform.plural.sh/draining"
+      value  = "true"
+      effect = "NO_SCHEDULE"
+    }
+  ]
+  node_pool_add = {
+    (local.active_node_group) = {ami_release_version = data.aws_ssm_parameter.eks_ami_release_version_next.value},
+    (local.drain_node_group) = {min_size = 0, taints = local.bg_taint}
+  }
+
+  full_node_groups = {for k, v in var.managed_node_groups: k => merge(v, try(lookup(local.node_pool_add, k), {}))}
 }
 
 module "eks" {
@@ -55,9 +69,13 @@ module "eks" {
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = var.node_group_defaults
-  eks_managed_node_groups = var.managed_node_groups
+  eks_managed_node_groups = local.full_node_groups
 
   create_cloudwatch_log_group = var.create_cloudwatch_log_group
 
   depends_on = [ module.vpc.nat_ids ] # This ensures that the VPC NAT gateways are created before the EKS cluster
+}
+
+data "aws_ssm_parameter" "eks_ami_release_version_next" {
+  name = "/aws/service/eks/optimized-ami/${var.next_kubernetes_version}/amazon-linux-2/recommended/release_version"
 }
