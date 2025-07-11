@@ -104,6 +104,7 @@ variable "managed_node_groups" {
       use_name_prefix = false // TODO: True?
       min_size        = 0
       max_size        = 10
+      desired_size    = 3 // TODO: Remove?
     }
   }
 }
