@@ -33,6 +33,27 @@ variable "next_kubernetes_version" {
   default = "1.32"
 }
 
+variable "desired_size" {
+  type    = number
+  default = 3
+}
+
+variable "managed_node_groups" {
+  type = any
+  default = {
+    green = {
+      use_name_prefix = false
+      min_size        = 0
+      max_size        = 10
+    }
+    blue = {
+      use_name_prefix = false
+      min_size        = 0
+      max_size        = 10
+    }
+  }
+}
+
 variable "public" {
   type    = bool
   default = true
@@ -88,24 +109,6 @@ variable "node_group_defaults" {
       }
     ]
     disk_size = 50
-  }
-}
-
-variable "managed_node_groups" {
-  type = any
-  default = {
-    green = {
-      use_name_prefix = false // TODO: True?
-      min_size        = 0
-      max_size        = 10
-      desired_size    = 3
-    }
-    blue = {
-      use_name_prefix = false // TODO: True?
-      min_size        = 0
-      max_size        = 10
-      desired_size    = 3 // TODO: Remove?
-    }
   }
 }
 

@@ -21,9 +21,17 @@ locals {
       effect = "NO_SCHEDULE"
     }
   ]
+
   node_pool_add = {
-    (local.active_node_group) = {ami_release_version = data.aws_ssm_parameter.eks_ami_release_version_next.value},
-    (local.drain_node_group) = {min_size = 0, taints = local.bg_taint}
+    (local.active_node_group) = {
+      desired_size = var.desired_size,
+      taints = local.upgrading ? local.bg_taint : [],
+    },
+    (local.drain_node_group) = {
+      desired_size = local.upgrading ? var.desired_size : 0,
+      taints = local.upgrading ? [] : local.bg_taint,
+      ami_release_version = data.aws_ssm_parameter.eks_ami_release_version_next.value
+    }
   }
 
   full_node_groups = {for k, v in var.managed_node_groups: k => merge(v, try(lookup(local.node_pool_add, k), {}))}
