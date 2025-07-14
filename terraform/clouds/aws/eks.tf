@@ -31,7 +31,6 @@ locals {
     (local.drain_node_group) = {
       desired_size = local.upgrading ? var.desired_size : 0,
       taints = local.upgrading ? [] : local.bg_taint,
-      ami_release_version = data.aws_ssm_parameter.eks_ami_release_version_next.value
       cluster_version = var.next_kubernetes_version,
     }
   }
@@ -84,8 +83,4 @@ module "eks" {
   create_cloudwatch_log_group = var.create_cloudwatch_log_group
 
   depends_on = [ module.vpc.nat_ids ] # This ensures that the VPC NAT gateways are created before the EKS cluster
-}
-
-data "aws_ssm_parameter" "eks_ami_release_version_next" {
-  name = "/aws/service/eks/optimized-ami/${var.next_kubernetes_version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
 }
