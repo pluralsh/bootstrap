@@ -24,18 +24,15 @@ locals {
 
   node_pool_add = {
     (local.active_node_group) = {
-      desired_size = var.desired_size,
-      taints = local.upgrading ? local.bg_taint : [],
       cluster_version = var.kubernetes_version,
+      taints = local.upgrading ? local.bg_taint : [],
     },
-    (local.drain_node_group) = {
-      desired_size = local.upgrading ? var.desired_size : 0,
-      taints = local.upgrading ? [] : local.bg_taint,
+    (local.drain_node_group) =  {
       cluster_version = var.next_kubernetes_version,
     }
   }
 
-  full_node_groups = {for k, v in var.managed_node_groups: k => merge(v, try(lookup(local.node_pool_add, k), {}))}
+  full_node_groups = {for k, v in var.managed_node_groups: k => merge(v, try(lookup(local.node_pool_add, k), {})) if k != local.drain_node_group || local.upgrading == true}
 }
 
 module "eks" {
