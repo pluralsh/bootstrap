@@ -26,11 +26,13 @@ locals {
     (local.active_node_group) = {
       desired_size = var.desired_size,
       taints = local.upgrading ? local.bg_taint : [],
+      cluster_version = var.kubernetes_version,
     },
     (local.drain_node_group) = {
       desired_size = local.upgrading ? var.desired_size : 0,
       taints = local.upgrading ? [] : local.bg_taint,
       ami_release_version = data.aws_ssm_parameter.eks_ami_release_version_next.value
+      cluster_version = var.next_kubernetes_version,
     }
   }
 
@@ -42,7 +44,7 @@ module "eks" {
   version = "~> 20.0"
 
   cluster_name    = var.cluster_name
-  cluster_version = var.kubernetes_version
+  cluster_version = var.next_kubernetes_version
 
   cluster_endpoint_public_access = var.public
 
