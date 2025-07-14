@@ -33,21 +33,19 @@ variable "next_kubernetes_version" {
   default = "1.32"
 }
 
-variable "desired_size" {
-  type    = number
-  default = 3
-}
 
 variable "managed_node_groups" {
   type = any
   default = {
     green = {
       use_name_prefix = false
+      desired_size   = 3
       min_size        = 0
       max_size        = 10
     }
     blue = {
       use_name_prefix = false
+      desired_size   = 3
       min_size        = 0
       max_size        = 10
     }
