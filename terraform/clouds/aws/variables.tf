@@ -28,6 +28,11 @@ variable "kubernetes_version" {
   default = "1.32"
 }
 
+variable "admin_arn" {
+  type    = string
+  default = ""
+}
+
 variable "public" {
   type    = bool
   default = true
