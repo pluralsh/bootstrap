@@ -38,13 +38,13 @@ variable "managed_node_groups" {
   type = any
   default = {
     green = {
-      use_name_prefix = false
+      use_name_prefix = true
       desired_size   = 3
       min_size        = 0
       max_size        = 10
     }
     blue = {
-      use_name_prefix = false
+      use_name_prefix = true
       desired_size   = 3
       min_size        = 0
       max_size        = 10
