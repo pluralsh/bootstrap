@@ -4,7 +4,8 @@ data "google_dns_managed_zone" "prod" {
 }
 
 resource "google_dns_managed_zone" "dev" {
-  name = "dev.{{ .AppDomain }}"
+  name = "{{ replace "." "-
+" (printf "dev.%s" .AppDomain) }}"
   dns_name    = "dev.{{ .AppDomain }}."
   project     = "{{ .Project }}"
   description = "Dev zone for {{ .AppDomain }}"
