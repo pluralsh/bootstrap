@@ -13,7 +13,8 @@ locals {
     }
   }
 
-  full_node_pools = {for k, v in var.node_pools: k => merge(v, try(lookup(local.node_pool_add, k), {})) if k != local.drain_node_group || local.upgrading == true}}
+  full_node_pools = {for k, v in var.node_pools: k => merge(v, try(lookup(local.node_pool_add, k), {})) if k != local.drain_node_group || local.upgrading == true}
+}
 
 
 module "aks" {
