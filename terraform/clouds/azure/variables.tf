@@ -18,6 +18,11 @@ variable "kubernetes_version" {
   default = "1.32"
 }
 
+variable "next_kubernetes_version" {
+  type    = string
+  default = "1.32"
+}
+
 variable "create_resource_group" {
     type = bool
     default = false
@@ -87,7 +92,14 @@ variable "mysql_network_link_name" {
 variable "node_pools" {
   type = map(any)
   default = {
-    plural = {
+    blue = {
+      vm_size = "Standard_D2s_v3"
+      node_count = 3
+      min_count = 1
+      max_count = 20
+      enable_auto_scaling = true
+    }
+    green = {
       vm_size = "Standard_D2s_v3"
       node_count = 3
       min_count = 1
