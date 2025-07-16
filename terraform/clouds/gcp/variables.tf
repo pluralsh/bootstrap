@@ -24,27 +24,25 @@ variable "next_kubernetes_version" {
 }
 
 variable "node_pools" {
-  type = list(any)
-  default = [
-    {
-      name               = "green",
+  type = any
+  default = {
+    green = {
       machine_type       = "n2-standard-2"
       min_count          = 0
-      initial_node_count = 3
+      initial_node_count = 1
       max_count = 10
       # Must be set to false to allow for blue-green deployments
       auto_upgrade       = false
     },
-    {
-      name               = "blue"
+    blue = {
       machine_type       = "n2-standard-2"
       min_count          = 0
-      initial_node_count = 3
+      initial_node_count = 1
       max_count = 10
       # Must be set to false to allow for blue-green deployments
       auto_upgrade       = false
     }
-  ]
+  }
 }
 
 variable "node_pools_taints" {
