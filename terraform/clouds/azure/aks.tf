@@ -2,14 +2,10 @@ locals {
   node_pool_add = {
     (local.active_node_group) = {
       orchestrator_version = var.kubernetes_version,
-      name = local.active_node_group,
       node_taints = local.upgrading ? ["platform.plural.sh/draining=true:NoSchedule"] : [],
-      vnet_subnet_id = azurerm_subnet.network.id
     },
     (local.drain_node_group) =  {
       orchestrator_version = var.next_kubernetes_version,
-      name = local.drain_node_group,
-      vnet_subnet_id = azurerm_subnet.network.id
     }
   }
 
@@ -29,7 +25,7 @@ module "aks" {
   sku_tier             = "Standard"
   rbac_aad             = false
   vnet_subnet_id       = azurerm_subnet.network.id
-  node_pools           = local.full_node_pools
+  node_pools           = {for name, pool in local.full_node_pools : name => merge(pool, {name = name, vnet_subnet_id = azurerm_subnet.network.id})}
   
   ebpf_data_plane     = "cilium"
   network_plugin_mode = "overlay"
