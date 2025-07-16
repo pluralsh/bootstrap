@@ -1,19 +1,20 @@
 locals {
   node_pool_add = {
     (local.active_node_group) = {
-      cluster_version = var.kubernetes_version,
+      orchestrator_version = var.kubernetes_version,
       name = local.active_node_group,
       node_taints = local.upgrading ? ["platform.plural.sh/draining=true:NoSchedule"] : [],
       vnet_subnet_id = azurerm_subnet.network.id
     },
     (local.drain_node_group) =  {
-      cluster_version = var.next_kubernetes_version,
+      orchestrator_version = var.next_kubernetes_version,
       name = local.drain_node_group,
       vnet_subnet_id = azurerm_subnet.network.id
     }
   }
 
-  full_node_pools = {for k, v in var.node_pools: k => merge(v, try(lookup(local.node_pool_add, k), {})) if k != local.drain_node_group || local.upgrading == true}}
+  full_node_pools = {for k, v in var.node_pools: k => merge(v, try(lookup(local.node_pool_add, k), {})) if k != local.drain_node_group || local.upgrading == true}
+}
 
 
 module "aks" {
