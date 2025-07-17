@@ -18,24 +18,46 @@ variable "kubernetes_version" {
   default = "1.32"
 }
 
+variable "next_kubernetes_version" {
+  type    = string
+  default = "1.32"
+}
+
 variable "node_pools" {
-  type = list(any)
-  default = [{ name = "default-node-pool", machine_type = "n2-standard-2" }]
+  type = any
+  default = {
+    green = {
+      machine_type       = "n2-standard-2"
+      min_count          = 0
+      initial_node_count = 1
+      max_count = 10
+      # Must be set to false to allow for blue-green deployments
+      auto_upgrade       = false
+    },
+    blue = {
+      machine_type       = "n2-standard-2"
+      min_count          = 0
+      initial_node_count = 1
+      max_count = 10
+      # Must be set to false to allow for blue-green deployments
+      auto_upgrade       = false
+    }
+  }
 }
 
 variable "node_pools_taints" {
   type = map(list(object({ key = string, value = string, effect = string })))
-  default = { "all" : [], "default-node-pool" : [] }
+  default = { "all" : [], "green" : [], "blue" : [] }
 }
 
 variable "node_pools_labels" {
   type = map(map(string))
-  default = { "all" : {}, "default-node-pool" : {} }
+  default = { "all" : {}, "green" : {}, "blue" : {} }
 }
 
 variable "node_pools_tags" {
   type = map(list(string))
-  default = { "all" : [], "default-node-pool" : [] }
+  default = { "all" : [], "green" : [], "blue" : [] }
 }
 
 variable "project_id" {

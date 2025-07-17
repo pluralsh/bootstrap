@@ -13,6 +13,26 @@ data "aws_partition" "current" {}
 locals {
   cluster_admin_policy = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
   stacks_arn           = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${var.cluster_name}-plrl-stacks"
+
+  bg_taint = [
+    {
+      key    = "platform.plural.sh/draining"
+      value  = "true"
+      effect = "NO_SCHEDULE"
+    }
+  ]
+
+  node_pool_add = {
+    (local.active_node_group) = {
+      cluster_version = var.kubernetes_version,
+      taints = local.upgrading ? local.bg_taint : [],
+    },
+    (local.drain_node_group) =  {
+      cluster_version = var.next_kubernetes_version,
+    }
+  }
+
+  full_node_groups = {for k, v in var.managed_node_groups: k => merge(v, try(lookup(local.node_pool_add, k), {})) if k != local.drain_node_group || local.upgrading == true}
 }
 
 module "eks" {
@@ -20,7 +40,7 @@ module "eks" {
   version = "~> 20.0"
 
   cluster_name    = var.cluster_name
-  cluster_version = var.kubernetes_version
+  cluster_version = var.next_kubernetes_version
 
   cluster_endpoint_public_access = var.public
 
@@ -55,7 +75,7 @@ module "eks" {
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = var.node_group_defaults
-  eks_managed_node_groups = var.managed_node_groups
+  eks_managed_node_groups = local.full_node_groups
 
   create_cloudwatch_log_group = var.create_cloudwatch_log_group
 
