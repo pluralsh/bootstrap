@@ -7,4 +7,10 @@ locals {
   }
   vpc_name = var.vpc_name == "" ? "${var.cluster_name}-vpc" : var.vpc_name
   monitoring_role_name = var.monitoring_role == "" ? "${var.cluster_name}-PluralRDSMonitoringRole" : var.monitoring_role
+
+  upgrading = var.kubernetes_version != var.next_kubernetes_version
+  split_vsn = [ for i in split(".", var.kubernetes_version): tonumber(i) ]
+  vsn_even = ((tonumber(local.split_vsn[0]) * 100 + tonumber(local.split_vsn[1])) % 2) == 0
+  active_node_group = local.vsn_even ? "blue" : "green"
+  drain_node_group = local.vsn_even ? "green" : "blue"
 }
