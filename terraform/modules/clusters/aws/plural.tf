@@ -24,6 +24,7 @@ resource "plural_cluster" "this" {
         }
 
         vpc_id = local.vpc.vpc_id
+        region = var.region
         
         network = {
           private_subnets = local.vpc.private_subnets

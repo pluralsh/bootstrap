@@ -14,7 +14,8 @@ spec:
     solvers:
     - dns01:
         {% if cluster.distro == 'EKS' %}
-        route53: {}
+        route53:
+          region: {{ cluster.metadata.region }}
         {% endif %}
         {% if cluster.distro == 'AKS' %}
         azureDNS:
