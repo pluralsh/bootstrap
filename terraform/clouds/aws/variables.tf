@@ -52,6 +52,11 @@ variable "managed_node_groups" {
   }
 }
 
+variable "admin_arn" {
+  type    = string
+  default = ""
+}
+
 variable "public" {
   type    = bool
   default = true

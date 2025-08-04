@@ -50,14 +50,24 @@ module "eks" {
 
   create_kms_key = true
 
-  # You'll need to set this to false to allow Plural stacks to manage this cluster
-  enable_cluster_creator_admin_permissions = true
+  enable_cluster_creator_admin_permissions = false
 
   access_entries = {
+    admin = {
+      principal_arn  = var.admin_arn
+      type          = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
     stacks = {
       principal_arn = local.stacks_arn
       type          = "STANDARD"
-
       policy_associations = {
         admin = {
           policy_arn = local.cluster_admin_policy
