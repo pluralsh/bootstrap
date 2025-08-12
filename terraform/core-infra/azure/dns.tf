@@ -1,11 +1,11 @@
 data "azurerm_dns_zone" "prod" {
   name                = "{{ .AppDomain }}"
-  resource_group_name = "{{ .ResourceGroupName }}"
+  resource_group_name = "{{ .Project }}"
 }
 
 resource "azurerm_dns_zone" "dev" {
   name                = "dev.{{ .AppDomain }}"
-  resource_group_name = "{{ .ResourceGroupName }}"
+  resource_group_name = "{{ .Project }}"
 }
 
 resource "azurerm_dns_ns_record" "dev_ns" {
