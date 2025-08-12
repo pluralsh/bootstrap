@@ -33,6 +33,7 @@ resource "plural_cluster" "cluster" {
       
       iam = {
         external_dns = azurerm_user_assigned_identity.dns.client_id
+        cert_manager = azurerm_user_assigned_identity.dns.client_id
       }
     })
 
