@@ -27,13 +27,18 @@ serviceAccount:
 {% endif %}
 
 {% if cluster.distro == "AKS" %}
+azure:
+  useWorkloadIdentityExtension: true
+  resourceGroup: {{ cluster.metadata.resource_group_name }}
+  tenantId: {{ cluster.metadata.tenant_id }}
+  subscriptionId: {{ cluster.metadata.subscription_id }}
+
 serviceAccount:
   annotations:
     azure.workload.identity/client-id: {{ cluster.metadata.iam.external_dns }}
 
 podLabels:
-  labels:
-    azure.workload.identity/use: "true"
+  azure.workload.identity/use: "true"
 {% endif %}
 
 {% if cluster.distro == "GKE" %}
