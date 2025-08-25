@@ -5,20 +5,10 @@ global:
 installCRDs: true
 serviceAccount:
   name: cert-manager
-  {% if cluster.distro == 'EKS' %}
   annotations:
     eks.amazonaws.com/role-arn: {{ cluster.metadata.iam.cert_manager }}
-  {% endif %}
-
-  {% if cluster.distro == 'AKS' %}
-  annotations:
     azure.workload.identity/client-id: {{ cluster.metadata.iam.cert_manager }}
-  {% endif %}
-
-  {% if cluster.distro == 'GKE' %}
-  annotations:
     iam.gke.io/gcp-service-account: {{ cluster.metadata.iam.cert_manager }}
-  {% endif %}
 
 securityContext:
   fsGroup: 1000

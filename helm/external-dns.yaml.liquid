@@ -20,12 +20,6 @@ aws:
 domainFilters:
 - {{ cluster.metadata.dns_zone }} # check terraform/modules/clusters/aws/plural.tf for where this is set
 
-{% if cluster.distro == "EKS" %}
-serviceAccount:
-  annotations:
-    eks.amazonaws.com/role-arn: {{ cluster.metadata.iam.external_dns }} 
-{% endif %}
-
 {% if cluster.distro == "AKS" %}
 azure:
   useWorkloadIdentityExtension: true
@@ -33,16 +27,12 @@ azure:
   tenantId: {{ cluster.metadata.tenant_id }}
   subscriptionId: {{ cluster.metadata.subscription_id }}
 
-serviceAccount:
-  annotations:
-    azure.workload.identity/client-id: {{ cluster.metadata.iam.external_dns }}
-
 podLabels:
   azure.workload.identity/use: "true"
 {% endif %}
 
-{% if cluster.distro == "GKE" %}
 serviceAccount:
   annotations:
+    eks.amazonaws.com/role-arn: {{ cluster.metadata.iam.external_dns }}
     iam.gke.io/gcp-service-account: {{ cluster.metadata.iam.external_dns }}
-{% endif %}
+    azure.workload.identity/client-id: {{ cluster.metadata.iam.external_dns }}
