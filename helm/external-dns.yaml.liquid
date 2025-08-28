@@ -1,5 +1,8 @@
 enabled: true
 
+image:
+  repository: bitnamilegacy/external-dns
+
 {% if cluster.distro == "EKS" %}
 provider: aws
 {% endif %}
