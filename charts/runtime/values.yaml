@@ -2,6 +2,8 @@ external-dns:
   enabled: true
   provider: plural
   fullnameOverride: runtime-externaldns
+  image:
+    repository: bitnamilegacy/external-dns
   rbac:
     create: true
     serviceAccountName: external-dns
@@ -30,7 +32,7 @@ operator:
   enabled: true
 
 application:
-  enabled: true
+  enabled: false
   registry: dkr.plural.sh/bootstrap
   tag: v0.8.3
 
