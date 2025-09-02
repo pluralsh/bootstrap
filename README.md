@@ -1,6 +1,6 @@
-# Plural Bootstrap
+# Plural Bootstrap Repository
 
-This repo defines the core terraform code needed to bootstrap a Plural management cluster.  It is intended to be cloned in a users infra repo and then owned by their DevOps team from there.  We do our best to adhere to the standard terraform setup for k8s within the respective cloud, while also installing necessary add-ons as needed (eg load balancer controller and autoscaler for AWS).
+This repo defines the core terraform code needed to bootstrap a Plural management cluster and set up your GitOps environment using Plural.  It is intended to be cloned in a users infra repo and then owned by their DevOps team from there.  We do our best to adhere to the standard terraform setup for k8s within the respective cloud, while also installing necessary add-ons as needed (eg load balancer controller and autoscaler for AWS).
 
 > [!TIP]
 > If you want a guided walkthrough of how to use your new repo and get started with a Plural-based GitOps workflow, our [how-to guide](https://docs.plural.sh/how-to) is an amazing place to start!
@@ -22,16 +22,20 @@ Our defaults are meant to be tweaked, feel free to reference the documentation o
 A plural installation repo will have a folder structure like this:
 
 ```
-helm-values/ # git crypted helm values to be used for app installs
+helm-values/ # git-crypted helm values to be used to bootstrap your setup.  Avoid editing unless necessary
 - ${app}.yaml # value overrides
 - ${app}-defaults.yaml # default values we generate on install
 
+helm/ # helm values files that are meant to be user-editable, used for setup of many common components
+- *.yaml{.liquid} # `.liquid` extension signifies the helm values file can be templated
+
 bootstrap/ # setup for apps within your cluster fleet, this is the root service-of-services that bootstraps everything recursively
 
-resources/ # additional third party setup manifests for common k8s add-on concerns like observability and policy enforcement.
+resources/ # additional third party setup manifests for common k8s add-on concerns like observability and policy enforcement.  Can be useful learning resources, but no default setup uses thse
 
 terraform/
   - mgmt # module for setting up your management cluster
+  - core-infra # Sets up base networking and dns.  Can also be used for similar cross-cutting infra concerns
   - modules
   - - clusters
   - - - {cloud} # we've crafted some reusable modules for setting up clusters on most major clouds, feel free to use these in stacks or wherever
@@ -39,6 +43,20 @@ terraform/
 ```
 
 You're free to extend this as you'd like, although if you use the plural marketplace that structure will be expected.  You can also deploy services w/ manifests in other repos, this is meant to serve as a base to define the core infrastructure and get you started in a sane way.
+
+## Using the Plural Catalog
+
+Many of the common operations you'll need to do to manage your kubernetes infrastructure have all been operationalized as part of the service catalog that's synced via `bootstrap/catalogs.yaml`.  A decent example here would be setting up a new kubernetes fleet, which you can do with the following:
+
+1. Go to {your-console-url}/self-service/catalogs, and click the `infra` catalog
+2. Chose the `cluster-fleet-creator` pr automation, and fill out the needed values
+3. Click create pr after filling out a decent branch name, the generated pr once merged should set up a dev and prod cluster in the networks defined by the core-infra stack we provision by default.
+
+There are also other useful self-service setups in our catalog including:
+
+* data infrastructure - sets up dagster, airbyte, mlflow
+* security tooling - trivy operator, opa gatekeeper
+* devops tools - elasticsearch log aggregation, victoriametrics based scale-out prometheus, grafana, etc.
 
 ## Add a workload cluster to your fleet
 
@@ -54,6 +72,8 @@ If you chose to create a cluster using your own automation, adding a cluster can
 ```sh
 plural cd clusters boottrap --name {name}
 ```
+
+or with our terraform provider, which can easily be duplicated by looking at `terraform/modules/clusters/aws/plural.tf`
 
 To reference it in other GitOps resources, add a `Cluster` CRD like:
 
@@ -104,12 +124,4 @@ spec:
         name: externaldns
 ```
 
-## Fleet Setup
-
-There's a few common things you'll often need to solve when managing kubernetes.  We've collected a lot of tested setups that you can adapt into your own environments.  In particular, we've provided resources for setting up:
-
-* monitoring - full victoria metrics cluster + agent setup and how to connect them both to your instance of the console
-* OPA policy management - example yaml setup for OPA Gatekeeper and various constraints to meet common important benchmarks.
-* pipelines - a full PR Automation pipeline setup inclusive of using global services as well that should help testdrive some of the more advanced change management capabilities of the platform.
-
-Most of these live in the generated `resources` folder and the most mature will have a pre-built Pr Automation already created for you to install them.
+To see a number of working examples, look at your `bootstrap/o11y` or `bootstrap/network` folders, where we should install a few global services for common runtime-level kubernetes concerns.  If you want to reverse our default setup, simply delete them from the repo and push.
