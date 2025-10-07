@@ -1,5 +1,9 @@
 # Plural Bootstrap Repository
 
+Welcome to the Plural Bootstrap Repository! This repository provides the core Terraform and Kubernetes setup code used to bootstrap a Plural management cluster, enabling you to quickly set up a GitOps-driven Kubernetes environment maintained by your DevOps team.
+
+This documentation will guide you through the architecture, folder structure, and usage conventions to help you get started efficiently and extend your infrastructure as needed.
+
 This repo defines the core terraform code needed to bootstrap a Plural management cluster and set up your GitOps environment using Plural.  It is intended to be cloned in a users infra repo and then owned by their DevOps team from there.  We do our best to adhere to the standard terraform setup for k8s within the respective cloud, while also installing necessary add-ons as needed (eg load balancer controller and autoscaler for AWS).
 
 > [!TIP]
@@ -7,6 +11,9 @@ This repo defines the core terraform code needed to bootstrap a Plural managemen
 
 
 ## General Architecture
+
+The bootstrap environment established by this repo includes three primary components:
+
 
 There are three main resources created by these templates:
 
@@ -16,8 +23,10 @@ There are three main resources created by these templates:
 
 Our defaults are meant to be tweaked, feel free to reference the documentation of the underlying modules if you want to make a cluster private, or modify our CIDR range defaults if you want to VPC peer.
 
+If you need additional customization, the modular terraform code and Helm charts provided within this repo can be extended or replaced as required for your specific needs.
 
-## Installation repo folder structure
+
+## Installation Repo Folder Structure
 
 A plural installation repo will have a folder structure like this:
 
@@ -42,9 +51,23 @@ terraform/
   - ${app}/ - submodule for individual app's terraform
 ```
 
-You're free to extend this as you'd like, although if you use the plural marketplace that structure will be expected.  You can also deploy services w/ manifests in other repos, this is meant to serve as a base to define the core infrastructure and get you started in a sane way.
+You're free to extend this as you'd like, although if you use the Plural marketplace that structure will be expected.  You can also deploy services with manifests from other repositories. This repository aims to define core infrastructure and get you started in a solid, maintainable way.
 
 ## Using the Plural Catalog
+
+The Plural Catalog operationalizes common Kubernetes infrastructure operations via a service catalog, synced through `bootstrap/catalogs.yaml`.
+
+For example, setting up a new Kubernetes fleet can be done as follows:
+
+1. Go to {your-console-url}/self-service/catalogs, and click the `infra` catalog.
+2. Choose the `cluster-fleet-creator` PR automation and provide the necessary values.
+3. Click create PR with a descriptive branch name. Once merged, this will set up dev and prod clusters using the networking defined by the core-infra stack.
+
+Other useful self-service setups in the catalog include:
+
+* Data infrastructure (dagster, airbyte, mlflow).
+* Security tooling (trivy operator, opa gatekeeper).
+* DevOps tools (elasticsearch log aggregation, victoriametrics scale-out prometheus, grafana, etc.).
 
 Many of the common operations you'll need to do to manage your kubernetes infrastructure have all been operationalized as part of the service catalog that's synced via `bootstrap/catalogs.yaml`.  A decent example here would be setting up a new kubernetes fleet, which you can do with the following:
 
@@ -58,7 +81,7 @@ There are also other useful self-service setups in our catalog including:
 * security tooling - trivy operator, opa gatekeeper
 * devops tools - elasticsearch log aggregation, victoriametrics based scale-out prometheus, grafana, etc.
 
-## Add a workload cluster to your fleet
+## Adding a Workload Cluster to Your Fleet
 
 There are many ways to set up a workload cluster.  We've given you some baseline terraform to work from in the `terraform/modules/clusters` folders.  You can easily deploy these using stacks documented [here](https://docs.plural.sh/stacks/overview).
 
@@ -73,7 +96,9 @@ If you chose to create a cluster using your own automation, adding a cluster can
 plural cd clusters boottrap --name {name}
 ```
 
-or with our terraform provider, which can easily be duplicated by looking at `terraform/modules/clusters/aws/plural.tf`
+or with our terraform provider, which can easily be duplicated by looking at `terraform/modules/clusters/aws/plural.tf`.
+
+To reference a cluster in other GitOps resources, add a `Cluster` CRD like so:
 
 To reference it in other GitOps resources, add a `Cluster` CRD like:
 
@@ -91,7 +116,11 @@ spec:
       yaml: metadata # any arbitrary metadata you might want to add for service templating (see https://docs.plural.sh/deployments/templating)
 ```
 
-## Installing Low-Level K8s Operators
+## Installing Low-Level Kubernetes Operators
+
+Plural provides various tools for fleet-wide deployment of critical Kubernetes add-ons. For operators like cert-manager or Istio, we recommend using the `GlobalService` resource.
+
+See more details in the [GlobalService documentation](https://docs.plural.sh/deployments/operator/global-service).
 
 Plural provides a number of very useful tools for fleet-wide deployment. If you need to install operators like cert-manager or Istio, we'd recommend using our `GlobalService` resource.  You can find more documentation about [here](https://docs.plural.sh/deployments/operator/global-service).
 
@@ -124,4 +153,4 @@ spec:
         name: externaldns
 ```
 
-To see a number of working examples, look at your `bootstrap/o11y` or `bootstrap/network` folders, where we should install a few global services for common runtime-level kubernetes concerns.  If you want to reverse our default setup, simply delete them from the repo and push.
+To see a number of working examples, review your `bootstrap/o11y` or `bootstrap/network` folders. These include preconfigured global services for runtime-level Kubernetes concerns common to many clusters. If desired, you can reverse this default setup by removing corresponding manifests and pushing the changes.
