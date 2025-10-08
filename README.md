@@ -1,25 +1,27 @@
-# Plural Bootstrap Repository
+# Plural Infrastructure Bootstrap Repository
 
-This repo defines the core terraform code needed to bootstrap a Plural management cluster and set up your GitOps environment using Plural.  It is intended to be cloned in a users infra repo and then owned by their DevOps team from there.  We do our best to adhere to the standard terraform setup for k8s within the respective cloud, while also installing necessary add-ons as needed (eg load balancer controller and autoscaler for AWS).
+This repository contains core infrastructure code and configurations to bootstrap a Plural management cluster and establish a GitOps environment using Plural. It includes Terraform modules, Kubernetes manifests, Helm charts, and other resources for managing clusters, global services, and common add-ons. It is designed to be cloned into your infrastructure repo and managed by your DevOps team.
+
+We adhere to standard Terraform practices for Kubernetes across major cloud providers while provisioning essential add-ons such as load balancer controllers and autoscalers.
 
 > [!TIP]
 > If you want a guided walkthrough of how to use your new repo and get started with a Plural-based GitOps workflow, our [how-to guide](https://docs.plural.sh/how-to) is an amazing place to start!
 
 
-## General Architecture
+## Repository Structure and Key Components
 
-There are three main resources created by these templates:
+### Key Components and Resources
 
-* VPC Network to house all resources in the respective cloud
-* K8s Control Plane + minimal worker node set
-* Postgres DB (will be used for your Plural Console instance)
+- VPC Network resources to establish cloud networking
+- Kubernetes Control Plane and minimal worker nodes
+- Postgres database for hosting your Plural Console instance
 
-Our defaults are meant to be tweaked, feel free to reference the documentation of the underlying modules if you want to make a cluster private, or modify our CIDR range defaults if you want to VPC peer.
+These defaults can be customized to suit your needs. Refer to the module documentation for configuring private clusters, modifying CIDR ranges, or enabling VPC peering.
 
 
-## Installation repo folder structure
+## Folder Structure Overview
 
-A plural installation repo will have a folder structure like this:
+The repository contains the following main folders and their responsibilities:
 
 ```
 helm-values/ # git-crypted helm values to be used to bootstrap your setup.  Avoid editing unless necessary
@@ -42,40 +44,51 @@ terraform/
   - ${app}/ - submodule for individual app's terraform
 ```
 
+- **terraform/**: Contains Terraform modules and stacks for provisioning clusters, core infrastructure, and cloud-specific resources.
+- **setup/**: Resources and configurations for setting up clusters, global services, RBAC, notifications, PR automations, and more.
+- **services/**: Pre-configured Kubernetes manifests and Helm charts for common services and add-ons like issuers and logstash.
+- **helm/**: Helm values and chart templates used across the platform.
+- **network/**: Manifests related to networking components such as load balancers and ingress controllers.
+- **o11y/**: Observability-related manifests including metrics and logging.
+- **existing/**: Sample existing setups and terraform code for various cloud providers.
+- **test/**: Terraform and test resources for different cloud providers.
+
+
+
 You're free to extend this as you'd like, although if you use the plural marketplace that structure will be expected.  You can also deploy services w/ manifests in other repos, this is meant to serve as a base to define the core infrastructure and get you started in a sane way.
 
-## Using the Plural Catalog
+## Working with the Plural Catalog and PR Automation
 
-Many of the common operations you'll need to do to manage your kubernetes infrastructure have all been operationalized as part of the service catalog that's synced via `bootstrap/catalogs.yaml`.  A decent example here would be setting up a new kubernetes fleet, which you can do with the following:
+Many common Kubernetes infrastructure management operations are streamlined through the Plural service catalog, synced via `bootstrap/catalogs.yaml`. For example, to set up a new Kubernetes fleet, follow these steps:
 
-1. Go to {your-console-url}/self-service/catalogs, and click the `infra` catalog
-2. Chose the `cluster-fleet-creator` pr automation, and fill out the needed values
-3. Click create pr after filling out a decent branch name, the generated pr once merged should set up a dev and prod cluster in the networks defined by the core-infra stack we provision by default.
+1. Navigate to `{your-console-url}/self-service/catalogs` and select the `infra` catalog.
+2. Choose the `cluster-fleet-creator` PR automation and complete the required fields.
+3. Create the PR with an appropriate branch name. Once merged, it will provision dev and production clusters using the core-infra stack by default.
 
-There are also other useful self-service setups in our catalog including:
+Other useful self-service setups in the catalog include:
 
-* data infrastructure - sets up dagster, airbyte, mlflow
-* security tooling - trivy operator, opa gatekeeper
-* devops tools - elasticsearch log aggregation, victoriametrics based scale-out prometheus, grafana, etc.
+- Data Infrastructure: Deploys Dagster, Airbyte, and MLflow
+- Security Tooling: Installs Trivy Operator, OPA Gatekeeper
+- DevOps Tools: Includes Elasticsearch log aggregation, Victoriametrics-based scalable Prometheus, Grafana, among others
 
-## Add a workload cluster to your fleet
+## Adding Workload Clusters to Your Fleet
 
-There are many ways to set up a workload cluster.  We've given you some baseline terraform to work from in the `terraform/modules/clusters` folders.  You can easily deploy these using stacks documented [here](https://docs.plural.sh/stacks/overview).
+You can add workload clusters using various methods. Baseline Terraform modules are available in the `terraform/modules/clusters` directory. These modules can be deployed using stacks as documented [here](https://docs.plural.sh/stacks/overview).
 
-We've actually also set this up for you via a PR automation, which you can find at the `/pr/automations` url in your newly created console.  This will trigger a PR with the follownig resources:
+We provide PR automation available at the `/pr/automations` endpoint in your Plural console to facilitate cluster provisioning. This automation will generate a PR containing the following resources:
 
-* `InfrastructureStack` to create the underlying physical cluster
-* `Cluster` to reference that cluster via CRD and enable future crds to point to it for `ServiceDeployment` and so forth.
+- `InfrastructureStack`: Creates the underlying physical cluster
+- `Cluster`: References the created cluster via a CRD, enabling other CRDs like `ServiceDeployment` to target it
 
-If you chose to create a cluster using your own automation, adding a cluster can be done simply with the `plural` cli using:
+For clusters created with your own automation, you can add them manually using the `plural` CLI:
 
 ```sh
-plural cd clusters boottrap --name {name}
+plural cd clusters bootstrap --name {name}
 ```
 
-or with our terraform provider, which can easily be duplicated by looking at `terraform/modules/clusters/aws/plural.tf`
+Alternatively, you can reference clusters using the Terraform provider (e.g., see `terraform/modules/clusters/aws/plural.tf`).
 
-To reference it in other GitOps resources, add a `Cluster` CRD like:
+To integrate clusters in GitOps resources, create a `Cluster` CRD similar to:
 
 ```yaml
 apiVersion: deployments.plural.sh/v1alpha1
@@ -83,19 +96,19 @@ kind: Cluster
 metadata:
   name: <name>
 spec:
-  handle: <name> # must be set to reference the cluster
+  handle: <name> # reference cluster handle
   tags:
-    some: tag # if you want to add tags to the cluster
+    some: tag # optional tags
   metadata:
     arbitrary:
-      yaml: metadata # any arbitrary metadata you might want to add for service templating (see https://docs.plural.sh/deployments/templating)
+      yaml: metadata # arbitrary metadata for service templating (see https://docs.plural.sh/deployments/templating)
 ```
 
-## Installing Low-Level K8s Operators
+## Installing Low-level Kubernetes Operators
 
-Plural provides a number of very useful tools for fleet-wide deployment. If you need to install operators like cert-manager or Istio, we'd recommend using our `GlobalService` resource.  You can find more documentation about [here](https://docs.plural.sh/deployments/operator/global-service).
+Plural offers tools to simplify fleet-wide deployment of Kubernetes operators. For operators such as cert-manager or Istio, use the `GlobalService` custom resource. More details are available in the [GlobalService documentation](https://docs.plural.sh/deployments/operator/global-service).
 
-Here's an example for deploying externaldns:
+Example `GlobalService` definition for deploying ExternalDNS:
 
 ```yaml
 apiVersion: deployments.plural.sh/v1alpha1
@@ -124,4 +137,4 @@ spec:
         name: externaldns
 ```
 
-To see a number of working examples, look at your `bootstrap/o11y` or `bootstrap/network` folders, where we should install a few global services for common runtime-level kubernetes concerns.  If you want to reverse our default setup, simply delete them from the repo and push.
+Refer to the `bootstrap/o11y` and `bootstrap/network` folders for working examples of global service installations for common Kubernetes runtime concerns. To undo the default setup, remove these resources and push the changes.
