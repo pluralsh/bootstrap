@@ -1,3 +1,5 @@
+enableLetsEncrypt: true
+
 external-dns:
   enabled: true
   provider: plural
