@@ -1,7 +1,7 @@
 resource "azurerm_virtual_network" "network" {
   address_space       = var.network_cidrs
   location            = local.resource_group.location
-  name                = var.network_name
+  name                = local.network_name
   resource_group_name = local.resource_group.name
 }
 
