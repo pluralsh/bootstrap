@@ -7,14 +7,14 @@ resource "azurerm_virtual_network" "network" {
 
 resource "azurerm_subnet" "network" {
   address_prefixes                               = var.subnet_cidrs
-  name                                           = "${var.network_name}-sn"
+  name                                           = "${local.network_name}-sn"
   resource_group_name                            = local.resource_group.name
   virtual_network_name                           = azurerm_virtual_network.network.name
   enforce_private_link_endpoint_network_policies = true
 }
 
 resource "azurerm_subnet" "postgres" {
-  name                 = "${var.network_name}-pg"
+  name                 = "${local.network_name}-pg"
   resource_group_name  = local.resource_group.name
   virtual_network_name = azurerm_virtual_network.network.name
   address_prefixes     = var.postgres_cidrs

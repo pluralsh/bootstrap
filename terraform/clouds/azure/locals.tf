@@ -1,4 +1,3 @@
-
 locals {
   network_name = var.network_name == "" ? "${var.cluster_name}-network" : var.network_name
   resource_group = {
