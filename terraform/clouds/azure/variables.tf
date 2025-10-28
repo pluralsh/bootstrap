@@ -40,7 +40,7 @@ variable "location" {
 
 variable "network_name" {
   type = string
-  default = "plural"
+  default = ""
 }
 
 variable "network_cidrs" {
