@@ -8,6 +8,6 @@ resource "plural_service_context" "cluster" {
         subnet_ids      = concat(local.vpc.private_subnets, local.vpc.public_subnets)
         private_subnets = local.vpc.private_subnets
         public_subnets  = local.vpc.public_subnets
-        vpc_cidr        = var.vpc_cidr
+        vpc_cidr        = local.vpc.vpc_cidr
     })
 }
