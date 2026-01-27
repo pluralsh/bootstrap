@@ -17,7 +17,7 @@ spec:
       namespace: infra
     helm:
       url: https://victoriametrics.github.io/helm-charts/
-      version: 0.25.9
+      version: 0.67.0
       chart: victoria-metrics-k8s-stack
       valuesFiles:
       - agent.yaml.liquid
