@@ -10,12 +10,12 @@ dependencies:
   version: 0.1.7
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
-  version: 4.13.1
+  version: 4.14.1
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
-  version: 4.13.1
+  version: 4.14.1
 - name: flux2
   repository: https://fluxcd-community.github.io/helm-charts
   version: 2.12.4
-digest: sha256:6f658d5054b6a02b1d26850bc3752e81c799e2391f4eccab60f701f577205dee
-generated: "2025-08-28T18:26:54.591864-04:00"
+digest: sha256:ce31c323eaf982f0818215331d3d06c05d5fa94c4a75a399b16ef6c68a53ef76
+generated: "2026-01-27T13:36:10.336632-05:00"
