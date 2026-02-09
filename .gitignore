@@ -42,4 +42,3 @@ test/helm-values
 
 # Temporary files used during bootstrap
 temp/
-!temp/.gitkeep
