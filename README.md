@@ -38,6 +38,8 @@ terraform/
   - - clusters
   - - - {cloud} # we've crafted some reusable modules for setting up clusters on most major clouds, feel free to use these in stacks or wherever
   - ${app}/ - submodule for individual app's terraform
+
+temp/ # a temp folder used during bootstrap that is gitignored
 ```
 
 You're free to extend this as you'd like, although if you use the plural marketplace that structure will be expected.  You can also deploy services w/ manifests in other repos, this is meant to serve as a base to define the core infrastructure and get you started in a sane way.
