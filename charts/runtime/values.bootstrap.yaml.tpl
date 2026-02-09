@@ -16,11 +16,11 @@ dnsSolver:
       cluster: {{ .Cluster }}
       provider: {{ .Provider }}
 
-pluralToken: {{ "{{ configuration.pluralToken }}" }}
+pluralToken: {{ .Config.Token }}
 
 acmeEAB:
-  kid: {{ "{{ configuration.acmeEABKid }}" }}
-  secret: {{ "{{ configuration.acmeEABSecret }}" }}
+  kid: {{ .Acme.KeyId }}
+  secret: {{ .Acme.HmacKey }}
 {{ end }}
 
 {{ if .Cloud }}
