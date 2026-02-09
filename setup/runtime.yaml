@@ -6,7 +6,7 @@ metadata:
 spec:
   namespace: plural-runtime
   git:
-    folder: helm-values
+    folder: helm
     ref: [[ or .Context.Branch "main" ]]
   repositoryRef:
     kind: GitRepository
