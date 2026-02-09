@@ -17,3 +17,19 @@ resource "kubernetes_secret" "runtime_config" {
 
   depends_on = [module.mgmt.cluster, module.mgmt.ready]
 }
+
+resource "kubernetes_secret" "console_config" {
+  metadata {
+    name      = "console-config"
+    namespace = "infra"
+  }
+
+  type = "Opaque"
+
+  data = {
+    clusterName = base64encode("{{ .Config.ClusterName }}")
+    provider    = base64encode("{{ .Config.Provider }}")
+  }
+
+  depends_on = [module.mgmt.cluster, module.mgmt.ready]
+}
