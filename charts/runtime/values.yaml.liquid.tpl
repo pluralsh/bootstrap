@@ -1,4 +1,4 @@
-ownerEmail: {{ "{{ configuration.ownerEmail }}" }}}
+ownerEmail: {{ "{{ configuration.ownerEmail }}" }}
 
 {{ if not .Cloud }}
 external-dns:
