@@ -40,5 +40,5 @@ test/helm-values
 
 **/values.secret.yaml
 
-# Temporary Helm files used during bootstrap
-helm-temp
+# Temporary files used during bootstrap
+temp
