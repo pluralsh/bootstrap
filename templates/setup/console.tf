@@ -15,7 +15,7 @@ data "local_sensitive_file" "flux" {
 }
 
 data "local_sensitive_file" "runtime" {
-  filename = "${path.module}/../../helm-values/runtime.yaml"
+  filename = "${path.module}/../../temp/helm/runtime.yaml"
 }
 
 data "local_sensitive_file" "console" {
