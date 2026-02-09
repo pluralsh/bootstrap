@@ -8,7 +8,7 @@ external-dns:
   domainFilters:
   - {{ .Subdomain }}
 
-dnsSolver: 
+dnsSolver:
   webhook:
     groupName: acme.plural.sh
     solverName: plural-solver
