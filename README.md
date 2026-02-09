@@ -22,11 +22,9 @@ Our defaults are meant to be tweaked, feel free to reference the documentation o
 A plural installation repo will have a folder structure like this:
 
 ```
-helm-values/ # git-crypted helm values to be used to bootstrap your setup.  Avoid editing unless necessary
+helm/ # helm values files
 - ${app}.yaml # value overrides
 - ${app}-defaults.yaml # default values we generate on install
-
-helm/ # helm values files that are meant to be user-editable, used for setup of many common components
 - *.yaml{.liquid} # `.liquid` extension signifies the helm values file can be templated
 
 bootstrap/ # setup for apps within your cluster fleet, this is the root service-of-services that bootstraps everything recursively
@@ -113,7 +111,7 @@ spec:
       namespace: infra
     git:
       ref: main
-      folder: helm-values # or wherever else you want to store the helm values
+      folder: helm # or wherever else you want to store the helm values
     helm:
       version: 6.31.4
       chart: externaldns
