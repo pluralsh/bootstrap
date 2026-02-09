@@ -7,11 +7,11 @@ resource "null_resource" "console" {
 }
 
 data "local_sensitive_file" "certmanager" {
-  filename = "${path.module}/../../helm-values/certmanager.yaml"
+  filename = "${path.module}/../../helm/certmanager.yaml"
 }
 
 data "local_sensitive_file" "flux" {
-  filename = "${path.module}/../../helm-values/flux.yaml"
+  filename = "${path.module}/../../helm/flux.yaml"
 }
 
 data "local_sensitive_file" "runtime" {
