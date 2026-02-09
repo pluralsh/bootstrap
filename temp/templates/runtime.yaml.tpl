@@ -4,6 +4,7 @@ metadata:
   name: runtime-secret
 type: Opaque
 stringData:
-  pluralToken: {{ .Values.pluralToken | quote }}
-  acmeEABKid: {{ .Values.acmeEAB.kid | quote }}
-  acmeEABSecret: {{ .Values.acmeEAB.secret | quote }}
+  ownerEmail: {{ .Config.Email | quote }}
+  pluralToken: {{ .Config.Token | quote }}
+  acmeEABKid: {{ .Acme.KeyId | quote }}
+  acmeEABSecret: {{ .Acme.HmacKey | quote }}
