@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: runtime-secret
+  name: runtime-config
+  namespace: infra
 type: Opaque
 stringData:
   ownerEmail: {{ .Config.Email | quote }}

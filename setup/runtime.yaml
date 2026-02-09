@@ -12,12 +12,15 @@ spec:
     kind: GitRepository
     name: infra
     namespace: infra
+  configurationRef:
+    name: runtime-config
+    namespace: infra
   helm:
     version: "0.x.x"
     chart: runtime
     url: https://pluralsh.github.io/bootstrap
     valuesFiles:
-    - runtime.yaml
+    - runtime.yaml.liquid
   clusterRef:
     kind: Cluster
     name: mgmt
