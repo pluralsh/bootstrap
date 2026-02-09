@@ -23,9 +23,7 @@ acmeEAB:
 {{ end }}
 
 {{ if .Cloud }}
-
 ownerEmail: {{ .Config.Email }}
-
 
 external-dns:
   enabled: false
