@@ -4,10 +4,18 @@ locals {
   console_values = yamldecode(data.local_sensitive_file.console.content)
 }
 
+resource "kubernetes_namespace" "infra" {
+  metadata {
+    name = "infra"
+  }
+
+  depends_on = [module.mgmt.cluster, module.mgmt.ready]
+}
+
 resource "kubernetes_secret" "console_config" {
   metadata {
     name      = "console-config"
-    namespace = "infra"
+    namespace = kubernetes_namespace.infra.metadata[0].name
   }
 
   type = "Opaque"
@@ -39,13 +47,13 @@ resource "kubernetes_secret" "console_config" {
     postgresUrl   = base64encode(tostring(try(local.console_values.extraSecretEnv.POSTGRES_URL, "")))
   }
 
-  depends_on = [module.mgmt.cluster, module.mgmt.ready]
+  depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]
 }
 
 resource "kubernetes_secret" "runtime_config" {
   metadata {
     name      = "runtime-config"
-    namespace = "infra"
+    namespace = kubernetes_namespace.infra.metadata[0].name
   }
 
   type = "Opaque"
@@ -57,5 +65,5 @@ resource "kubernetes_secret" "runtime_config" {
     acmeEABSecret = base64encode("{{ .Acme.HmacKey }}")
   }
 
-  depends_on = [module.mgmt.cluster, module.mgmt.ready]
+  depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]
 }
