@@ -31,6 +31,7 @@ resource "kubernetes_secret" "console_config" {
     provider    = base64encode("{{ .Config.Provider }}")
     consoleDns  = base64encode("console.{{ .Subdomain }}")
     kasDns      = base64encode("kas.{{ .Subdomain }}")
+    postgresUrl = base64encode(module.mgmt.db_url)
   }
 
   depends_on = [module.mgmt.cluster, module.mgmt.ready]
