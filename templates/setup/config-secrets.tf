@@ -29,7 +29,10 @@ resource "kubernetes_secret" "console_config" {
   data = {
     clusterName = base64encode("{{ .Config.ClusterName }}")
     provider    = base64encode("{{ .Config.Provider }}")
+    consoleDns  = base64encode("console.{{ .Subdomain }}")
+    kasDns      = base64encode("kas.{{ .Subdomain }}")
   }
 
   depends_on = [module.mgmt.cluster, module.mgmt.ready]
 }
+
