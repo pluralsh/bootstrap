@@ -2,7 +2,7 @@
 resource "null_resource" "console" {
   provisioner "local-exec" {
     command     = "plural cd control-plane-values --name {{ .Cluster }} --dsn \"${module.mgmt.db_url}\" --domain {{ .Subdomain }} --file console.yaml"
-    working_dir = "${path.module}/../../helm-values"
+    working_dir = "${path.module}/../../temp/helm"
   }
 }
 
@@ -19,7 +19,7 @@ data "local_sensitive_file" "runtime" {
 }
 
 data "local_sensitive_file" "console" {
-  filename   = "${path.module}/../../helm-values/console.yaml"
+  filename   = "${path.module}/../../temp/helm/console.yaml"
   depends_on = [null_resource.console]
 }
 
