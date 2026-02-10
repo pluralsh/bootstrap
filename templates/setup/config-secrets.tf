@@ -21,30 +21,30 @@ resource "kubernetes_secret" "console_config" {
   type = "Opaque"
 
   data = {
-    consoleDns = base64encode(tostring(try(local.console_values.ingress.consoleDns, "")))
-    kasDns     = base64encode(tostring(try(local.console_values.ingress.kasDns, "")))
+    consoleDns = tostring(try(local.console_values.ingress.consoleDns, ""))
+    kasDns     = tostring(try(local.console_values.ingress.kasDns, ""))
 
-    clusterIssuer = base64encode("plural")
+    clusterIssuer = "plural"
 
-    provider = base64encode(tostring(try(local.console_values.provider, "")))
+    provider = tostring(try(local.console_values.provider, ""))
 
-    jwt                = base64encode(tostring(try(local.console_values.secrets.jwt, "")))
-    erlang             = base64encode(tostring(try(local.console_values.secrets.erlang, "")))
-    aesKey             = base64encode(tostring(try(local.console_values.secrets.aesKey, "")))
-    key                = base64encode(tostring(try(local.console_values.secrets.key, "")))
-    identity           = base64encode(tostring(try(local.console_values.secrets.identity, "")))
-    pluralClientId     = base64encode(tostring(try(local.console_values.secrets.pluralClientId, "")))
-    pluralClientSecret = base64encode(tostring(try(local.console_values.secrets.pluralClientSecret, "")))
-    adminName          = base64encode(tostring(try(local.console_values.secrets.adminName, "")))
-    adminEmail         = base64encode(tostring(try(local.console_values.secrets.adminEmail, "")))
-    adminPassword      = base64encode(tostring(try(local.console_values.secrets.adminPassword, "")))
-    clusterName        = base64encode(tostring(try(local.console_values.secrets.clusterName, "")))
+    jwt                = tostring(try(local.console_values.secrets.jwt, ""))
+    erlang             = tostring(try(local.console_values.secrets.erlang, ""))
+    aesKey             = tostring(try(local.console_values.secrets.aesKey, ""))
+    key                = tostring(try(local.console_values.secrets.key, ""))
+    identity           = tostring(try(local.console_values.secrets.identity, ""))
+    pluralClientId     = tostring(try(local.console_values.secrets.pluralClientId, ""))
+    pluralClientSecret = tostring(try(local.console_values.secrets.pluralClientSecret, ""))
+    adminName          = tostring(try(local.console_values.secrets.adminName, ""))
+    adminEmail         = tostring(try(local.console_values.secrets.adminEmail, ""))
+    adminPassword      = tostring(try(local.console_values.secrets.adminPassword, ""))
+    clusterName        = tostring(try(local.console_values.secrets.clusterName, ""))
 
-    pluralToken   = base64encode(tostring(try(local.console_values.extraSecretEnv.PLURAL_TOKEN, "")))
-    kasApi        = base64encode(tostring(try(local.console_values.extraSecretEnv.KAS_API_SECRET, "")))
-    kasPrivateApi = base64encode(tostring(try(local.console_values.extraSecretEnv.KAS_PRIVATE_API_SECRET, "")))
-    kasRedis      = base64encode(tostring(try(local.console_values.extraSecretEnv.KAS_REDIS_SECRET, "")))
-    postgresUrl   = base64encode(tostring(try(local.console_values.extraSecretEnv.POSTGRES_URL, "")))
+    pluralToken   = tostring(try(local.console_values.extraSecretEnv.PLURAL_TOKEN, ""))
+    kasApi        = tostring(try(local.console_values.extraSecretEnv.KAS_API_SECRET, ""))
+    kasPrivateApi = tostring(try(local.console_values.extraSecretEnv.KAS_PRIVATE_API_SECRET, ""))
+    kasRedis      = tostring(try(local.console_values.extraSecretEnv.KAS_REDIS_SECRET, ""))
+    postgresUrl   = tostring(try(local.console_values.extraSecretEnv.POSTGRES_URL, ""))
   }
 
   depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]
@@ -59,10 +59,10 @@ resource "kubernetes_secret" "runtime_config" {
   type = "Opaque"
 
   data = {
-    ownerEmail    = base64encode("{{ .Config.Email }}")
-    pluralToken   = base64encode("{{ .Config.Token }}")
-    acmeEABKid    = base64encode("{{ .Acme.KeyId }}")
-    acmeEABSecret = base64encode("{{ .Acme.HmacKey }}")
+    ownerEmail    = "{{ .Config.Email }}"
+    pluralToken   = "{{ .Config.Token }}"
+    acmeEABKid    = "{{ .Acme.KeyId }}"
+    acmeEABSecret = "{{ .Acme.HmacKey }}"
   }
 
   depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]
