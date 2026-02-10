@@ -28,6 +28,8 @@ resource "kubernetes_secret" "console_config" {
   type = "Opaque"
 
   data = {
+    adminName     = base64encode("{{ .Config.UserEmail }}")
+    adminEmail    = base64encode("{{ .Config.UserEmail }}")
     clusterName   = base64encode("{{ .Config.ClusterName }}")
     provider      = base64encode("{{ .Config.Provider }}")
     consoleDns    = base64encode("console.{{ .Subdomain }}")
