@@ -21,8 +21,8 @@ resource "kubernetes_secret" "console_config" {
   type = "Opaque"
 
   data = {
-    consoleDns = tostring(try(local.console_values.ingress.consoleDns, ""))
-    kasDns     = tostring(try(local.console_values.ingress.kasDns, ""))
+    consoleDns = tostring(try(local.console_values.ingress.console_dns, ""))
+    kasDns     = tostring(try(local.console_values.ingress.kas_dns, ""))
 
     clusterIssuer = "plural"
 
@@ -30,15 +30,15 @@ resource "kubernetes_secret" "console_config" {
 
     jwt                = tostring(try(local.console_values.secrets.jwt, ""))
     erlang             = tostring(try(local.console_values.secrets.erlang, ""))
-    aesKey             = tostring(try(local.console_values.secrets.aesKey, ""))
+    aesKey             = tostring(try(local.console_values.secrets.aes_key, ""))
     key                = tostring(try(local.console_values.secrets.key, ""))
     identity           = tostring(try(local.console_values.secrets.identity, ""))
-    pluralClientId     = tostring(try(local.console_values.secrets.pluralClientId, ""))
-    pluralClientSecret = tostring(try(local.console_values.secrets.pluralClientSecret, ""))
-    adminName          = tostring(try(local.console_values.secrets.adminName, ""))
-    adminEmail         = tostring(try(local.console_values.secrets.adminEmail, ""))
-    adminPassword      = tostring(try(local.console_values.secrets.adminPassword, ""))
-    clusterName        = tostring(try(local.console_values.secrets.clusterName, ""))
+    pluralClientId     = tostring(try(local.console_values.secrets.plural_client_id, ""))
+    pluralClientSecret = tostring(try(local.console_values.secrets.plural_client_secret, ""))
+    adminName          = tostring(try(local.console_values.secrets.admin_name, ""))
+    adminEmail         = tostring(try(local.console_values.secrets.admin_email, ""))
+    adminPassword      = tostring(try(local.console_values.secrets.admin_password, ""))
+    clusterName        = tostring(try(local.console_values.secrets.cluster_name, ""))
 
     pluralToken   = tostring(try(local.console_values.extraSecretEnv.PLURAL_TOKEN, ""))
     kasApi        = tostring(try(local.console_values.extraSecretEnv.KAS_API_SECRET, ""))
