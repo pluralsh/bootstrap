@@ -13,7 +13,7 @@ spec:
     name: infra
     namespace: infra
   configurationRef:
-    name: runtime-config
+    name: console-config
     namespace: infra
   helm:
     version: "0.x.x"
