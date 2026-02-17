@@ -1,4 +1,4 @@
-ownerEmail: {{ .Config.Email }}
+ownerEmail: {{ "{{ configuration.ownerEmail }}" }}
 
 {{ if not .Cloud }}
 external-dns:
@@ -16,11 +16,11 @@ dnsSolver:
       cluster: {{ .Cluster }}
       provider: {{ .Provider }}
 
-pluralToken: {{ .Config.Token }}
+pluralToken: {{ "{{ configuration.pluralToken }}" }}
 
 acmeEAB:
-  kid: {{ .Acme.KeyId }}
-  secret: {{ .Acme.HmacKey }}
+  kid: {{ "{{ configuration.acmeEABKid }}" }}
+  secret: {{ "{{ configuration.acmeEABSecret }}" }}
 {{ end }}
 
 {{ if .Cloud }}

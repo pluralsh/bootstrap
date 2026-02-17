@@ -6,18 +6,21 @@ metadata:
 spec:
   namespace: plrl-console
   git:
-    folder: helm-values
+    folder: helm
     ref: [[ or .Context.Branch "main" ]]
   repositoryRef:
     kind: GitRepository
     name: infra
+    namespace: infra
+  configurationRef:
+    name: console-config
     namespace: infra
   helm:
     version: "0.x.x"
     chart: console
     url: https://pluralsh.github.io/console
     valuesFiles:
-    - console.yaml
+    - console.yaml.liquid
   clusterRef:
     kind: Cluster
     name: mgmt
