@@ -3,6 +3,7 @@
 
 locals {
   console_values = yamldecode(data.local_sensitive_file.console.content)
+  runtime_values = yamldecode(data.local_sensitive_file.runtime.content)
 }
 
 resource "kubernetes_namespace" "infra_gcp" {
@@ -119,10 +120,10 @@ resource "kubernetes_secret" "runtime_config_gcp" {
   type = "Opaque"
 
   data = {
-    ownerEmail    = "{{ .Config.Email }}"
-    pluralToken   = "{{ .Config.Token }}"
-    acmeEABKid    = "{{ .Acme.KeyId }}"
-    acmeEABSecret = "{{ .Acme.HmacKey }}"
+    ownerEmail    = tostring(try(local.runtime_values.ownerEmail, ""))
+    pluralToken   = tostring(try(local.runtime_values.pluralToken, ""))
+    acmeEABKid    = tostring(try(local.runtime_values.acmeEAB.kid, ""))
+    acmeEABSecret = tostring(try(local.runtime_values.acmeEAB.secret, ""))
   }
 
   depends_on = [kubernetes_namespace.infra_gcp, module.mgmt.cluster, module.mgmt.ready]
@@ -139,10 +140,10 @@ resource "kubernetes_secret" "runtime_config" {
   type = "Opaque"
 
   data = {
-    ownerEmail    = "{{ .Config.Email }}"
-    pluralToken   = "{{ .Config.Token }}"
-    acmeEABKid    = "{{ .Acme.KeyId }}"
-    acmeEABSecret = "{{ .Acme.HmacKey }}"
+    ownerEmail    = tostring(try(local.runtime_values.ownerEmail, ""))
+    pluralToken   = tostring(try(local.runtime_values.pluralToken, ""))
+    acmeEABKid    = tostring(try(local.runtime_values.acmeEAB.kid, ""))
+    acmeEABSecret = tostring(try(local.runtime_values.acmeEAB.secret, ""))
   }
 
   depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]
