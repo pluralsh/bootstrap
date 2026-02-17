@@ -5,6 +5,8 @@ locals {
 }
 
 resource "kubernetes_namespace" "infra" {
+  provider = "{{ .Provider }}" == "gcp" ? kubernetes.bootstrap : kubernetes
+
   metadata {
     name = "infra"
   }
