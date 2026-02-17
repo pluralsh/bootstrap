@@ -42,14 +42,14 @@ data "google_container_cluster" "mgmt" {
 }
 
 provider "kubernetes" {
-  host                   = data.google_container_cluster.mgmt.endpoint
+  host                   = "https://${data.google_container_cluster.mgmt.endpoint}"
   cluster_ca_certificate = base64decode(data.google_container_cluster.mgmt.master_auth[0].cluster_ca_certificate)
   token                  = data.google_client_config.default.access_token
 }
 
 provider "helm" {
   kubernetes {
-    host                   = data.google_container_cluster.mgmt.endpoint
+    host                   = "https://${data.google_container_cluster.mgmt.endpoint}"
     cluster_ca_certificate = base64decode(data.google_container_cluster.mgmt.master_auth[0].cluster_ca_certificate)
     token                  = data.google_client_config.default.access_token
   }
