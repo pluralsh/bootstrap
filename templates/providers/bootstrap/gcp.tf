@@ -35,18 +35,24 @@ terraform {
 
 data "google_client_config" "default" {}
 
-provider "helm" {
-  kubernetes {
-    host                   = module.mgmt.cluster.endpoint
-    cluster_ca_certificate = base64decode(module.mgmt.cluster.ca_certificate)
-    token                  = data.google_client_config.default.access_token
-  }
+data "google_container_cluster" "mgmt" {
+  name     = "{{ .Cluster }}"
+  location = "{{ .Region }}"
+  project  = "{{ .Project }}"
 }
 
 provider "kubernetes" {
-  host                   = module.mgmt.cluster.endpoint
-  cluster_ca_certificate = base64decode(module.mgmt.cluster.ca_certificate)
+  host                   = data.google_container_cluster.mgmt.endpoint
+  cluster_ca_certificate = base64decode(data.google_container_cluster.mgmt.master_auth[0].cluster_ca_certificate)
   token                  = data.google_client_config.default.access_token
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = data.google_container_cluster.mgmt.endpoint
+    cluster_ca_certificate = base64decode(data.google_container_cluster.mgmt.master_auth[0].cluster_ca_certificate)
+    token                  = data.google_client_config.default.access_token
+  }
 }
 
 provider "plural" {
