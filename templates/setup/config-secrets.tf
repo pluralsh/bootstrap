@@ -32,7 +32,7 @@ resource "kubernetes_secret" "console_config_gcp" {
 
   metadata {
     name      = "console-config"
-    namespace = kubernetes_namespace.infra.metadata[0].name
+    namespace = kubernetes_namespace.infra_gcp[0].metadata[0].name
   }
 
   type = "Opaque"
@@ -64,7 +64,7 @@ resource "kubernetes_secret" "console_config_gcp" {
     postgresUrl   = tostring(try(local.console_values.extraSecretEnv.POSTGRES_URL, ""))
   }
 
-  depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]
+  depends_on = [kubernetes_namespace.infra_gcp, module.mgmt.cluster, module.mgmt.ready]
 }
 
 resource "kubernetes_secret" "console_config" {
@@ -72,7 +72,7 @@ resource "kubernetes_secret" "console_config" {
 
   metadata {
     name      = "console-config"
-    namespace = kubernetes_namespace.infra.metadata[0].name
+    namespace = kubernetes_namespace.infra[0].metadata[0].name
   }
 
   type = "Opaque"
@@ -113,7 +113,7 @@ resource "kubernetes_secret" "runtime_config_gcp" {
 
   metadata {
     name      = "runtime-config"
-    namespace = kubernetes_namespace.infra.metadata[0].name
+    namespace = kubernetes_namespace.infra_gcp[0].metadata[0].name
   }
 
   type = "Opaque"
@@ -125,7 +125,7 @@ resource "kubernetes_secret" "runtime_config_gcp" {
     acmeEABSecret = "{{ .Acme.HmacKey }}"
   }
 
-  depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]
+  depends_on = [kubernetes_namespace.infra_gcp, module.mgmt.cluster, module.mgmt.ready]
 }
 
 resource "kubernetes_secret" "runtime_config" {
@@ -133,7 +133,7 @@ resource "kubernetes_secret" "runtime_config" {
 
   metadata {
     name      = "runtime-config"
-    namespace = kubernetes_namespace.infra.metadata[0].name
+    namespace = kubernetes_namespace.infra[0].metadata[0].name
   }
 
   type = "Opaque"
