@@ -30,7 +30,7 @@ variable "client_id" {
 
 variable "use_mgmt_dns_zone" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "postgres_dns_zone" {
