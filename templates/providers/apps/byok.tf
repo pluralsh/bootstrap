@@ -19,7 +19,7 @@ provider "kubernetes" {
   config_path = "~/.kube/config"
 }
 
-data "kubernetes_secret" "console-auth" {
+data "kubernetes_secret_v1" "console-auth" {
   metadata {
     name      = "console-auth-token"
     namespace = "plrl-console"
@@ -28,7 +28,5 @@ data "kubernetes_secret" "console-auth" {
 
 provider "plural" {
   console_url  = "https://console.{{ .Subdomain }}"
-  access_token = data.kubernetes_secret.console-auth.data.access-token
-  insecure = true
+  access_token = data.kubernetes_secret_v1.console-auth.data["access-token"]
 }
-
