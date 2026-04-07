@@ -45,6 +45,13 @@ ingress-nginx-private:
   enabled: false
 {{ end }}
 
+{{ if eq .Provider "byok" }}
+ingress-nginx:
+  enabled: false
+ingress-nginx-private:
+  enabled: false
+{{ end }}
+
 {{ if and (eq .Provider "aws") (not .Cloud) }}
 ingress-nginx:
   controller:
