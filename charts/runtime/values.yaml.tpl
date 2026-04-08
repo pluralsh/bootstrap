@@ -1,6 +1,6 @@
 ownerEmail: {{ .Config.Email }}
 
-{{ if and (not .Cloud) (not (eq .Provider "byok")) }}
+{{ if not .Cloud }}
 external-dns:
   extraArgs:
     plural-cluster: {{ .Cluster }}
@@ -23,7 +23,7 @@ acmeEAB:
   secret: {{ .Acme.HmacKey }}
 {{ end }}
 
-{{ if or .Cloud (eq .Provider "byok") }}
+{{ if .Cloud }}
 external-dns:
   enabled: false
 
@@ -38,6 +38,28 @@ application:
 
 plural:
   enabled: false
+
+ingress-nginx:
+  enabled: false
+ingress-nginx-private:
+  enabled: false
+{{ end }}
+
+{{ if eq .Provider "byok" }}
+external-dns:
+  enabled: false
+
+plural-certmanager-webhook:
+  enabled: true
+
+operator:
+  enabled: true
+
+application:
+  enabled: true
+
+plural:
+  enabled: true
 
 ingress-nginx:
   enabled: false
