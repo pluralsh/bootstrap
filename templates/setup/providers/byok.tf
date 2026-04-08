@@ -65,6 +65,36 @@ resource "null_resource" "local_ca" {
           secretName: local-ca-secret
       EOF
       kubectl wait --for=condition=Ready certificate/local-ca -n cert-manager --timeout=60s
+
+      # Issue the console TLS cert signed by the local CA
+      kubectl apply -f - <<CERT
+      apiVersion: cert-manager.io/v1
+      kind: Certificate
+      metadata:
+        name: console-tls
+        namespace: plrl-console
+      spec:
+        secretName: console-tls
+        dnsNames:
+          - console.{{ .Subdomain }}
+          - kas.{{ .Subdomain }}
+        issuerRef:
+          name: local-ca-issuer
+          kind: ClusterIssuer
+          group: cert-manager.io
+      CERT
+      kubectl wait --for=condition=Ready certificate/console-tls -n plrl-console --timeout=60s
+
+      # Patch ingresses to use the new cert and CA issuer
+      for ing in $(kubectl get ingress -n plrl-console -o jsonpath='{.items[*].metadata.name}'); do
+        kubectl annotate ingress "$ing" -n plrl-console \
+          "cert-manager.io/cluster-issuer=local-ca-issuer" --overwrite
+        kubectl patch ingress "$ing" -n plrl-console --type=json -p='[
+          {"op": "replace", "path": "/spec/tls/0/secretName", "value": "console-tls"}
+        ]' 2>/dev/null || kubectl patch ingress "$ing" -n plrl-console --type=json -p='[
+          {"op": "add", "path": "/spec/tls", "value": [{"hosts": ["console.{{ .Subdomain }}", "kas.{{ .Subdomain }}"], "secretName": "console-tls"}]}
+        ]'
+      done
     EOT
   }
 
@@ -89,7 +119,6 @@ resource "null_resource" "trust_bundle" {
         sources:
         - secret:
             name: local-ca-secret
-            namespace: cert-manager
             key: tls.crt
         target:
           configMap:
