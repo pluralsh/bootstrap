@@ -56,10 +56,10 @@ operator:
   enabled: true
 
 application:
-  enabled: true
+  enabled: false
 
 plural:
-  enabled: true
+  enabled: false
 
 ingress-nginx:
   enabled: false
