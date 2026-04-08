@@ -98,7 +98,7 @@ resource "null_resource" "local_ca" {
     EOT
   }
 
-  depends_on = [helm_release.certmanager]
+  depends_on = [helm_release.certmanager, helm_release.console]
 }
 
 // Bundle distributes the local CA cert into plrl-deploy-operator so the
