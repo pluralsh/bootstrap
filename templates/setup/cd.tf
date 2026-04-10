@@ -18,8 +18,10 @@ data "plural_cluster" "mgmt" {
 
 resource "plural_git_repository" "infra" {
     url         = local.context.spec.configuration.console.repo_url
-    private_key = local.context.spec.configuration.console.private_key
-    decrypt     = true
+    private_key = try(local.context.spec.configuration.console.private_key, null)
+    username    = try(local.context.spec.configuration.console.git_username, null)
+    password    = try(local.context.spec.configuration.console.git_password, null)
+    decrypt     = try(local.context.spec.configuration.console.private_key, null) != null
 }
 
 resource "plural_service_deployment" "apps" {
