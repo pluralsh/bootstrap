@@ -30,7 +30,7 @@ variable "engine_id" {
 
 variable "kubernetes_vsn" {
   type = string
-  default = "1.27"
+  default = "1.34"
 }
 
 variable "node_pools" {

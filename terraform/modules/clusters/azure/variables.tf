@@ -13,7 +13,7 @@ variable "tier" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.30.9"
+  default = "1.34"
 }
 
 variable "resource_group_name" {

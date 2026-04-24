@@ -1,7 +1,7 @@
 
 variable "kubernetes_vsn" {
   type = string
-  default = "1.29"
+  default = "1.34"
 }
 
 variable "cluster" {
