@@ -53,7 +53,7 @@ resource "kubernetes_secret" "console_config" {
     postgresUrl   = tostring(try(local.console_values.extraSecretEnv.POSTGRES_URL, ""))
   }
 
-  depends_on = [kubernetes_namespace.infra_gcp, module.mgmt.cluster, module.mgmt.ready]
+  depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]
 }
 
 resource "kubernetes_secret" "runtime_config" {
