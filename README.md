@@ -3,7 +3,7 @@
 This repo defines the core terraform code needed to bootstrap a Plural management cluster and set up your GitOps environment using Plural.  It is intended to be cloned in a users infra repo and then owned by their DevOps team from there.  We do our best to adhere to the standard terraform setup for k8s within the respective cloud, while also installing necessary add-ons as needed (eg load balancer controller and autoscaler for AWS).
 
 > [!TIP]
-> If you want a guided walkthrough of how to use your new repo and get started with a Plural-based GitOps workflow, our [how-to guide](https://docs.plural.sh/how-to) is an amazing place to start!
+> If you want a guided walkthrough of how to use your new repo and get started with a Plural-based GitOps workflow, our [how-to guide](https://docs.plural.sh/getting-started/how-to-use) is an amazing place to start!
 
 
 ## General Architecture
@@ -60,7 +60,7 @@ There are also other useful self-service setups in our catalog including:
 
 ## Add a workload cluster to your fleet
 
-There are many ways to set up a workload cluster.  We've given you some baseline terraform to work from in the `terraform/modules/clusters` folders.  You can easily deploy these using stacks documented [here](https://docs.plural.sh/stacks/overview).
+There are many ways to set up a workload cluster.  We've given you some baseline terraform to work from in the `terraform/modules/clusters` folders.  You can easily deploy these using stacks documented [here](https://docs.plural.sh/plural-features/stacks-iac-management).
 
 We've actually also set this up for you via a PR automation, which you can find at the `/pr/automations` url in your newly created console.  This will trigger a PR with the follownig resources:
 
@@ -88,12 +88,12 @@ spec:
     some: tag # if you want to add tags to the cluster
   metadata:
     arbitrary:
-      yaml: metadata # any arbitrary metadata you might want to add for service templating (see https://docs.plural.sh/deployments/templating)
+      yaml: metadata # any arbitrary metadata you might want to add for service templating (see https://docs.plural.sh/plural-features/continuous-deployment/service-templating)
 ```
 
 ## Installing Low-Level K8s Operators
 
-Plural provides a number of very useful tools for fleet-wide deployment. If you need to install operators like cert-manager or Istio, we'd recommend using our `GlobalService` resource.  You can find more documentation about [here](https://docs.plural.sh/deployments/operator/global-service).
+Plural provides a number of very useful tools for fleet-wide deployment. If you need to install operators like cert-manager or Istio, we'd recommend using our `GlobalService` resource.  You can find more documentation about [here](https://docs.plural.sh/plural-features/continuous-deployment/global-service).
 
 Here's an example for deploying externaldns:
 
