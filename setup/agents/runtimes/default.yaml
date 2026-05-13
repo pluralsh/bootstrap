@@ -1,0 +1,15 @@
+[[ if .Cloud ]]
+apiVersion: deployments.plural.sh/v1alpha1
+kind: AgentRuntime
+metadata:
+  name: opencode
+spec:
+  targetNamespace: agents
+  type: OPENCODE
+  aiProxy: true
+  default: true
+  dind: true
+  browser:
+    enabled: true
+    browser: chrome
+[[ end ]]
