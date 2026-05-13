@@ -44,6 +44,8 @@ temp/ # a temp folder used during bootstrap that is gitignored
 
 You're free to extend this as you'd like, although if you use the plural marketplace that structure will be expected.  You can also deploy services w/ manifests in other repos, this is meant to serve as a base to define the core infrastructure and get you started in a sane way.
 
+For cloud installs (`plural up --cloud`), bootstrap also templates a default `AgentRuntime` at `bootstrap/agents/runtimes/default.yaml`. It is configured with `aiProxy: true` so agent runs use the AI proxy path without requiring per-runtime API key wiring.
+
 ## Using the Plural Catalog
 
 Many of the common operations you'll need to do to manage your kubernetes infrastructure have all been operationalized as part of the service catalog that's synced via `bootstrap/catalogs.yaml`.  A decent example here would be setting up a new kubernetes fleet, which you can do with the following:
