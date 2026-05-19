@@ -27,9 +27,8 @@ spec:
           }
         }
         filter {
-          age {}
-          if [@metadata][age] > 86400 {
-            drop {}
+          ruby {
+            code => 'event.cancel if (Time.now.to_f - event.timestamp.to_f) > 86400'
           }
           grok {
             match => { "message" => "%{HTTPD_COMMONLOG}"}
