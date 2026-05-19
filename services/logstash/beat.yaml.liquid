@@ -17,11 +17,17 @@ spec:
               type: container
               paths:
               - /var/log/containers/*${data.kubernetes.container.id}.log
+              ignore_older: 24h
     output.logstash:
       hosts: ["logstash-ls-beats.elastic:5044"]
     processors:
     - add_cloud_metadata: {}
     - add_host_metadata: {}
+    - add_kubernetes_metadata:
+        node: ${NODE_NAME}
+        add_resource_metadata:
+          deployment: true
+          cronjob: true
     - add_fields:
         target: cluster
         fields:

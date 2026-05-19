@@ -17,6 +17,9 @@ spec:
           cpu: 500m
   pipelines:
     - pipeline.id: main
+      # Defaults are 125 / 50ms; raise both to batch more events per cycle (fewer ES bulks, slightly higher latency).
+      pipeline.batch.size: 200
+      pipeline.batch.delay: 150
       config.string: |
         input {
           beats {
@@ -24,6 +27,10 @@ spec:
           }
         }
         filter {
+          age {}
+          if [@metadata][age] > 86400 {
+            drop {}
+          }
           grok {
             match => { "message" => "%{HTTPD_COMMONLOG}"}
           }
@@ -39,6 +46,9 @@ spec:
             password => "${UPSTREAM_ES_PASSWORD}"
             index => "{{ contexts["plrl/cloud/observability"].elastic.user }}-logs-%{+YYYY.MM.dd}"
             manage_template => false
+            # Longer timeout while ES is under merge/ILM load (default 60s).
+            timeout => 120
+            retry_max_interval => 120
           }
         }
   services:
