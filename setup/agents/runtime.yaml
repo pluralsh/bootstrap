@@ -1,0 +1,14 @@
+apiVersion: deployments.plural.sh/v1alpha1
+kind: AgentRuntime
+metadata:
+  name: codex
+  namespace: agents
+spec:
+  targetNamespace: agents
+  type: CODEX
+  aiProxy: true
+  dind: true
+  default: true
+  config:
+    codex:
+      model: openai/gpt-5.4
