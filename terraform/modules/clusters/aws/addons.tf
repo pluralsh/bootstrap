@@ -45,6 +45,10 @@ module "vpc_cni_irsa_role" {
   vpc_cni_enable_ipv4   = true
   vpc_cni_enable_ipv6   = true
 
+  role_policy_arns = {
+    vpc_cni_policy = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  }
+
   oidc_providers = {
     main = {
       provider_arn               = module.eks.oidc_provider_arn
