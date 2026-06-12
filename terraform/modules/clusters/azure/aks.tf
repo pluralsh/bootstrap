@@ -2,7 +2,8 @@ module "aks" {
   source = "Azure/aks/azurerm"
   version = "9.2.0"
 
-  kubernetes_version   = var.kubernetes_version
+  kubernetes_version   = var.next_kubernetes_version
+  orchestrator_version = local.node_orchestrator_version
   cluster_name         = var.cluster
   resource_group_name  = data.azurerm_resource_group.default.name
   prefix               = var.cluster
@@ -10,7 +11,13 @@ module "aks" {
   sku_tier             = "Standard"
   rbac_aad             = false
   vnet_subnet_id       = local.network.sn_subnet_id
-  node_pools           = {for name, pool in var.node_pools : name => merge(pool, {name = name, vnet_subnet_id = local.network.sn_subnet_id})}
+  node_pools = {
+    for name, pool in var.node_pools : name => merge(pool, {
+      name                   = name
+      vnet_subnet_id         = local.network.sn_subnet_id
+      orchestrator_version   = local.node_orchestrator_version
+    })
+  }
 
   ebpf_data_plane     = "cilium"
   network_plugin_mode = "overlay"

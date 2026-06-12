@@ -12,4 +12,6 @@ locals {
   vsn_even = ((tonumber(local.split_vsn[0]) * 100 + tonumber(local.split_vsn[1])) % 2) == 0
   active_node_group = local.vsn_even ? "blue" : "green"
   drain_node_group = local.vsn_even ? "green" : "blue"
+  # AKS cannot upgrade CP and node pools in one apply when both versions change.
+  node_orchestrator_version = local.upgrading ? var.kubernetes_version : var.next_kubernetes_version
 }

@@ -16,6 +16,11 @@ variable "kubernetes_version" {
   default = "1.34"
 }
 
+variable "next_kubernetes_version" {
+  type    = string
+  default = "1.34"
+}
+
 variable "resource_group_name" {
   type = string
   default = "plural"
