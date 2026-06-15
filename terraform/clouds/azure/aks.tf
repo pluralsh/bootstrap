@@ -3,15 +3,20 @@ locals {
     (local.active_node_group) = {
       orchestrator_version = local.node_orchestrator_version,
       node_taints          = local.upgrading ? ["platform.plural.sh/draining=true:NoSchedule"] : [],
+      node_labels = local.upgrading ? {} : {
+        "platform.plural.sh/stack-runner" = "true"
+      },
     },
     (local.drain_node_group) = {
       orchestrator_version = local.next_kubernetes_version,
+      node_labels = local.upgrading ? {
+        "platform.plural.sh/stack-runner" = "true"
+      } : {},
     }
   }
 
   full_node_pools = { for k, v in var.node_pools : k => merge(v, try(lookup(local.node_pool_add, k), {})) if k != local.drain_node_group || local.upgrading == true }
 }
-
 
 module "aks" {
   source = "Azure/aks/azurerm"
@@ -27,7 +32,7 @@ module "aks" {
   rbac_aad             = false
   vnet_subnet_id       = azurerm_subnet.network.id
   node_pools           = { for name, pool in local.full_node_pools : name => merge(pool, { name = name, vnet_subnet_id = azurerm_subnet.network.id }) }
-  
+
   ebpf_data_plane     = "cilium"
   network_plugin_mode = "overlay"
   network_plugin      = "azure"

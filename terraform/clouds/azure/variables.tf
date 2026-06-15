@@ -96,14 +96,14 @@ variable "node_pools" {
     blue = {
       vm_size = "Standard_D2s_v3"
       node_count = 3
-      min_count = 1
+      min_count = 0
       max_count = 20
       enable_auto_scaling = true
     }
     green = {
       vm_size = "Standard_D2s_v3"
       node_count = 3
-      min_count = 1
+      min_count = 0
       max_count = 20
       enable_auto_scaling = true
     }

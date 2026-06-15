@@ -36,6 +36,8 @@ spec:
     labels:
       azure.workload.identity/use: "true"
     serviceAccount: "stacks"
+    nodeSelector:
+      platform.plural.sh/stack-runner: "true"
   [[ end ]]
   git:
     ref: main
