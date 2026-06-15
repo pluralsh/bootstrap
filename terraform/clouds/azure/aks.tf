@@ -5,7 +5,7 @@ locals {
       node_taints          = local.upgrading ? ["platform.plural.sh/draining=true:NoSchedule"] : [],
     },
     (local.drain_node_group) = {
-      orchestrator_version = var.next_kubernetes_version,
+      orchestrator_version = local.next_kubernetes_version,
     }
   }
 
@@ -17,7 +17,7 @@ module "aks" {
   source = "Azure/aks/azurerm"
   version = "9.2.0"
 
-  kubernetes_version   = var.next_kubernetes_version
+  kubernetes_version   = local.next_kubernetes_version
   orchestrator_version = local.node_orchestrator_version
   cluster_name         = var.cluster_name
   resource_group_name  = local.resource_group.name

@@ -2,7 +2,7 @@ module "aks" {
   source = "Azure/aks/azurerm"
   version = "9.2.0"
 
-  kubernetes_version   = var.next_kubernetes_version
+  kubernetes_version   = local.next_kubernetes_version
   orchestrator_version = local.node_orchestrator_version
   cluster_name         = var.cluster
   resource_group_name  = data.azurerm_resource_group.default.name
