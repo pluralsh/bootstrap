@@ -16,6 +16,12 @@ variable "kubernetes_version" {
   default = "1.34"
 }
 
+variable "next_kubernetes_version" {
+  type        = string
+  default     = ""
+  description = "AKS control plane target; leave empty to match kubernetes_version."
+}
+
 variable "resource_group_name" {
   type = string
   default = "plural"
