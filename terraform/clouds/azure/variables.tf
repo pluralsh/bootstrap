@@ -1,76 +1,86 @@
 variable "cluster_name" {
-    type = string
-    default = "plural"
+  type    = string
+  default = "plural"
 }
 
 variable "db_name_prefix" {
-  type = string
+  type    = string
   default = "plural"
 }
 
 variable "create_db" {
-  type = bool
+  type    = bool
   default = true
 }
 
 variable "kubernetes_version" {
-  type = string
+  type    = string
   default = "1.34"
+
+  validation {
+    condition     = can(regex("^[0-9]+\\.[0-9]+$", var.kubernetes_version)) && tonumber(split(".", var.kubernetes_version)[0]) == 1 && tonumber(split(".", var.kubernetes_version)[1]) >= 34
+    error_message = "kubernetes_version must be a Kubernetes minor version in major.minor format and at least 1.34."
+  }
 }
 
 variable "next_kubernetes_version" {
   type        = string
   default     = ""
   description = "AKS control plane target; leave empty to match kubernetes_version."
+
+  validation {
+    condition     = var.next_kubernetes_version == "" || (can(regex("^[0-9]+\\.[0-9]+$", var.next_kubernetes_version)) && tonumber(split(".", var.next_kubernetes_version)[0]) == 1 && tonumber(split(".", var.next_kubernetes_version)[1]) >= 34)
+    error_message = "next_kubernetes_version must be empty or a Kubernetes minor version in major.minor format and at least 1.34."
+  }
 }
 
 variable "create_resource_group" {
-    type = bool
-    default = false
+  type    = bool
+  default = false
 }
 
 variable "resource_group_name" {
-  type = string
+  type    = string
   default = "plural"
 }
 
 variable "location" {
-  type = string
+  type    = string
   default = "centralus"
 }
 
 variable "network_name" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "network_cidrs" {
-  type = list(string)
+  type    = list(string)
   default = ["10.52.0.0/16"]
 }
 
 variable "subnet_cidrs" {
-  type = list(string)
+  type    = list(string)
   default = ["10.52.0.0/20"]
 }
 
 variable "postgres_cidrs" {
-  type = list(string)
+  type    = list(string)
   default = ["10.52.16.0/24"]
 }
 
 variable "postgres_disk" {
-  type = number
+  type    = number
   default = 32768
 }
 
 variable "postgres_sku" {
-  type = string
+  type    = string
   default = "GP_Standard_D4s_v3"
 }
 
 variable "workload_identity_enabled" {
-  type = bool
+  type    = bool
   default = true
 }
 
@@ -94,17 +104,17 @@ variable "node_pools" {
   type = map(any)
   default = {
     blue = {
-      vm_size = "Standard_D2s_v3"
-      node_count = 3
-      min_count = 1
-      max_count = 20
+      vm_size             = "Standard_D2s_v3"
+      node_count          = 3
+      min_count           = 1
+      max_count           = 20
       enable_auto_scaling = true
     }
     green = {
-      vm_size = "Standard_D2s_v3"
-      node_count = 3
-      min_count = 1
-      max_count = 20
+      vm_size             = "Standard_D2s_v3"
+      node_count          = 3
+      min_count           = 1
+      max_count           = 20
       enable_auto_scaling = true
     }
   }

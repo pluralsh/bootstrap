@@ -1,5 +1,5 @@
 variable "cluster" {
-  type = string
+  type    = string
   default = "plural"
 }
 
@@ -12,18 +12,23 @@ variable "tier" {
 }
 
 variable "region" {
-  type = string
+  type    = string
   default = "us-east-2"
 }
 
 variable "public" {
-  type = bool
+  type    = bool
   default = true
 }
 
 variable "kubernetes_version" {
-  type = string
+  type    = string
   default = "1.34"
+
+  validation {
+    condition     = can(regex("^[0-9]+\\.[0-9]+$", var.kubernetes_version)) && tonumber(split(".", var.kubernetes_version)[0]) == 1 && tonumber(split(".", var.kubernetes_version)[1]) >= 34
+    error_message = "kubernetes_version must be a Kubernetes minor version in major.minor format and at least 1.34."
+  }
 }
 
 variable "vpc_cidr" {
@@ -49,10 +54,10 @@ variable "node_group_defaults" {
       {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size = 50
-          volume_type = "gp3"
+          volume_size           = 50
+          volume_type           = "gp3"
           delete_on_termination = true
-          encrypted = true
+          encrypted             = true
         }
       }
     ]

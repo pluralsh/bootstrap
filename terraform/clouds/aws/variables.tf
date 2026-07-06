@@ -9,12 +9,12 @@ variable "db_name" {
 }
 
 variable "db_storage" {
-  type = number
+  type    = number
   default = 20
 }
 
 variable "postgres_vsn" {
-  type = string
+  type    = string
   default = "14"
 }
 
@@ -26,11 +26,21 @@ variable "create_db" {
 variable "kubernetes_version" {
   type    = string
   default = "1.34"
+
+  validation {
+    condition     = can(regex("^[0-9]+\\.[0-9]+$", var.kubernetes_version)) && tonumber(split(".", var.kubernetes_version)[0]) == 1 && tonumber(split(".", var.kubernetes_version)[1]) >= 34
+    error_message = "kubernetes_version must be a Kubernetes minor version in major.minor format and at least 1.34."
+  }
 }
 
 variable "next_kubernetes_version" {
   type    = string
   default = "1.34"
+
+  validation {
+    condition     = can(regex("^[0-9]+\\.[0-9]+$", var.next_kubernetes_version)) && tonumber(split(".", var.next_kubernetes_version)[0]) == 1 && tonumber(split(".", var.next_kubernetes_version)[1]) >= 34
+    error_message = "next_kubernetes_version must be a Kubernetes minor version in major.minor format and at least 1.34."
+  }
 }
 
 
@@ -39,13 +49,13 @@ variable "managed_node_groups" {
   default = {
     green = {
       use_name_prefix = true
-      desired_size   = 3
+      desired_size    = 3
       min_size        = 0
       max_size        = 10
     }
     blue = {
       use_name_prefix = true
-      desired_size   = 3
+      desired_size    = 3
       min_size        = 0
       max_size        = 10
     }
@@ -88,7 +98,7 @@ variable "deletion_protection" {
 }
 
 variable "backup_retention_period" {
-  type = number
+  type    = number
   default = 7
 }
 
@@ -104,10 +114,10 @@ variable "node_group_defaults" {
       {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size = 50
-          volume_type = "gp3"
+          volume_size           = 50
+          volume_type           = "gp3"
           delete_on_termination = true
-          encrypted = true
+          encrypted             = true
         }
       }
     ]
@@ -116,16 +126,16 @@ variable "node_group_defaults" {
 }
 
 variable "create_cloudwatch_log_group" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "monitoring_role" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "additional_kms_administrators" {
-  type = list(string)
-  default = [ ]
+  type    = list(string)
+  default = []
 }

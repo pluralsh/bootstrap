@@ -16,11 +16,21 @@ variable "deletion_protection" {
 variable "kubernetes_version" {
   type    = string
   default = "1.34"
+
+  validation {
+    condition     = can(regex("^[0-9]+\\.[0-9]+$", var.kubernetes_version)) && tonumber(split(".", var.kubernetes_version)[0]) == 1 && tonumber(split(".", var.kubernetes_version)[1]) >= 34
+    error_message = "kubernetes_version must be a Kubernetes minor version in major.minor format and at least 1.34."
+  }
 }
 
 variable "next_kubernetes_version" {
   type    = string
   default = "1.34"
+
+  validation {
+    condition     = can(regex("^[0-9]+\\.[0-9]+$", var.next_kubernetes_version)) && tonumber(split(".", var.next_kubernetes_version)[0]) == 1 && tonumber(split(".", var.next_kubernetes_version)[1]) >= 34
+    error_message = "next_kubernetes_version must be a Kubernetes minor version in major.minor format and at least 1.34."
+  }
 }
 
 variable "node_pools" {
@@ -30,33 +40,33 @@ variable "node_pools" {
       machine_type       = "n2-standard-2"
       min_count          = 0
       initial_node_count = 1
-      max_count = 10
+      max_count          = 10
       # Must be set to false to allow for blue-green deployments
-      auto_upgrade       = false
+      auto_upgrade = false
     },
     blue = {
       machine_type       = "n2-standard-2"
       min_count          = 0
       initial_node_count = 1
-      max_count = 10
+      max_count          = 10
       # Must be set to false to allow for blue-green deployments
-      auto_upgrade       = false
+      auto_upgrade = false
     }
   }
 }
 
 variable "node_pools_taints" {
-  type = map(list(object({ key = string, value = string, effect = string })))
+  type    = map(list(object({ key = string, value = string, effect = string })))
   default = { "all" : [], "green" : [], "blue" : [] }
 }
 
 variable "node_pools_labels" {
-  type = map(map(string))
+  type    = map(map(string))
   default = { "all" : {}, "green" : {}, "blue" : {} }
 }
 
 variable "node_pools_tags" {
-  type = map(list(string))
+  type    = map(list(string))
   default = { "all" : [], "green" : [], "blue" : [] }
 }
 
