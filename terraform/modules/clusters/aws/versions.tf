@@ -8,13 +8,8 @@ terraform {
     }
 
     plural = {
-      source = "pluralsh/plural"
+      source  = "pluralsh/plural"
       version = ">= 0.2.9"
-    }
-
-    helm = {
-      source = "hashicorp/helm"
-      version = "< 3.0.0"
     }
   }
 }
@@ -24,4 +19,4 @@ provider "aws" {
 }
 
 
-provider "plural" { }
+provider "plural" {}

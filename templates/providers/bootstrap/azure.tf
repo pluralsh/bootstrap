@@ -3,10 +3,10 @@ terraform {
 
   backend "azurerm" {
     storage_account_name = "{{ .Context.StorageAccount }}"
-    subscription_id = "{{ .Context.SubscriptionId }}"
-    resource_group_name = "{{ .Project }}"
-    container_name = "{{ .Bucket }}"
-    key = "{{ .Cluster }}/bootstrap/terraform.tfstate"
+    subscription_id      = "{{ .Context.SubscriptionId }}"
+    resource_group_name  = "{{ .Project }}"
+    container_name       = "{{ .Bucket }}"
+    key                  = "{{ .Cluster }}/bootstrap/terraform.tfstate"
   }
 
   required_providers {
@@ -27,15 +27,15 @@ terraform {
       version = "3.6.0"
     }
     helm = {
-      source = "hashicorp/helm"
-      version = "2.14.0"
+      source  = "hashicorp/helm"
+      version = ">= 3.0.0, < 4.0.0"
     }
     local = {
-      source = "hashicorp/local"
+      source  = "hashicorp/local"
       version = "2.5.2"
     }
     plural = {
-      source = "pluralsh/plural"
+      source  = "pluralsh/plural"
       version = ">= 0.2.16"
     }
   }
@@ -53,7 +53,7 @@ provider "azurerm" {
   }
 
   subscription_id = "{{ .Context.SubscriptionId }}"
-  tenant_id = "{{ .Context.TenantId }}"
+  tenant_id       = "{{ .Context.TenantId }}"
 }
 
 provider "kubernetes" {
@@ -64,7 +64,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.mgmt.cluster.cluster_fqdn
     cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_ca_certificate)
     client_certificate     = base64decode(module.mgmt.cluster.client_certificate)
@@ -77,6 +77,6 @@ provider "plural" {
 }
 
 variable "use_cli" {
-  type = bool
+  type    = bool
   default = true
 }

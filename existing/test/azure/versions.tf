@@ -19,11 +19,11 @@ terraform {
       version = "3.6.0"
     }
     helm = {
-      source = "hashicorp/helm"
-      version = "2.12.1"
+      source  = "hashicorp/helm"
+      version = ">= 3.0.0, < 4.0.0"
     }
     local = {
-      source = "hashicorp/local"
+      source  = "hashicorp/local"
       version = "2.5.1"
     }
   }
@@ -49,14 +49,14 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.mgmt.cluster.cluster_fqdn
     cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_ca_certificate)
     client_certificate     = base64decode(module.mgmt.cluster.client_certificate)
     client_key             = base64decode(module.mgmt.cluster.client_key)
   }
 
-  experiments {
+  experiments = {
     manifest = false
   }
 }

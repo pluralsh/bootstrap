@@ -3,15 +3,15 @@ terraform {
 
   backend "s3" {
     endpoint = "us-east-1.linodeobjects.com"
-    bucket = "{{ .Bucket }}"
-    key = "{{ .Cluster }}/bootstrap/terraform.tfstate"
-    region = "us-east-1"
+    bucket   = "{{ .Bucket }}"
+    key      = "{{ .Cluster }}/bootstrap/terraform.tfstate"
+    region   = "us-east-1"
   }
 
   required_providers {
     linode = {
       source  = "linode/linode"
-      version = "~> 2.13.0" 
+      version = "~> 2.13.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -22,15 +22,15 @@ terraform {
       version = "3.6.0"
     }
     helm = {
-      source = "hashicorp/helm"
-      version = "2.14.0"
+      source  = "hashicorp/helm"
+      version = ">= 3.0.0, < 4.0.0"
     }
     local = {
-      source = "hashicorp/local"
+      source  = "hashicorp/local"
       version = "2.5.2"
     }
     plural = {
-      source = "pluralsh/plural"
+      source  = "pluralsh/plural"
       version = ">= 0.2.0"
     }
   }
@@ -39,12 +39,12 @@ terraform {
 provider "linode" {}
 
 module "parsed" {
-    source = "../bootstrap/terraform/modules/raw-kubeconfig"
-    kubeconfig = module.mgmt.cluster.kubeconfig
+  source     = "../bootstrap/terraform/modules/raw-kubeconfig"
+  kubeconfig = module.mgmt.cluster.kubeconfig
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.parsed.cluster.server
     cluster_ca_certificate = base64decode(module.parsed.cluster.certificate-authority-data)
     token                  = module.parsed.user.token
@@ -56,6 +56,6 @@ provider "plural" {
 }
 
 variable "use_cli" {
-  type = bool
+  type    = bool
   default = true
 }
