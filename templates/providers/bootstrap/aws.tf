@@ -3,7 +3,7 @@ terraform {
 
   backend "s3" {
     bucket = "{{ .Bucket }}"
-    key = "{{ .Cluster }}/bootstrap/terraform.tfstate"
+    key    = "{{ .Cluster }}/bootstrap/terraform.tfstate"
     region = "{{ .Region }}"
   }
 
@@ -21,15 +21,15 @@ terraform {
       version = "3.6.0"
     }
     helm = {
-      source = "hashicorp/helm"
-      version = "2.14.0"
+      source  = "hashicorp/helm"
+      version = ">= 3.0.0, < 4.0.0"
     }
     local = {
-      source = "hashicorp/local"
+      source  = "hashicorp/local"
       version = "2.5.2"
     }
     plural = {
-      source = "pluralsh/plural"
+      source  = "pluralsh/plural"
       version = ">= 0.2.16"
     }
   }
@@ -43,7 +43,7 @@ data "aws_eks_cluster" "cluster" {
   name = module.mgmt.cluster.cluster_name
 
   # BEGIN REMOVE
-  depends_on = [ module.mgmt.cluster ]
+  depends_on = [module.mgmt.cluster]
   # END REMOVE
 }
 
@@ -51,7 +51,7 @@ data "aws_eks_cluster_auth" "cluster" {
   name = module.mgmt.cluster.cluster_name
 
   # BEGIN REMOVE
-  depends_on = [ module.mgmt.cluster ]
+  depends_on = [module.mgmt.cluster]
   # END REMOVE
 }
 
@@ -62,7 +62,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.mgmt.cluster.cluster_endpoint
     cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.cluster.token
@@ -83,6 +83,6 @@ output "vpc_id" {
 }
 
 variable "use_cli" {
-  type = bool
+  type    = bool
   default = true
 }

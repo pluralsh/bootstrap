@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     google = {
-      source = "hashicorp/google"
+      source  = "hashicorp/google"
       version = ">= 6.10.0"
     }
     kubernetes = {
@@ -12,8 +12,8 @@ terraform {
       version = "3.3.2"
     }
     helm = {
-      source = "hashicorp/helm"
-      version = "2.12.1"
+      source  = "hashicorp/helm"
+      version = ">= 3.0.0, < 4.0.0"
     }
   }
   required_version = ">= 0.13"
@@ -28,7 +28,7 @@ data "google_client_config" "current" {}
 # }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.gcp.cluster.endpoint
     cluster_ca_certificate = base64decode(module.gcp.cluster.ca_certificate)
     token                  = data.google_client_config.current.access_token
