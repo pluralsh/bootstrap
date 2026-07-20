@@ -8,7 +8,7 @@ spec:
   targetNamespace: agents
   type: CODEX
   aiProxy: true
-  default: false
+  default: true
   dind: true
   browser:
     enabled: true
