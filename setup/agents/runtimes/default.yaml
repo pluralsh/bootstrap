@@ -2,12 +2,13 @@
 apiVersion: deployments.plural.sh/v1alpha1
 kind: AgentRuntime
 metadata:
-  name: opencode
+  name: codex
+  namespace: agents
 spec:
   targetNamespace: agents
-  type: OPENCODE
+  type: CODEX
   aiProxy: true
-  default: true
+  default: false
   dind: true
   browser:
     enabled: true
