@@ -27,6 +27,17 @@ resource "azurerm_role_assignment" "stacks-ssi" {
   principal_id         = azurerm_user_assigned_identity.stacks.principal_id
 }
 
+data "azurerm_subscription" "current" {}
+
+# Stacks also grant roles outside the resource group, e.g. the cloud functions get custom roles
+# on the AKS node resource groups (MC_...), which every cluster adds. Like the AWS and GCP stack
+# roles, this lets them define and assign roles anywhere in the subscription.
+resource "azurerm_role_assignment" "stacks-uaa" {
+  scope                = data.azurerm_subscription.current.id
+  role_definition_name = "User Access Administrator"
+  principal_id         = azurerm_user_assigned_identity.stacks.principal_id
+}
+
 resource "azurerm_federated_identity_credential" "stacks" {
   name                = "${var.cluster_name}-stacks"
   resource_group_name = local.resource_group.name
