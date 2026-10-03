@@ -1,0 +1,21 @@
+dependencies:
+- name: external-dns
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 8.3.8
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v1.13.6
+- name: plural-certmanager-webhook
+  repository: ""
+  version: 0.1.7
+- name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 4.12.0
+- name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 4.12.0
+- name: flux2
+  repository: https://fluxcd-community.github.io/helm-charts
+  version: 2.12.4
+digest: sha256:04430f437badbb7b3fb2bd40bb54d1cc707966427193bd90f4e253014031cc06
+generated: "2025-03-05T08:36:21.219651-05:00"
