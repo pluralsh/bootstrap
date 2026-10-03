@@ -2,14 +2,36 @@ data "azurerm_resource_group" "default" {
   name = var.resource_group_name
 }
 
-data "azurerm_private_dns_zone" "postgres" {
+resource "azurerm_private_dns_zone" "postgres" {
+  name                = "${var.cluster_name}.postgres.database.azure.com"
+  resource_group_name = data.azurerm_resource_group.default.name
+}
+
+resource "azurerm_private_dns_zone" "mysql" {
+  name                = "${var.cluster_name}.mysql.database.azure.com"
+  resource_group_name = data.azurerm_resource_group.default.name
+}
+
+data "azurerm_private_dns_zone" "postgres_mgmt" {
   name                = var.postgres_dns_zone
   resource_group_name = data.azurerm_resource_group.default.name
 }
 
-data "azurerm_private_dns_zone" "mysql" {
+data "azurerm_private_dns_zone" "mysql_mgmt" {
   name                = var.mysql_dns_zone
   resource_group_name = data.azurerm_resource_group.default.name
+}
+
+locals {
+  mgmt_postgres_private_dns_zone_name = data.azurerm_private_dns_zone.postgres_mgmt.name
+  mgmt_postgres_private_dns_zone_id   = data.azurerm_private_dns_zone.postgres_mgmt.id
+  mgmt_mysql_private_dns_zone_name    = data.azurerm_private_dns_zone.mysql_mgmt.name
+  mgmt_mysql_private_dns_zone_id      = data.azurerm_private_dns_zone.mysql_mgmt.id
+
+  env_postgres_private_dns_zone_name = var.use_mgmt_dns_zone ? local.mgmt_postgres_private_dns_zone_name : azurerm_private_dns_zone.postgres.name
+  env_postgres_private_dns_zone_id   = var.use_mgmt_dns_zone ? local.mgmt_postgres_private_dns_zone_id : azurerm_private_dns_zone.postgres.id
+  env_mysql_private_dns_zone_name    = var.use_mgmt_dns_zone ? local.mgmt_mysql_private_dns_zone_name : azurerm_private_dns_zone.mysql.name
+  env_mysql_private_dns_zone_id      = var.use_mgmt_dns_zone ? local.mgmt_mysql_private_dns_zone_id : azurerm_private_dns_zone.mysql.id
 }
 
 data "azurerm_virtual_network" "plural" {
@@ -39,8 +61,8 @@ resource "plural_service_context" "plural" {
     sn_subnet_id   = data.azurerm_subnet.plural_sn.id
     pg_subnet_name = data.azurerm_subnet.plural_pg.name
     pg_subnet_id   = data.azurerm_subnet.plural_pg.id
-    dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
-    dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
+    dns_zone_name  = local.mgmt_postgres_private_dns_zone_name
+    dns_zone_id    = local.mgmt_postgres_private_dns_zone_id
   })
 }
 
@@ -98,14 +120,14 @@ resource "azurerm_subnet" "dev_mysql" {
 resource "azurerm_private_dns_zone_virtual_network_link" "dev_pg" {
   name                  = "dev.postgres.com"
   resource_group_name   = data.azurerm_resource_group.default.name
-  private_dns_zone_name = data.azurerm_private_dns_zone.postgres.name
+  private_dns_zone_name = local.env_postgres_private_dns_zone_name
   virtual_network_id    = azurerm_virtual_network.dev.id
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "dev_mysql" {
   name                  = "dev.mysql.com"
   resource_group_name   = data.azurerm_resource_group.default.name
-  private_dns_zone_name = data.azurerm_private_dns_zone.mysql.name
+  private_dns_zone_name = local.env_mysql_private_dns_zone_name
   virtual_network_id    = azurerm_virtual_network.dev.id
 }
 
@@ -119,19 +141,19 @@ resource "plural_service_context" "dev" {
     sn_subnet_id      = azurerm_subnet.dev_sn.id
     pg_subnet_name    = azurerm_subnet.dev_pg.name
     pg_subnet_id      = azurerm_subnet.dev_pg.id
-    pg_dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
-    pg_dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
+    pg_dns_zone_name  = local.env_postgres_private_dns_zone_name
+    pg_dns_zone_id    = local.env_postgres_private_dns_zone_id
     mysql_subnet_name = azurerm_subnet.dev_mysql.name
     mysql_subnet_id   = azurerm_subnet.dev_mysql.id
-    mysql_dns_zone_name  = data.azurerm_private_dns_zone.mysql.name
-    mysql_dns_zone_id    = data.azurerm_private_dns_zone.mysql.id
+    mysql_dns_zone_name  = local.env_mysql_private_dns_zone_name
+    mysql_dns_zone_id    = local.env_mysql_private_dns_zone_id
   {{ if .AppDomain }}
     ingress_dns_zone = "dev.{{ .AppDomain }}"
   {{ end}}
 
     # Kept for backwards compatibility. Use fields with pg_ prefix instead.
-    dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
-    dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
+    dns_zone_name  = local.env_postgres_private_dns_zone_name
+    dns_zone_id    = local.env_postgres_private_dns_zone_id
   })
 }
 
@@ -189,14 +211,14 @@ resource "azurerm_subnet" "prod_mysql" {
 resource "azurerm_private_dns_zone_virtual_network_link" "prod_pg" {
   name                  = "prod.postgres.com"
   resource_group_name   = data.azurerm_resource_group.default.name
-  private_dns_zone_name = data.azurerm_private_dns_zone.postgres.name
+  private_dns_zone_name = local.env_postgres_private_dns_zone_name
   virtual_network_id    = azurerm_virtual_network.prod.id
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "prod_mysql" {
   name                  = "prod.mysql.com"
   resource_group_name   = data.azurerm_resource_group.default.name
-  private_dns_zone_name = data.azurerm_private_dns_zone.mysql.name
+  private_dns_zone_name = local.env_mysql_private_dns_zone_name
   virtual_network_id    = azurerm_virtual_network.prod.id
 }
 
@@ -210,17 +232,17 @@ resource "plural_service_context" "prod" {
     sn_subnet_id      = azurerm_subnet.prod_sn.id
     pg_subnet_name    = azurerm_subnet.prod_pg.name
     pg_subnet_id      = azurerm_subnet.prod_pg.id
-    pg_dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
-    pg_dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
+    pg_dns_zone_name  = local.env_postgres_private_dns_zone_name
+    pg_dns_zone_id    = local.env_postgres_private_dns_zone_id
     mysql_subnet_name = azurerm_subnet.prod_mysql.name
     mysql_subnet_id   = azurerm_subnet.prod_mysql.id
-    mysql_dns_zone_name  = data.azurerm_private_dns_zone.mysql.name
-    mysql_dns_zone_id    = data.azurerm_private_dns_zone.mysql.id
+    mysql_dns_zone_name  = local.env_mysql_private_dns_zone_name
+    mysql_dns_zone_id    = local.env_mysql_private_dns_zone_id
     {{ if .AppDomain }}
     ingress_dns_zone = "{{ .AppDomain }}"
     {{ end}}
     # Kept for backwards compatibility. Use fields with pg_ prefix instead.
-    dns_zone_name  = data.azurerm_private_dns_zone.postgres.name
-    dns_zone_id    = data.azurerm_private_dns_zone.postgres.id
+    dns_zone_name  = local.env_postgres_private_dns_zone_name
+    dns_zone_id    = local.env_postgres_private_dns_zone_id
   })
 }
