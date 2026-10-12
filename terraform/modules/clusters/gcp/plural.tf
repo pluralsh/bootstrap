@@ -1,4 +1,6 @@
 resource "plural_cluster" "this" {
+    provider = plural.cluster
+
     handle = var.cluster
     name   = var.cluster
   
@@ -16,10 +18,4 @@ resource "plural_cluster" "this" {
         external_dns = google_service_account.externaldns.email
       }
     })
-
-    kubeconfig = {
-      host = "https://${module.gke.endpoint}"
-      cluster_ca_certificate = base64decode(module.gke.ca_certificate)
-      token = data.google_client_config.default.access_token
-    }
 }

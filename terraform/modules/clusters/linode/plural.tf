@@ -13,10 +13,4 @@ resource "plural_cluster" "this" {
     fleet = var.fleet
     role = "workload"
   }
-
-  kubeconfig = {
-    host = local.cluster.server
-    cluster_ca_certificate = base64decode(local.cluster["certificate-authority-data"])
-    token = local.user.token
-  }
 }
