@@ -57,7 +57,7 @@ provider "azurerm" {
 }
 
 provider "kubernetes" {
-  host                   = module.mgmt.cluster.cluster_fqdn
+  host                   = "https://${module.mgmt.cluster.cluster_fqdn}"
   cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_ca_certificate)
   client_certificate     = base64decode(module.mgmt.cluster.client_certificate)
   client_key             = base64decode(module.mgmt.cluster.client_key)
@@ -65,7 +65,7 @@ provider "kubernetes" {
 
 provider "helm" {
   kubernetes = {
-    host                   = module.mgmt.cluster.cluster_fqdn
+    host                   = "https://${module.mgmt.cluster.cluster_fqdn}"
     cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_ca_certificate)
     client_certificate     = base64decode(module.mgmt.cluster.client_certificate)
     client_key             = base64decode(module.mgmt.cluster.client_key)
