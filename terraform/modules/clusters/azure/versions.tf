@@ -16,7 +16,7 @@ terraform {
     }
     plural = {
       source = "pluralsh/plural"
-      version = ">= 0.2.9"
+      version = ">= 0.2.26"
     }
     local = {
         source = "hashicorp/local"
@@ -49,3 +49,16 @@ provider "azapi" {
 }
 
 provider "plural" {}
+
+# Separate provider for plural_cluster, kubeconfig on the default one causes a dependency cycle
+# through plural_service_context data sources that the cluster depends on.
+provider "plural" {
+  alias = "cluster"
+
+  kubeconfig = {
+    host =  module.aks.cluster_fqdn
+    cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
+    client_certificate     = base64decode(module.aks.client_certificate)
+    client_key             = base64decode(module.aks.client_key)
+  }
+}

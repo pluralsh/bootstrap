@@ -36,7 +36,7 @@ terraform {
     }
     plural = {
       source  = "pluralsh/plural"
-      version = ">= 0.2.16"
+      version = ">= 0.2.26"
     }
   }
 }
@@ -57,7 +57,7 @@ provider "azurerm" {
 }
 
 provider "kubernetes" {
-  host                   = module.mgmt.cluster.cluster_fqdn
+  host                   = "https://${module.mgmt.cluster.cluster_fqdn}"
   cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_ca_certificate)
   client_certificate     = base64decode(module.mgmt.cluster.client_certificate)
   client_key             = base64decode(module.mgmt.cluster.client_key)
@@ -65,7 +65,7 @@ provider "kubernetes" {
 
 provider "helm" {
   kubernetes = {
-    host                   = module.mgmt.cluster.cluster_fqdn
+    host                   = "https://${module.mgmt.cluster.cluster_fqdn}"
     cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_ca_certificate)
     client_certificate     = base64decode(module.mgmt.cluster.client_certificate)
     client_key             = base64decode(module.mgmt.cluster.client_key)
@@ -74,6 +74,13 @@ provider "helm" {
 
 provider "plural" {
   use_cli = var.use_cli # If you want to have a Plural stack manage your console, comment this out and use the `actor` field
+
+  kubeconfig = {
+    host                   = module.mgmt.cluster.cluster_fqdn
+    cluster_ca_certificate = base64decode(module.mgmt.cluster.cluster_ca_certificate)
+    client_certificate     = base64decode(module.mgmt.cluster.client_certificate)
+    client_key             = base64decode(module.mgmt.cluster.client_key)
+  }
 }
 
 variable "use_cli" {

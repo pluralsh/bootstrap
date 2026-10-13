@@ -30,7 +30,7 @@ terraform {
     }
     plural = {
       source  = "pluralsh/plural"
-      version = ">= 0.2.16"
+      version = ">= 0.2.26"
     }
   }
 }
@@ -71,6 +71,12 @@ provider "helm" {
 
 provider "plural" {
   use_cli = var.use_cli # If you want to have a Plural stack manage your console, comment this out and use the `actor` field
+
+  kubeconfig = {
+    host                   = module.mgmt.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.mgmt.cluster_certificate_authority_data)
+    token                  = data.aws_eks_cluster_auth.cluster.token
+  }
 }
 
 ## useful outputs dumped here, can be moved to a separate file post-generate

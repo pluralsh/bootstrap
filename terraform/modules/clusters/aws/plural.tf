@@ -5,6 +5,8 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 resource "plural_cluster" "this" {
+    provider = plural.cluster
+
     handle = var.cluster
     name   = var.cluster
     tags   = {
@@ -31,12 +33,6 @@ resource "plural_cluster" "this" {
           public_subnets  = local.vpc.public_subnets
         }
     })
-
-    kubeconfig = {
-      host                   = module.eks.cluster_endpoint
-      cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-      token                  = data.aws_eks_cluster_auth.cluster.token
-    }
 
     depends_on = [ 
       module.addons,

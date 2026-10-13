@@ -12,7 +12,7 @@ terraform {
     }
     plural = {
       source = "pluralsh/plural"
-      version = ">= 0.2.9"
+      version = ">= 0.2.26"
     }
     local = {
         source = "hashicorp/local"
@@ -26,4 +26,16 @@ provider "google" {
 
 data "google_client_config" "default" {}
 
-provider "plural" { }
+provider "plural" {}
+
+# Separate provider for plural_cluster, kubeconfig on the default one causes a dependency cycle
+# through plural_service_context data sources that the cluster depends on.
+provider "plural" {
+  alias = "cluster"
+
+  kubeconfig = {
+    host = "https://${module.gke.endpoint}"
+    cluster_ca_certificate = base64decode(module.gke.ca_certificate)
+    token = data.google_client_config.default.access_token
+  }
+}

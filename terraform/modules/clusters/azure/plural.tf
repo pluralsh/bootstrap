@@ -15,6 +15,8 @@ resource "plural_service_context" "cluster" {
 }
 
 resource "plural_cluster" "cluster" {
+    provider = plural.cluster
+
     handle = var.cluster
     name   = var.cluster
   
@@ -36,11 +38,4 @@ resource "plural_cluster" "cluster" {
         cert_manager = azurerm_user_assigned_identity.dns.client_id
       }
     })
-
-    kubeconfig = {
-      host =  module.aks.cluster_fqdn
-      cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
-      client_certificate     = base64decode(module.aks.client_certificate)
-      client_key             = base64decode(module.aks.client_key)
-    }
 }
