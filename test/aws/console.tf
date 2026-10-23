@@ -1,7 +1,7 @@
 // leave this resource static, if you want to modify console values, do it in the generated helm values directly instead.
 resource "null_resource" "console" {
   provisioner "local-exec" {
-    command = "plural cd control-plane-values --name boot-test --dsn \"${module.mgmt.db_url}\" --domain bootstrap.onplural.sh --file console.yaml"
+    command     = "plural cd control-plane-values --name boot-test --dsn \"${module.mgmt.db_url}\" --domain bootstrap.onplural.sh --file console.yaml --object-store-bucket \"${try(module.mgmt.console_s3_bucket, "")}\" --object-store-region \"${try(module.mgmt.console_s3_region, "")}\""
     working_dir = "${path.module}/../helm-values"
   }
 }

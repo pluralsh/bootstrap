@@ -84,6 +84,18 @@ output "cloudwatch_iam_arn" {
   value = module.mgmt.cloudwatch_iam_arn
 }
 
+output "console_s3_bucket" {
+  value = module.mgmt.console_s3_bucket
+}
+
+output "console_s3_region" {
+  value = module.mgmt.console_s3_region
+}
+
+output "console_s3_role_arn" {
+  value = module.mgmt.console_s3_role_arn
+}
+
 output "vpc_id" {
   value = module.mgmt.vpc.vpc_id
 }

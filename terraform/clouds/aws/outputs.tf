@@ -241,3 +241,15 @@ output "identity" {
 output "cloudwatch_iam_arn" {
   value = aws_iam_role.cloudwatch_exporter_role.arn
 }
+
+output "console_s3_bucket" {
+  value = aws_s3_bucket.console.id
+}
+
+output "console_s3_region" {
+  value = data.aws_region.current.name
+}
+
+output "console_s3_role_arn" {
+  value = aws_iam_role.console_role.arn
+}

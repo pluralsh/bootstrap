@@ -21,6 +21,10 @@ spec:
     url: https://pluralsh.github.io/console
     valuesFiles:
     - console.yaml.liquid
+  imports:
+  - stackRef:
+      name: mgmt
+      namespace: infra
   clusterRef:
     kind: Cluster
     name: mgmt
