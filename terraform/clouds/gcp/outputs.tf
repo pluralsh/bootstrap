@@ -22,3 +22,15 @@ output "ready" {
 output "identity" {
   value = module.console-workload-identity.gcp_service_account_email
 }
+
+output "console_gcs_bucket" {
+  value = google_storage_bucket.console.name
+}
+
+output "console_gcs_project" {
+  value = var.project_id
+}
+
+output "console_gcs_service_account" {
+  value = module.console-object-store-workload-identity.gcp_service_account_email
+}
