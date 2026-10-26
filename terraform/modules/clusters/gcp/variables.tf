@@ -19,7 +19,7 @@ variable "region" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.36"
+  default = "1.35"
 }
 
 variable "node_pools" {
