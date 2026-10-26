@@ -15,19 +15,19 @@ variable "deletion_protection" {
 
 variable "kubernetes_version" {
   type    = string
-  default = "1.34"
+  default = "1.36"
 }
 
 variable "next_kubernetes_version" {
   type    = string
-  default = "1.34"
+  default = "1.36"
 }
 
 variable "node_pools" {
   type = any
   default = {
     green = {
-      machine_type       = "n2-standard-2"
+      machine_type       = "n2-standard-4"
       min_count          = 0
       initial_node_count = 1
       max_count = 10
@@ -35,7 +35,7 @@ variable "node_pools" {
       auto_upgrade       = false
     },
     blue = {
-      machine_type       = "n2-standard-2"
+      machine_type       = "n2-standard-4"
       min_count          = 0
       initial_node_count = 1
       max_count = 10
