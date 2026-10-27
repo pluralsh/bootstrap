@@ -15,7 +15,7 @@ variable "create_db" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.34"
+  default = "1.35"
 }
 
 variable "next_kubernetes_version" {
@@ -94,14 +94,14 @@ variable "node_pools" {
   type = map(any)
   default = {
     blue = {
-      vm_size = "Standard_D2s_v3"
+      vm_size = "Standard_D4s_v3"
       node_count = 3
       min_count = 1
       max_count = 20
       enable_auto_scaling = true
     }
     green = {
-      vm_size = "Standard_D2s_v3"
+      vm_size = "Standard_D4s_v3"
       node_count = 3
       min_count = 1
       max_count = 20

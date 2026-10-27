@@ -13,7 +13,7 @@ variable "tier" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.34"
+  default = "1.35"
 }
 
 variable "next_kubernetes_version" {
