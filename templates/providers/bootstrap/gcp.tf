@@ -60,6 +60,19 @@ provider "plural" {
   }
 }
 
+## useful outputs dumped here, can be moved to a separate file post-generate
+output "console_gcs_bucket" {
+  value = module.mgmt.console_gcs_bucket
+}
+
+output "console_gcs_project" {
+  value = module.mgmt.console_gcs_project
+}
+
+output "console_gcs_service_account" {
+  value = module.mgmt.console_gcs_service_account
+}
+
 variable "use_cli" {
   type    = bool
   default = true

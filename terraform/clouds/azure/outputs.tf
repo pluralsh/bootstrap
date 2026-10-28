@@ -22,3 +22,16 @@ output "ready" {
 output "identity" {
     value = azurerm_user_assigned_identity.stacks.client_id
 }
+
+
+output "console_azure_storage_account" {
+  value = azurerm_storage_account.console.name
+}
+
+output "console_azure_container" {
+  value = azurerm_storage_container.console.name
+}
+
+output "console_azure_client_id" {
+  value = azurerm_user_assigned_identity.console.client_id
+}

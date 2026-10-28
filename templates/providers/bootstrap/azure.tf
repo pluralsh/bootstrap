@@ -83,6 +83,19 @@ provider "plural" {
   }
 }
 
+## useful outputs dumped here, can be moved to a separate file post-generate
+output "console_azure_storage_account" {
+  value = module.mgmt.console_azure_storage_account
+}
+
+output "console_azure_container" {
+  value = module.mgmt.console_azure_container
+}
+
+output "console_azure_client_id" {
+  value = module.mgmt.console_azure_client_id
+}
+
 variable "use_cli" {
   type    = bool
   default = true

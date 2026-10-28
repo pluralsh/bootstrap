@@ -25,6 +25,7 @@ module "aks" {
   kubernetes_version   = local.next_kubernetes_version
   orchestrator_version = local.node_orchestrator_version
   cluster_name         = var.cluster_name
+  location             = local.resource_group.location
   resource_group_name  = local.resource_group.name
   prefix               = var.cluster_name
   os_disk_size_gb      = 60

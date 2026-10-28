@@ -1,7 +1,7 @@
 // leave this resource static, if you want to modify console values, do it in the generated helm values directly instead.
 resource "null_resource" "console" {
   provisioner "local-exec" {
-    command     = "plural cd control-plane-values --name {{ .Cluster }} --dsn \"${module.mgmt.db_url}\" --domain {{ .Subdomain }} --file console.yaml"
+    command     = "plural cd control-plane-values --name {{ .Cluster }} --dsn \"${module.mgmt.db_url}\" --domain {{ .Subdomain }} --file console.yaml --object-store-bucket \"${try(module.mgmt.console_s3_bucket, "")}\" --object-store-region \"${try(module.mgmt.console_s3_region, "")}\" --object-store-azure-storage-account \"${try(module.mgmt.console_azure_storage_account, "")}\" --object-store-azure-container \"${try(module.mgmt.console_azure_container, "")}\" --object-store-azure-client-id \"${try(module.mgmt.console_azure_client_id, "")}\" --object-store-gcs-bucket \"${try(module.mgmt.console_gcs_bucket, "")}\" --object-store-gcs-service-account \"${try(module.mgmt.console_gcs_service_account, "")}\""
     working_dir = "${path.module}/../../temp/helm"
   }
 }
