@@ -15,7 +15,7 @@ variable "create_db" {
 
 variable "kubernetes_version" {
   type = string
-  default = "1.35"
+  default = "1.36"
 }
 
 variable "next_kubernetes_version" {

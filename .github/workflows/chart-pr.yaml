@@ -1,0 +1,72 @@
+name: Chart PR
+
+on:
+  pull_request:
+    paths:
+    - charts/runtime/**
+    - .github/workflows/chart-pr.yaml
+
+permissions:
+  contents: read
+
+env:
+  KUBERNETES_VERSION: 1.36.0
+  KUBECONFORM_VERSION: v0.8.0
+
+jobs:
+  lint:
+    name: Lint runtime chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v3
+
+      - name: Install kubeconform
+        working-directory: ${{ runner.temp }}
+        run: |
+          base="https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}"
+          curl -sSLO "${base}/kubeconform-linux-amd64.tar.gz"
+          curl -sSL "${base}/CHECKSUMS" | grep ' kubeconform-linux-amd64.tar.gz$' | sha256sum -c -
+          sudo tar xzf kubeconform-linux-amd64.tar.gz -C /usr/local/bin kubeconform
+
+      - name: Lint and validate
+        working-directory: charts/runtime
+        # subcharts are vendored in charts/, no dependency build needed
+        run: |
+          helm lint .
+          helm template runtime . --namespace plural-runtime --kube-version "${KUBERNETES_VERSION}" \
+            | kubeconform -strict -summary -ignore-missing-schemas -kubernetes-version "${KUBERNETES_VERSION}"
+
+  publish:
+    name: Push PR runtime chart to ghcr
+    needs: lint
+    # forks get a read-only token, only same-repo PRs can push
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: azure/setup-helm@v3
+
+      - name: Package and push
+        working-directory: charts/runtime
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY: oci://ghcr.io/${{ github.repository_owner }}/bootstrap-charts
+        run: |
+          version="$(yq -r '.version' Chart.yaml)-pr${PR_NUMBER}-${HEAD_SHA::7}"
+          echo "${REGISTRY_TOKEN}" | helm registry login ghcr.io --username "${REGISTRY_USER}" --password-stdin
+          helm package . --version "${version}" --destination "${RUNNER_TEMP}"
+          helm push "${RUNNER_TEMP}/runtime-${version}.tgz" "${REGISTRY}"
+          echo "Pushed ${REGISTRY}/runtime:${version}" >> "${GITHUB_STEP_SUMMARY}"
