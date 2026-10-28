@@ -69,7 +69,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REGISTRY: oci://ghcr.io/${{ github.repository_owner }}/bootstrap-charts
+          REGISTRY: oci://ghcr.io/${{ github.repository_owner }}/charts
         run: |
           version="$(yq -r '.version' Chart.yaml)-pr${PR_NUMBER}-${HEAD_SHA::7}"
           echo "${REGISTRY_TOKEN}" | helm registry login ghcr.io --username "${REGISTRY_USER}" --password-stdin
