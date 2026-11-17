@@ -17,5 +17,8 @@ dependencies:
 - name: flux2
   repository: https://fluxcd-community.github.io/helm-charts
   version: 2.12.4
-digest: sha256:82426089df5a1aa30ddd30bbe58ab6b773392bc7e70dbf1bdcae4a73e1bddb7d
-generated: "2026-10-26T12:38:54.230823214+01:00"
+- name: gatekeeper
+  repository: https://open-policy-agent.github.io/gatekeeper/charts
+  version: 3.21.1
+digest: sha256:311c7b1e81e294616a520ac5f9de4b2175d28e9cd3ba86860ca6be70102b1706
+generated: "2026-11-17T23:25:49.818697327Z"
