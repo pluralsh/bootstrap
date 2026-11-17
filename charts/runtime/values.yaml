@@ -57,6 +57,9 @@ acmeEAB: {}
 
 certManagerNamespace: cert-manager
 
+gatekeeper:
+  enabled: true
+
 cert-manager:
   enabled: false
   installCRDs: true
