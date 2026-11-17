@@ -2,9 +2,13 @@ apiVersion: v2
 name: runtime
 description: Sets up the basic dependencies needed to get a network stack running
 type: application
-version: 0.1.37
+version: 0.1.38
 appVersion: "0.1.0"
 dependencies:
+- name: gatekeeper
+  version: 3.21.1
+  repository: https://open-policy-agent.github.io/gatekeeper/charts
+  condition: gatekeeper.enabled
 - name: external-dns
   version: 8.3.8
   repository: oci://registry-1.docker.io/bitnamicharts

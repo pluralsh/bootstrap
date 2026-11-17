@@ -1,4 +1,7 @@
 dependencies:
+- name: gatekeeper
+  repository: https://open-policy-agent.github.io/gatekeeper/charts
+  version: 3.21.1
 - name: external-dns
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 8.3.8
@@ -17,5 +20,5 @@ dependencies:
 - name: flux2
   repository: https://fluxcd-community.github.io/helm-charts
   version: 2.12.4
-digest: sha256:82426089df5a1aa30ddd30bbe58ab6b773392bc7e70dbf1bdcae4a73e1bddb7d
-generated: "2026-10-26T12:38:54.230823214+01:00"
+digest: sha256:9076527e122145035b420b32410918c52f9a1bcb3f3e7f3a5f328a6b3fcf4081
+generated: "2026-11-17T02:50:58.557877691Z"

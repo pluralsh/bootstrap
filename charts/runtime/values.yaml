@@ -1,3 +1,6 @@
+gatekeeper:
+  enabled: true
+
 enableLetsEncrypt: true
 
 external-dns:
