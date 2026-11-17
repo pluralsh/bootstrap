@@ -2,7 +2,7 @@ apiVersion: v2
 name: runtime
 description: Sets up the basic dependencies needed to get a network stack running
 type: application
-version: 0.1.37
+version: 0.1.38
 appVersion: "0.1.0"
 dependencies:
 - name: external-dns
@@ -29,3 +29,7 @@ dependencies:
   repository: https://fluxcd-community.github.io/helm-charts
   version: 2.12.4
   condition: flux2.enabled
+- name: gatekeeper
+  repository: https://open-policy-agent.github.io/gatekeeper/charts
+  version: 3.21.1
+  condition: gatekeeper.enabled
