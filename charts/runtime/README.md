@@ -21,3 +21,7 @@ to your config.
 ## ExternalDns
 
 External dns is actually safe to run multiple times in the same cluster.  If you'd like to set up externaldns for another domain, we simply recommend you deploy another instance of it configured how you might like.
+
+## Gatekeeper ownership
+
+Gatekeeper is not packaged by this runtime chart: it has no Gatekeeper dependency or templates. Manage Gatekeeper version changes through the service that owns its installation rather than adding it to runtime.
