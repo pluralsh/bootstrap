@@ -66,6 +66,9 @@ resource "kubernetes_secret" "runtime_config" {
     pluralToken   = tostring(try(local.runtime_values.pluralToken, ""))
     acmeEABKid    = tostring(try(local.runtime_values.acmeEAB.kid, ""))
     acmeEABSecret = tostring(try(local.runtime_values.acmeEAB.secret, ""))
+{{- if eq .Provider "aws" }}
+    vpcCidr       = module.mgmt.vpc.vpc_cidr_block
+{{- end }}
   }
 
   depends_on = [kubernetes_namespace.infra, module.mgmt.cluster, module.mgmt.ready]

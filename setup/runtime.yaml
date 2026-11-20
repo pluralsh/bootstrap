@@ -16,7 +16,7 @@ spec:
     name: runtime-config
     namespace: infra
   helm:
-    version: "0.x.x"
+    version: "1.x.x"
     chart: runtime
     url: https://pluralsh.github.io/bootstrap
     valuesFiles:

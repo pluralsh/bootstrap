@@ -55,17 +55,31 @@ resource "helm_release" "flux" {
   depends_on = [module.mgmt.cluster]
 }
 
+{{ if eq .Provider "aws" }}
+locals {
+  # NLBs send PROXY protocol v2 headers, trust them only from inside the VPC
+  vpc_trusted_ips = {
+    proxyProtocol = { trustedIPs = [module.mgmt.vpc.vpc_cidr_block] }
+  }
+  runtime_vpc_values = { for instance in ["traefik", "traefik-private"] : instance => {
+    ports = { web = local.vpc_trusted_ips, websecure = local.vpc_trusted_ips }
+  } }
+}
+{{ end }}
 resource "helm_release" "runtime" {
   name             = "runtime"
   namespace        = "plural-runtime"
   chart            = "runtime"
   repository       = "https://pluralsh.github.io/bootstrap"
-  version          = "0.1.33"
+  version          = "1.0.0"
   create_namespace = true
   timeout          = 300
   wait             = false
   values = [
-    data.local_sensitive_file.runtime.content
+    data.local_sensitive_file.runtime.content,
+{{- if eq .Provider "aws" }}
+    yamlencode(local.runtime_vpc_values),
+{{- end }}
   ]
 
   depends_on = [module.mgmt.cluster, helm_release.certmanager, helm_release.flux]
