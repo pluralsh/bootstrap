@@ -36,7 +36,7 @@ Both instances come from the upstream [traefik chart](https://github.com/traefik
            pathOverride: plural-runtime/runtime-ingress-nginx-private-controller
    ```
 
-   Without this, new load balancers are created and external-dns moves the records to them. Either way the Service switches to the Traefik pods (new ports and selector) while the ingress-nginx pods are removed, so expect a short blip and pick a quiet window.
+   Without this, new load balancers are created and external-dns moves the records to them. Either way the Service switches to the Traefik pods (new ports and selector) while the ingress-nginx pods are removed, so expect a short blip (about 20 seconds on AWS in testing) and pick a quiet window.
 4. On AWS the NLBs send PROXY protocol headers, so Traefik has to trust the VPC range. Add this to `helm/runtime.yaml.liquid`:
 
    ```yaml
