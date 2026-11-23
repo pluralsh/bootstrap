@@ -1,0 +1,41 @@
+[[- if or (eq .Provider "aws") (eq .Provider "gcp") (eq .Provider "azure") ]]
+# The devbox node pool's disk prep and the DevboxRunner the deployment operator turns into Substrate workers and
+# console devboxes. The node pool itself is in the mgmt stack (terraform/mgmt/cluster/devbox.tf).
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: devbox-nodes
+  namespace: infra
+spec:
+  name: devbox-nodes
+  namespace: devbox-nodes
+  git:
+    folder: services/devbox
+    ref: [[ or .Context.Branch "main" ]]
+  repositoryRef:
+    kind: GitRepository
+    name: infra
+    namespace: infra
+  dependencies:
+  # the DevboxRunner needs Substrate's WorkerPool API
+  - name: agent-substrate
+  configuration:
+    pool: devbox
+    diskPrepImage: ghcr.io/pluralsh/agent-harness-base:0.6.76
+    [[- if eq .Provider "aws" ]]
+    # the gp3 data volume at /dev/xvdb
+    diskModel: "Elastic Block Store"
+    [[- else ]]
+    # /var/lib/ate stays on the boot disk; disk prep only lifts the startup taint
+    diskModel: ""
+    [[- end ]]
+    # every pool's default machine has 8 vCPUs and 32GiB, so one worker per node fits below its allocatable resources
+    workerCpu: "7"
+    workerMemory: 24Gi
+    diskSize: 200Gi
+    maxWorkers: "5"
+  clusterRef:
+    kind: Cluster
+    name: mgmt
+    namespace: infra
+[[- end ]]

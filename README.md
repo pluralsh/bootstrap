@@ -14,6 +14,13 @@ There are three main resources created by these templates:
 * K8s Control Plane + minimal worker node set
 * Postgres DB (will be used for your Plural Console instance)
 
+On AWS, GCP and Azure it also sets up devboxes, Plural's sandboxed coding-agent environments, on the management cluster:
+
+* `terraform/mgmt/cluster/devbox.tf`: a node pool for the sandboxes, which scales from zero so it only costs money while devboxes run, a bucket for their snapshots, and workload identities to reach it
+* `bootstrap/devbox`: [Agent Substrate](https://github.com/agent-substrate/substrate), the sandbox runtime, and a `devbox` DevboxRunner (`services/devbox`)
+
+To leave them out, set `devbox_enabled = false` on the `mgmt` module and delete `bootstrap/devbox`.
+
 Our defaults are meant to be tweaked, feel free to reference the documentation of the underlying modules if you want to make a cluster private, or modify our CIDR range defaults if you want to VPC peer.
 
 

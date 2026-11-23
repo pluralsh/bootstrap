@@ -1,0 +1,43 @@
+# The default devbox. Workers scale from zero, so the devbox pool only has nodes while devboxes run; the first
+# devbox after an idle period waits for a node. Add SCM connections, repositories, egress rules or cloud identities
+# here. Reference: https://github.com/pluralsh/console/blob/master/go/deployment-operator/docs/api.md#devboxrunner
+apiVersion: deployments.plural.sh/v1alpha1
+kind: DevboxRunner
+metadata:
+  name: devbox
+spec:
+  agents:
+  - type: claude
+    default: true
+  - type: codex
+  - type: opencode
+  - type: gemini
+  - type: pi
+  scmConnections:
+  - plural
+  autonomy:
+    default: manual
+    max: full
+  browser:
+    enabled: true
+  resources:
+    cpu: "2"
+    memory: 4Gi
+    disk: 20Gi
+  workerPool:
+    autoscaling:
+      minReplicas: 0
+      maxReplicas: {{ configuration.maxWorkers }}
+      spareInstances: 0
+    diskSize: {{ configuration.diskSize }}
+    sandboxClass: gvisor
+    nodeSelector:
+      plural.sh/devbox-pool: {{ configuration.pool }}
+    tolerations:
+    # lets the cluster autoscaler size the pool from its template; atelet still waits for the disk
+    - key: plural.sh/devbox-disk
+      operator: Exists
+      effect: NoSchedule
+    resources:
+      requests: {cpu: "{{ configuration.workerCpu }}", memory: {{ configuration.workerMemory }}}
+      limits: {cpu: "{{ configuration.workerCpu }}", memory: {{ configuration.workerMemory }}}

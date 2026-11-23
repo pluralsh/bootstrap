@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devbox-nodes
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: devbox-disk-prep
+  namespace: devbox-nodes
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: devbox-disk-prep
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "update"]
+<<<<<<< Updated upstream
+# restarts pods on the node that started before /var/lib/ate was mounted
+=======
+>>>>>>> Stashed changes
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: devbox-disk-prep
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: devbox-disk-prep
+subjects:
+- kind: ServiceAccount
+  name: devbox-disk-prep
+  namespace: devbox-nodes
+---
+# devbox-disk-prep ships in the agent-harness base image. On a node's first boot it formats the disks whose model
+# matches DISK_MODEL (RAID0 when there are several) as XFS, mounts them at /var/lib/ate and lifts the
+# plural.sh/devbox-disk startup taint. Afterwards it only reassembles and remounts.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: devbox-disk-prep
+  namespace: devbox-nodes
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: devbox-disk-prep
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: devbox-disk-prep
+    spec:
+      serviceAccountName: devbox-disk-prep
+      priorityClassName: system-node-critical
+      nodeSelector:
+        plural.sh/devbox-pool: {{ configuration.pool }}
+      tolerations:
+      - operator: Exists
+      containers:
+      - name: disk-prep
+        image: {{ configuration.diskPrepImage }}
+        command: ["/devbox-disk-prep"]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: DISK_MODEL
+          value: "{{ configuration.diskModel }}"
+        securityContext:
+          privileged: true
+          runAsUser: 0
+          runAsGroup: 0
+        readinessProbe:
+          exec:
+            command: ["test", "-f", "/tmp/ready"]
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        volumeMounts:
+        - name: host
+          mountPath: /host
+          mountPropagation: Bidirectional
+        - name: dev
+          mountPath: /dev
+      volumes:
+      - name: host
+        hostPath:
+          path: /
+      - name: dev
+        hostPath:
+          path: /dev
