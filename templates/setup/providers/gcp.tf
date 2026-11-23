@@ -21,3 +21,16 @@ module "mgmt" {
     network       = "${var.network}"
     subnetwork    = "${var.subnetwork}"
 }
+
+# read by the devbox services in bootstrap/devbox through the mgmt stack's outputs
+output "devbox_snapshot_location" {
+  value = module.mgmt.devbox_snapshot_location
+}
+
+output "devbox_api_server_service_account" {
+  value = module.mgmt.devbox_api_server_service_account
+}
+
+output "devbox_transfer_service_account" {
+  value = module.mgmt.devbox_transfer_service_account
+}
