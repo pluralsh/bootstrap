@@ -4,7 +4,7 @@ This will guide teams new to kubernetes how to setup a fresh cluster with what's
 
 * cert-manager - this is used to issue certificates with the ACME protocol
 * external-dns - this is used to wire DNS records against common cloud DNS providers to k8s load balancer resources
-* ingress-nginx - a well-supported ingress controller to handle complex load balancing and routing setups
+* traefik - an ingress controller that serves the `nginx` ingress class (including ingress-nginx annotations) to handle complex load balancing and routing setups
 
 ## General Flow
 

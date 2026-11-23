@@ -39,9 +39,9 @@ application:
 plural:
   enabled: false
 
-ingress-nginx:
+traefik:
   enabled: false
-ingress-nginx-private:
+traefik-private:
   enabled: false
 {{ end }}
 
@@ -61,40 +61,32 @@ application:
 plural:
   enabled: false
 
-ingress-nginx:
+traefik:
   enabled: false
-ingress-nginx-private:
+traefik-private:
   enabled: false
 {{ end }}
 
 {{ if and (eq .Provider "aws") (not .Cloud) }}
-ingress-nginx:
-  controller:
-    service:
-      annotations:
-        service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
-        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
-        service.beta.kubernetes.io/aws-load-balancer-type: external
-        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
-        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
-    config:
-      compute-full-forwarded-for: 'true'
-      use-forwarded-headers: 'true'
-      use-proxy-protocol: 'true'
-ingress-nginx-private:
-  controller:
-    service:
-      annotations:
-        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
-        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
-        service.beta.kubernetes.io/aws-load-balancer-type: external
-        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
-        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
-    config:
-      compute-full-forwarded-for: 'true'
-      use-forwarded-headers: 'true'
-      use-proxy-protocol: 'true'
+# NLBs send PROXY protocol v2 headers, only trusted from inside the VPC
+traefik:
+  ports:
+    web:
+      proxyProtocol:
+        trustedIPs:
+        - 10.0.0.0/16
+    websecure:
+      proxyProtocol:
+        trustedIPs:
+        - 10.0.0.0/16
+traefik-private:
+  ports:
+    web:
+      proxyProtocol:
+        trustedIPs:
+        - 10.0.0.0/16
+    websecure:
+      proxyProtocol:
+        trustedIPs:
+        - 10.0.0.0/16
 {{ end }}

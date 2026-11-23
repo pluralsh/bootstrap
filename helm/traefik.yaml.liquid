@@ -1,0 +1,110 @@
+# Traefik serves the `nginx` ingress class through its ingress-nginx compatible provider,
+# so Ingresses written for ingress-nginx keep working unchanged.
+deployment:
+  replicas: null # owned by the HPA
+  terminationGracePeriodSeconds: 300
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+ingressClass:
+  enabled: false
+providers:
+  kubernetesCRD:
+    enabled: false
+  kubernetesIngress:
+    enabled: false
+  kubernetesIngressNGINX:
+    enabled: true
+    ingressClass: nginx
+    controllerClass: k8s.io/ingress-nginx
+    publishService:
+      enabled: true
+    proxyReadTimeout: 3600
+    proxySendTimeout: 3600
+# unlimited request body like ingress-nginx proxy-body-size 0, the chart drops falsy provider values
+additionalArguments:
+- --providers.kubernetesingressnginx.proxyBodySize=0
+extraObjects:
+- apiVersion: networking.k8s.io/v1
+  kind: IngressClass
+  metadata:
+    name: nginx
+  spec:
+    controller: k8s.io/ingress-nginx
+ports:
+  web:
+    transport:
+      respondingTimeouts:
+        readTimeout: 0
+        writeTimeout: 0
+        idleTimeout: 3600s
+      lifeCycle:
+        graceTimeOut: 240s
+  websecure:
+    transport:
+      respondingTimeouts:
+        readTimeout: 0
+        writeTimeout: 0
+        idleTimeout: 3600s
+      lifeCycle:
+        graceTimeOut: 240s
+service:
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+log:
+  format: json
+accessLog:
+  enabled: true
+  format: json
+metrics:
+  prometheus:
+    service:
+      enabled: true
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
+        prometheus.io/path: "/metrics"
+        prometheus.io/scheme: http
+resources:
+  requests:
+    cpu: 100m
+    memory: 250Mi
+topologySpreadConstraints:
+- maxSkew: 1
+  topologyKey: topology.kubernetes.io/zone
+  whenUnsatisfiable: DoNotSchedule
+  labelSelector:
+    matchLabels:
+{% raw %}
+      app.kubernetes.io/name: '{{ template "traefik.name" . }}'
+      app.kubernetes.io/instance: '{{ template "traefik.instance-name" . }}'
+{% endraw %}
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 11
+  metrics:
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 95
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 180
+    scaleUp:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 60
