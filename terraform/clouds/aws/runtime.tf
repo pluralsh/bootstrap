@@ -35,6 +35,11 @@ module "eks_blueprints_addons" {
   # mostly need this module to install the lb controller here.
   enable_aws_load_balancer_controller = true
   enable_cluster_autoscaler           = true
+  # the module's default chart lacks the RBAC newer autoscalers need (DRA and VolumeAttachments), which stalls
+  # them before they ever scale
+  cluster_autoscaler = {
+    chart_version = "9.60.0"
+  }
   enable_metrics_server               = true
 
   depends_on = [
