@@ -1,12 +1,12 @@
 apiVersion: deployments.plural.sh/v1alpha1
 kind: GlobalService
 metadata:
-  name: ingress-nginx
+  name: traefik
   namespace: infra
 spec:
   mgmt: false
   template:
-    namespace: ingress-nginx
+    namespace: traefik
     git:
       ref: main
       folder: helm
@@ -14,8 +14,8 @@ spec:
       name: infra # if you check in `bootstrap/setup.yaml` you should find the custom resource this points to
       namespace: infra
     helm:
-      version: x.x.x
-      chart: ingress-nginx
-      url: https://kubernetes.github.io/ingress-nginx
+      version: 42.x.x
+      chart: traefik
+      url: https://traefik.github.io/charts
       valuesFiles:
-      - ingress-nginx.yaml.liquid
+      - traefik.yaml.liquid
