@@ -1,6 +1,6 @@
-# The default devbox. Workers scale from zero, so the devbox pool only has nodes while devboxes run; the first
-# devbox after an idle period waits for a node. Add SCM connections, repositories, egress rules or cloud identities
-# here. Reference: https://github.com/pluralsh/console/blob/master/go/deployment-operator/docs/api.md#devboxrunner
+# The default devbox. One worker always runs, since building the devbox template needs one, and the pool grows
+# with demand. Add SCM connections, repositories, egress rules or cloud identities here.
+# Reference: https://github.com/pluralsh/console/blob/master/go/deployment-operator/docs/api.md#devboxrunner
 apiVersion: deployments.plural.sh/v1alpha1
 kind: DevboxRunner
 metadata:
@@ -26,9 +26,9 @@ spec:
     disk: 20Gi
   workerPool:
     autoscaling:
-      minReplicas: 0
+      minReplicas: 1
       maxReplicas: {{ configuration.maxWorkers }}
-      spareInstances: 0
+      spareInstances: 1
     diskSize: {{ configuration.diskSize }}
     sandboxClass: gvisor
     nodeSelector:
