@@ -23,11 +23,9 @@ spec:
     pool: devbox
     diskPrepImage: ghcr.io/pluralsh/agent-harness-base:0.6.76
     [[- if eq .Provider "aws" ]]
-    # the gp3 data volume at /dev/xvdb
+    # the gp3 data volume at /dev/xvdb; elsewhere /var/lib/ate stays on the boot disk and disk prep only lifts the
+    # startup taint (console rejects an empty configuration value, so diskModel is left out)
     diskModel: "Elastic Block Store"
-    [[- else ]]
-    # /var/lib/ate stays on the boot disk; disk prep only lifts the startup taint
-    diskModel: ""
     [[- end ]]
     # every pool's default machine has 8 vCPUs and 32GiB, so one worker per node fits below its allocatable resources
     workerCpu: "7"
