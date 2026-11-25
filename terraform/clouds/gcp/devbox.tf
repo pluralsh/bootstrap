@@ -107,6 +107,8 @@ resource "google_storage_bucket" "devbox" {
   location                    = var.region
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"
+  # snapshots only outlive their devboxes, which go with the cluster
+  force_destroy = true
 }
 
 resource "google_service_account" "devbox_api_server" {

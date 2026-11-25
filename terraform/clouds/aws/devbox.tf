@@ -72,6 +72,8 @@ locals {
 resource "aws_s3_bucket" "devbox" {
   count         = local.devbox
   bucket_prefix = substr("${var.cluster_name}-ate-", 0, 37)
+  # snapshots only outlive their devboxes, which go with the cluster
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_public_access_block" "devbox" {
