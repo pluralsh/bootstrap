@@ -42,7 +42,8 @@ objectStore:
   snapshotLocation: {{ imports["mgmt"].devbox_snapshot_location }}
   azureBlob:
     image:
-      tag: "0.3.0"
+      # built from agent-substrate-plugins/objectstore-azure-blob d960af4 by console's objectstore-azure-blob workflow
+      tag: sha-d960af4
     accountUrl: {{ imports["mgmt"].devbox_account_url }}
     containers:
     - snapshots
