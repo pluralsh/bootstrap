@@ -58,10 +58,10 @@ resource "azurerm_kubernetes_cluster_node_pool" "devbox" {
     "plural.sh/devbox-pool" = "devbox"
   }
 
+  # no plural.sh/devbox-disk startup taint here: AKS refuses to remove taints set on a node pool, and with
+  # /var/lib/ate on the OS disk there's nothing for devbox-disk-prep to wait for
   node_taints = [
     "ate.dev/sandboxClass=gvisor:NoSchedule",
-    # lifted by devbox-disk-prep; /var/lib/ate stays on the OS disk, so there's nothing to format
-    "plural.sh/devbox-disk=pending:NoSchedule",
   ]
 
   upgrade_settings {
