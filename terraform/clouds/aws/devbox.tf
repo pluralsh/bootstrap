@@ -1,6 +1,6 @@
-# Plural devboxes: a node pool for Agent Substrate's gVisor workers, the bucket Substrate keeps actor snapshots in,
-# and the EKS Pod Identity roles ate-api-server and atelet reach it with. The services in bootstrap/devbox install
-# Substrate and the DevboxRunner on top.
+# Plural devboxes: a node pool for Agent Substrate's gVisor workers, the bucket Substrate keeps actor snapshots and
+# ZeroFS devbox homes in, and the EKS Pod Identity roles ate-api-server, atelet and the ZeroFS driver reach it with.
+# The services in bootstrap/devbox install Substrate and the DevboxRunner on top.
 
 variable "devbox_enabled" {
   type    = bool
@@ -26,7 +26,7 @@ variable "devbox_data_disk_size" {
 
 locals {
   devbox       = var.devbox_enabled ? 1 : 0
-  devbox_roles = var.devbox_enabled ? toset(["ate-api-server", "atelet"]) : toset([])
+  devbox_roles = var.devbox_enabled ? toset(["ate-api-server", "atelet", "devbox-zerofs"]) : toset([])
 
   # Joins module.eks.eks_managed_node_groups, so it gets the node security group the rest of the cluster uses.
   devbox_node_groups = var.devbox_enabled ? {

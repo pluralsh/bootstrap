@@ -20,6 +20,9 @@ spec:
     max: full
   browser:
     enabled: true
+  # each devbox's /home/dev is its own ZeroFS filesystem in the snapshot bucket (agent-substrate's zerofs)
+  home:
+    storage: ZeroFS
   resources:
     cpu: "2"
     memory: 4Gi

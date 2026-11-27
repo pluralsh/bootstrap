@@ -1,6 +1,6 @@
 # Plural devboxes: a node pool for Agent Substrate's gVisor workers, the storage account Substrate keeps actor
-# snapshots in, and the Workload Identity identities that reach it. The services in bootstrap/devbox install
-# Substrate and the DevboxRunner on top. Needs workload_identity_enabled.
+# snapshots and ZeroFS devbox homes in, and the Workload Identity identities that reach it. The services in
+# bootstrap/devbox install Substrate and the DevboxRunner on top. Needs workload_identity_enabled.
 
 variable "devbox_enabled" {
   type    = bool
@@ -28,11 +28,12 @@ locals {
   devbox = var.devbox_enabled ? 1 : 0
   # Storage account names are 3-24 lowercase alphanumerics and globally unique.
   devbox_account_prefix = substr(replace(lower("ate${var.cluster_name}"), "/[^a-z0-9]/", ""), 0, 16)
-  # The objectstore-azure-blob plugin runs next to atelet (node) and ate-api-server (control), each as its own
-  # Entra identity federated to that pod's ServiceAccount.
+  # The objectstore-azure-blob plugin runs next to atelet (node) and ate-api-server (control), and the ZeroFS driver
+  # keeps devbox homes in the same container, each as its own Entra identity federated to that pod's ServiceAccount.
   devbox_identities = var.devbox_enabled ? {
     node    = "atelet"
     control = "ate-api-server"
+    zerofs  = "devbox-zerofs"
   } : {}
 }
 
@@ -140,4 +141,8 @@ output "devbox_node_client_id" {
 
 output "devbox_control_client_id" {
   value = try(azurerm_user_assigned_identity.devbox["control"].client_id, "")
+}
+
+output "devbox_zerofs_client_id" {
+  value = try(azurerm_user_assigned_identity.devbox["zerofs"].client_id, "")
 }

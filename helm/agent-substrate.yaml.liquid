@@ -19,8 +19,25 @@ atelet:
   nodeSelector:
     plural.sh/devbox-pool: devbox
 
+# Devbox homes (spec.home.storage: ZeroFS on the DevboxRunner) live under devbox-homes-zerofs/ in the snapshot
+# bucket, one encrypted ZeroFS filesystem each, so they follow a devbox from node to node. Its node plugin runs where
+# atelet does.
+zerofs:
+  enabled: true
+  image:
+    # TODO: drop once a deployment-operator release pins devbox-zerofs in the chart; until then, the head of
+    # console#4741
+    tag: sha-6fe2e1c
+{% if configuration.cloud == 'gcp' %}
+  serviceAccount:
+    annotations:
+      iam.gke.io/gcp-service-account: {{ imports["mgmt"].devbox_zerofs_service_account }}
+{% elsif configuration.cloud == 'azure' %}
+  azureClientId: {{ imports["mgmt"].devbox_zerofs_client_id }}
+{% endif %}
+
 {% if configuration.cloud == 'aws' %}
-# ate-api-server and atelet reach S3 through EKS Pod Identity associations made by the mgmt stack.
+# ate-api-server, atelet and devbox-zerofs reach S3 through EKS Pod Identity associations made by the mgmt stack.
 objectStore:
   backend: s3
   snapshotLocation: {{ imports["mgmt"].devbox_snapshot_location }}

@@ -34,3 +34,7 @@ output "devbox_api_server_service_account" {
 output "devbox_transfer_service_account" {
   value = module.mgmt.devbox_transfer_service_account
 }
+
+output "devbox_zerofs_service_account" {
+  value = module.mgmt.devbox_zerofs_service_account
+}

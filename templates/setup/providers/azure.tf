@@ -25,3 +25,7 @@ output "devbox_node_client_id" {
 output "devbox_control_client_id" {
   value = module.mgmt.devbox_control_client_id
 }
+
+output "devbox_zerofs_client_id" {
+  value = module.mgmt.devbox_zerofs_client_id
+}

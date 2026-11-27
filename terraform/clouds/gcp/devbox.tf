@@ -1,6 +1,6 @@
-# Plural devboxes: a node pool for Agent Substrate's gVisor workers, the bucket Substrate keeps actor snapshots in,
-# and the Workload Identity service accounts that reach it. The services in bootstrap/devbox install Substrate and
-# the DevboxRunner on top.
+# Plural devboxes: a node pool for Agent Substrate's gVisor workers, the bucket Substrate keeps actor snapshots and
+# ZeroFS devbox homes in, and the Workload Identity service accounts that reach it. The services in bootstrap/devbox
+# install Substrate and the DevboxRunner on top.
 
 variable "devbox_enabled" {
   type    = bool
@@ -33,6 +33,11 @@ locals {
   devbox = var.devbox_enabled ? 1 : 0
   # Service account ids are 6-30 characters, so the cluster part is capped.
   devbox_suffix = trim(substr(replace(lower(var.cluster_name), "/[^a-z0-9-]/", "-"), 0, 18), "-")
+  devbox_bucket_members = var.devbox_enabled ? {
+    api      = google_service_account.devbox_api_server[0].email
+    transfer = google_service_account.devbox_transfer[0].email
+    zerofs   = google_service_account.devbox_zerofs[0].email
+  } : {}
 }
 
 data "google_compute_zones" "devbox" {
@@ -127,11 +132,26 @@ resource "google_service_account" "devbox_transfer" {
   display_name = "Agent Substrate snapshot transfers on ${var.cluster_name}"
 }
 
+# The ZeroFS driver's controller and node plugins, which keep devbox homes in the bucket.
+resource "google_service_account" "devbox_zerofs" {
+  count        = local.devbox
+  project      = var.project_id
+  account_id   = "ate-zfs-${local.devbox_suffix}"
+  display_name = "Devbox ZeroFS homes on ${var.cluster_name}"
+}
+
 resource "google_service_account_iam_member" "devbox_api_server_workload_identity" {
   count              = local.devbox
   service_account_id = google_service_account.devbox_api_server[0].name
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.project_id}.svc.id.goog[ate-system/ate-api-server]"
+}
+
+resource "google_service_account_iam_member" "devbox_zerofs_workload_identity" {
+  count              = local.devbox
+  service_account_id = google_service_account.devbox_zerofs[0].name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[ate-system/devbox-zerofs]"
 }
 
 resource "google_service_account_iam_member" "devbox_transfer_token_creator" {
@@ -147,10 +167,12 @@ resource "google_storage_bucket_iam_member" "devbox" {
     "api-bucket-viewer"      = { role = "roles/storage.bucketViewer", sa = "api" }
     "transfer-object-admin"  = { role = "roles/storage.objectAdmin", sa = "transfer" }
     "transfer-bucket-viewer" = { role = "roles/storage.bucketViewer", sa = "transfer" }
+    "zerofs-object-admin"    = { role = "roles/storage.objectAdmin", sa = "zerofs" }
+    "zerofs-bucket-viewer"   = { role = "roles/storage.bucketViewer", sa = "zerofs" }
   } : {}
   bucket = google_storage_bucket.devbox[0].name
   role   = each.value.role
-  member = "serviceAccount:${each.value.sa == "api" ? google_service_account.devbox_api_server[0].email : google_service_account.devbox_transfer[0].email}"
+  member = "serviceAccount:${local.devbox_bucket_members[each.value.sa]}"
 }
 
 output "devbox_snapshot_location" {
@@ -163,4 +185,8 @@ output "devbox_api_server_service_account" {
 
 output "devbox_transfer_service_account" {
   value = try(google_service_account.devbox_transfer[0].email, "")
+}
+
+output "devbox_zerofs_service_account" {
+  value = try(google_service_account.devbox_zerofs[0].email, "")
 }
