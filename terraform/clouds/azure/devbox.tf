@@ -1,39 +1,11 @@
-# Plural devboxes: a node pool for Agent Substrate's gVisor workers, the storage account Substrate keeps actor
-# snapshots in, and the Workload Identity identities that reach it. Devbox homes are Azure managed disks. The services in
-# bootstrap/devbox install Substrate and the DevboxRunner on top. Needs workload_identity_enabled.
+# Plural devboxes: node auto-provisioning (AKS's managed Karpenter) for Agent Substrate's gVisor workers, the storage
+# account Substrate keeps actor snapshots in, and the Workload Identity identities that reach it. Devbox homes are Azure
+# managed disks. The services in bootstrap/devbox add the devbox NodePool and AKSNodeClass, Substrate and the
+# DevboxRunner on top. Needs workload_identity_enabled.
 
 variable "devbox_enabled" {
   type    = bool
   default = true
-}
-
-variable "devbox_vm_size" {
-  type        = string
-  default     = "Standard_D8s_v5"
-  description = "one VM size, since gVisor snapshots need a single CPU model across the pool"
-}
-
-variable "devbox_max_nodes" {
-  type        = number
-  default     = 5
-  description = "the most nodes each zone's devbox pool may grow to"
-}
-
-variable "devbox_zones" {
-  type        = list(string)
-  default     = ["1", "2", "3"]
-  description = "the availability zones to run a devbox pool in, one each; empty for one regional pool in regions without zones"
-
-  validation {
-    condition     = alltrue([for z in var.devbox_zones : can(regex("^[1-9]$", z))])
-    error_message = "devbox_zones are single digits, e.g. 1, 2, 3."
-  }
-}
-
-variable "devbox_boot_disk_size" {
-  type        = number
-  default     = 250
-  description = "size in GiB of the OS disk, which also holds /var/lib/ate"
 }
 
 locals {
@@ -50,42 +22,60 @@ locals {
 
 data "azurerm_client_config" "devbox" {}
 
-# One pool per zone: a pool spanning zones is one scale set that picks zones itself, and the cluster autoscaler isn't
-# zone-aware, so a worker that must run in one zone could wait on a node in another.
-resource "azurerm_kubernetes_cluster_node_pool" "devbox" {
-  for_each              = var.devbox_enabled ? toset(length(var.devbox_zones) > 0 ? var.devbox_zones : [""]) : toset([])
-  name                  = "devbox${each.key}"
-  kubernetes_cluster_id = module.aks.aks_id
-  vm_size               = var.devbox_vm_size
-  zones                 = each.key == "" ? null : [each.key]
-  orchestrator_version  = local.node_orchestrator_version
-  os_sku                = "Ubuntu"
-  os_disk_size_gb       = var.devbox_boot_disk_size
-  os_disk_type          = "Managed"
-  vnet_subnet_id        = azurerm_subnet.network.id
+# Devbox nodes come from node auto-provisioning, which launches each one in the zone its worker's home disk is in. The
+# cluster autoscaler can't: a pool spanning zones is one scale set that picks the zone itself. NAP runs beside the
+# autoscaled blue and green pools only with this subscription feature; the devbox NodePool's taint and label keep the
+# two from scaling for the same pods.
+resource "azapi_resource_action" "devbox_nap_feature" {
+  count                  = local.devbox
+  type                   = "Microsoft.Features/providers/features@2021-07-01"
+  resource_id            = "/subscriptions/${data.azurerm_client_config.devbox.subscription_id}/providers/Microsoft.Features/providers/Microsoft.ContainerService/features/AllowClusterAutoscalerAndNAP"
+  action                 = "register"
+  method                 = "POST"
+  response_export_values = ["properties.state"]
+}
 
-  enable_auto_scaling = true
-  min_count           = 0
-  max_count           = var.devbox_max_nodes
-  node_count          = 0
+# Registering takes a few minutes and azapi 1.x, which the AKS module pins, can't poll it. If AKS still rejects NAP
+# below, apply again.
+resource "time_sleep" "devbox_nap_feature" {
+  count           = local.devbox
+  create_duration = azapi_resource_action.devbox_nap_feature[0].output.properties.state == "Registered" ? "0s" : "10m"
+}
 
-  node_labels = {
-    "plural.sh/devbox-pool" = "devbox"
+# picks up the feature in the resource provider, as `az provider register` does
+resource "azapi_resource_action" "devbox_nap_provider" {
+  count       = local.devbox
+  type        = "Microsoft.Resources/providers@2021-04-01"
+  resource_id = "/subscriptions/${data.azurerm_client_config.devbox.subscription_id}/providers/Microsoft.ContainerService"
+  action      = "register"
+  method      = "POST"
+
+  depends_on = [time_sleep.devbox_nap_feature]
+}
+
+# No default NodePools: they're untainted, so NAP would add nodes for the same pending pods as the cluster autoscaler.
+# The only NodePool is the devbox one in services/devbox.
+resource "azapi_update_resource" "devbox_nap" {
+  count       = local.devbox
+  type        = "Microsoft.ContainerService/managedClusters@2025-10-01"
+  resource_id = module.aks.aks_id
+
+  body = {
+    properties = {
+      nodeProvisioningProfile = {
+        mode             = "Auto"
+        defaultNodePools = "None"
+      }
+    }
   }
 
-  # no plural.sh/devbox-disk startup taint here: AKS refuses to remove taints set on a node pool, and with
-  # /var/lib/ate on the OS disk there's nothing for devbox-disk-prep to wait for
-  node_taints = [
-    "ate.dev/sandboxClass=gvisor:NoSchedule",
-  ]
-
-  upgrade_settings {
-    max_surge = "1"
+  timeouts {
+    create = "40m"
+    update = "40m"
   }
 
-  lifecycle {
-    ignore_changes = [node_count]
-  }
+  # NAP joins nodes to the cluster's subnet as the cluster identity, which needs to read and join it
+  depends_on = [azapi_resource_action.devbox_nap_provider, azurerm_role_assignment.aks-network-identity-ssi]
 }
 
 resource "random_string" "devbox" {

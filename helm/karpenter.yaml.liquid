@@ -6,6 +6,9 @@ settings:
   clusterName: {{ imports["mgmt"].cluster_name }}
   clusterEndpoint: {{ imports["mgmt"].cluster_endpoint }}
   interruptionQueue: {{ imports["mgmt"].devbox_karpenter_queue }}
+  featureGates:
+    # The devbox pool's NodeOverlay tells Karpenter its nodes will have ate.dev/kvm.
+    nodeOverlay: true
 
 # the mgmt stack's Pod Identity association grants this ServiceAccount the controller's role
 serviceAccount:

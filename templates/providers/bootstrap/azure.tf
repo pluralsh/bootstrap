@@ -14,6 +14,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">=3.51.0, < 4.0"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = ">= 1.13, < 2.0"
+    }
     curl = {
       source  = "anschoewe/curl"
       version = "1.0.2"
@@ -52,6 +56,12 @@ provider "azurerm" {
     }
   }
 
+  subscription_id = "{{ .Context.SubscriptionId }}"
+  tenant_id       = "{{ .Context.TenantId }}"
+}
+
+# turns on node auto-provisioning for devboxes (terraform/mgmt/cluster/devbox.tf)
+provider "azapi" {
   subscription_id = "{{ .Context.SubscriptionId }}"
   tenant_id       = "{{ .Context.TenantId }}"
 }

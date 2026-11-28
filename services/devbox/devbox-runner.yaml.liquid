@@ -41,7 +41,7 @@ spec:
     - key: plural.sh/devbox-disk
       operator: Exists
       effect: NoSchedule
-{% if configuration.cloud == 'aws' %}
+{% if configuration.cloud == 'aws' or configuration.cloud == 'azure' %}
     # keeps Karpenter from draining a node out from under running sandboxes
     podAnnotations:
       karpenter.sh/do-not-disrupt: "true"

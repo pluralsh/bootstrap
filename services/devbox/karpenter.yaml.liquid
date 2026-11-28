@@ -1,3 +1,4 @@
+{% if configuration.cloud == 'aws' or configuration.cloud == 'azure' %}
 {% if configuration.cloud == 'aws' %}
 apiVersion: karpenter.k8s.aws/v1
 kind: EC2NodeClass
@@ -37,6 +38,26 @@ spec:
       deleteOnTermination: true
   tags:
     plural.sh/devbox-pool: {{ configuration.pool }}
+{% else %}
+# AKS node auto-provisioning (managed Karpenter), which the mgmt stack turns on (terraform/mgmt/cluster/devbox.tf)
+apiVersion: karpenter.azure.com/v1beta1
+kind: AKSNodeClass
+metadata:
+  name: {{ configuration.pool }}
+spec:
+  imageFamily: Ubuntu
+  # also holds /var/lib/ate
+  osDiskSizeGB: {{ configuration.bootDiskSize }}
+  osDiskType: Managed
+  # Azure has no nested virtualization switch: the VM size brings it, and Trusted Launch takes it away. With it the pool
+  # can run microvm sandboxes as well as gVisor.
+  security:
+    trustedLaunch:
+      secureBoot: false
+      vtpm: false
+  tags:
+    plural-devbox-pool: {{ configuration.pool }}
+{% endif %}
 ---
 apiVersion: karpenter.sh/v1
 kind: NodePool
@@ -47,20 +68,34 @@ spec:
     metadata:
       labels:
         plural.sh/devbox-pool: {{ configuration.pool }}
+{% if configuration.cloud == 'azure' %}
+        # lets NAP account for the Cilium agent on each node
+        kubernetes.azure.com/ebpf-dataplane: cilium
+{% endif %}
     spec:
       nodeClassRef:
+{% if configuration.cloud == 'aws' %}
         group: karpenter.k8s.aws
         kind: EC2NodeClass
+{% else %}
+        group: karpenter.azure.com
+        kind: AKSNodeClass
+{% endif %}
         name: {{ configuration.pool }}
       taints:
       - key: ate.dev/sandboxClass
         value: gvisor
         effect: NoSchedule
-      # lifted by devbox-disk-prep once the data volume is mounted at /var/lib/ate
+      # lifted by devbox-disk-prep once /var/lib/ate is ready
       startupTaints:
       - key: plural.sh/devbox-disk
         value: pending
         effect: NoSchedule
+{% if configuration.cloud == 'azure' %}
+      - key: node.cilium.io/agent-not-ready
+        value: "true"
+        effect: NoExecute
+{% endif %}
       requirements:
       - key: kubernetes.io/arch
         operator: In
@@ -68,7 +103,8 @@ spec:
       - key: karpenter.sh/capacity-type
         operator: In
         values: ["on-demand"]
-      # one instance type, since gVisor snapshots need a single CPU model across the pool
+      # one instance type, since gVisor snapshots need a single CPU model across the pool; it must support nested
+      # virtualization
       - key: node.kubernetes.io/instance-type
         operator: In
         values: ["{{ configuration.instanceType }}"]
@@ -83,4 +119,22 @@ spec:
     - nodes: "10%"
   limits:
     cpu: "{{ configuration.maxCpu }}"
+{% if configuration.cloud == 'aws' %}
+---
+# Karpenter only launches a node for a pod whose requests the instance type covers, and ate.dev/kvm (which microvm
+# workers request) only appears once atelet's device plugin runs on the node, so the pool would never scale up for
+# one. The count is the one atelet advertises; it is a placeholder, not a limit. Needs Karpenter's NodeOverlay feature
+# gate (helm/karpenter.yaml.liquid).
+apiVersion: karpenter.sh/v1alpha1
+kind: NodeOverlay
+metadata:
+  name: {{ configuration.pool }}-kvm
+spec:
+  requirements:
+  - key: karpenter.sh/nodepool
+    operator: In
+    values: ["{{ configuration.pool }}"]
+  capacity:
+    ate.dev/kvm: "4096"
+{% endif %}
 {% endif %}

@@ -1,7 +1,7 @@
 [[- if or (eq .Provider "aws") (eq .Provider "gcp") (eq .Provider "azure") ]]
 # The devbox node pool's disk prep and the DevboxRunner the deployment operator turns into Substrate workers and
-# console devboxes. On AWS the node pool is a Karpenter NodePool here; elsewhere it's in the mgmt stack
-# (terraform/mgmt/cluster/devbox.tf).
+# console devboxes. On AWS and Azure the node pool is a Karpenter NodePool here (on Azure AKS's node auto-provisioning,
+# which the mgmt stack turns on); on GCP it's in the mgmt stack (terraform/mgmt/cluster/devbox.tf).
 apiVersion: deployments.plural.sh/v1alpha1
 kind: ServiceDeployment
 metadata:
@@ -39,6 +39,14 @@ spec:
     dataDiskSize: 200Gi
     # one type, since gVisor snapshots need a single CPU model; it must support nested virtualization
     instanceType: m7i.2xlarge
+    # caps the pool at 5 of those nodes
+    maxCpu: "40"
+    [[- end ]]
+    [[- if eq .Provider "azure" ]]
+    # also holds /var/lib/ate
+    bootDiskSize: "250"
+    # one size, since gVisor snapshots need a single CPU model; Dsv5 supports nested virtualization
+    instanceType: Standard_D8s_v5
     # caps the pool at 5 of those nodes
     maxCpu: "40"
     [[- end ]]
