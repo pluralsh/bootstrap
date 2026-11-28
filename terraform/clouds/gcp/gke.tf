@@ -48,6 +48,9 @@ module "gke" {
 
   datapath_provider = "ADVANCED_DATAPATH"
 
+  # devbox homes are Persistent Disks, which the driver also snapshots through the VolumeSnapshot API GKE serves with it
+  gce_pd_csi_driver = true
+
   release_channel = "UNSPECIFIED"
 
   depends_on = [

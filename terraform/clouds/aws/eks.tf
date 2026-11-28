@@ -50,6 +50,9 @@ module "eks" {
 
   create_kms_key = true
 
+  # Access entries only, no aws-auth ConfigMap. EKS creates the managed node groups' entries; Karpenter's devbox node
+  # role gets one from its module (devbox.tf).
+  authentication_mode                      = "API"
   enable_cluster_creator_admin_permissions = false
 
   access_entries = {
@@ -82,6 +85,19 @@ module "eks" {
   kms_key_administrators = concat([
     data.aws_iam_session_context.current.issuer_arn
   ], var.additional_kms_administrators)
+
+  # the module only opens DNS and ephemeral ports between nodes; Agent Substrate's workers reach ate-api-server,
+  # atenet-router and atenet-egress on 443 on other nodes
+  node_security_group_additional_rules = {
+    ingress_self_https = {
+      description = "Node to node HTTPS"
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      type        = "ingress"
+      self        = true
+    }
+  }
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = var.node_group_defaults

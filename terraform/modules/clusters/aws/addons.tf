@@ -27,6 +27,10 @@ module "addons" {
     kube-proxy = {
       most_recent = true
     }
+    # lets workloads such as Agent Substrate get AWS credentials through EKS Pod Identity
+    eks-pod-identity-agent = {
+      most_recent = true
+    }
   }
 
   # mostly need this module to install the lb controller here.

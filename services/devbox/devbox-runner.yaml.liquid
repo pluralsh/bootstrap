@@ -1,0 +1,51 @@
+# The default devbox. One worker always runs, since building the devbox template needs one, and the pool grows
+# with demand. Add SCM connections, repositories, egress rules or cloud identities here.
+# Reference: https://github.com/pluralsh/console/blob/master/go/deployment-operator/docs/api.md#devboxrunner
+apiVersion: deployments.plural.sh/v1alpha1
+kind: DevboxRunner
+metadata:
+  name: devbox
+spec:
+  agents:
+  - type: claude
+    default: true
+  - type: codex
+  - type: opencode
+  - type: gemini
+  - type: pi
+  scmConnections:
+  - plural
+  autonomy:
+    default: manual
+    max: full
+  browser:
+    enabled: true
+  # each devbox's /home/dev is its own cloud disk from agent-substrate's block driver, in one zone
+  home:
+    storage: Block
+  resources:
+    cpu: "2"
+    memory: 4Gi
+    disk: 20Gi
+  workerPool:
+    autoscaling:
+      minReplicas: 1
+      maxReplicas: {{ configuration.maxWorkers }}
+      spareInstances: 1
+    diskSize: {{ configuration.diskSize }}
+    sandboxClass: gvisor
+    nodeSelector:
+      plural.sh/devbox-pool: {{ configuration.pool }}
+    tolerations:
+    # lets the cluster autoscaler size the pool from its template; atelet still waits for the disk
+    - key: plural.sh/devbox-disk
+      operator: Exists
+      effect: NoSchedule
+{% if configuration.cloud == 'aws' or configuration.cloud == 'azure' %}
+    # keeps Karpenter from draining a node out from under running sandboxes
+    podAnnotations:
+      karpenter.sh/do-not-disrupt: "true"
+{% endif %}
+    resources:
+      requests: {cpu: "{{ configuration.workerCpu }}", memory: {{ configuration.workerMemory }}}
+      limits: {cpu: "{{ configuration.workerCpu }}", memory: {{ configuration.workerMemory }}}

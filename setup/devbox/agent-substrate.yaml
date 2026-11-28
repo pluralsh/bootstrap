@@ -1,0 +1,38 @@
+[[- if or (eq .Provider "aws") (eq .Provider "gcp") (eq .Provider "azure") ]]
+# Agent Substrate, the sandbox runtime devboxes run on. Its snapshot storage and identities come from the mgmt
+# stack (terraform/mgmt/cluster/devbox.tf).
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: agent-substrate
+  namespace: infra
+spec:
+  name: agent-substrate
+  # Substrate's binaries default their in-cluster addresses and SPIFFE IDs to ate-system, so the chart only renders there.
+  namespace: ate-system
+  git:
+    folder: helm
+    ref: [[ or .Context.Branch "main" ]]
+  repositoryRef:
+    kind: GitRepository
+    name: infra
+    namespace: infra
+  helm:
+    version: "0.1.0"
+    chart: agent-substrate
+    release: ate
+    url: oci://ghcr.io/pluralsh/charts
+    valuesFiles:
+    - agent-substrate.yaml.liquid
+  imports:
+  - stackRef:
+      name: mgmt
+      namespace: infra
+  configuration:
+    cloud: [[ .Provider ]]
+    region: [[ .Region ]]
+  clusterRef:
+    kind: Cluster
+    name: mgmt
+    namespace: infra
+[[- end ]]

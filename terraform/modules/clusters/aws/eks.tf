@@ -8,10 +8,15 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  version = "~> 20.0"
 
   cluster_name    = var.cluster
   cluster_version = var.kubernetes_version
+
+  # Nodes and principals authenticate through EKS access entries; EKS creates the managed node groups' entries, and
+  # the identity applying this stack, which registers the cluster with Plural below, gets a cluster admin one.
+  authentication_mode                      = "API_AND_CONFIG_MAP"
+  enable_cluster_creator_admin_permissions = true
 
   cluster_endpoint_public_access = var.public
 

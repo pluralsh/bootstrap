@@ -1,0 +1,76 @@
+# Agent Substrate on the management cluster. Values reference:
+# https://github.com/pluralsh/console/blob/master/charts/agent-substrate/values.yaml
+
+# Wires Substrate to the deployment operator's devbox-gateway in plrl-deploy-operator and makes the operator's
+# ServiceAccount a bootstrap owner, so it can create atespaces.
+devboxes:
+  enabled: true
+
+otel:
+  endpoint: ""
+
+# Substrate keeps its state in a CloudNativePG cluster in ate-system, with the operator bundled.
+cloudnative-pg:
+  enabled: true
+
+# Substrate workers only run on the devbox pool, so atelet only needs to run there too. It doesn't tolerate the
+# plural.sh/devbox-disk startup taint, so it waits for devbox-disk-prep.
+atelet:
+  nodeSelector:
+    plural.sh/devbox-pool: devbox
+
+# Devbox homes (spec.home.storage: Block) are one cloud disk each from the cluster's own disk CSI
+# driver, seeded and moved between zones through VolumeSnapshots, which the mgmt stack makes sure the cluster serves.
+# The operator runs a WorkerPool per zone of the devbox nodes and keeps each devbox in its disk's zone.
+block:
+  enabled: true
+  image:
+    # TODO: drop once a deployment-operator release pins devbox-block in the chart; until then, the head of
+    # console#4742
+    tag: sha-1ee1177
+{% if configuration.cloud == 'aws' %}
+  provider: ebs.csi.aws.com
+  parameters:
+    type: gp3
+{% elsif configuration.cloud == 'gcp' %}
+  provider: pd.csi.storage.gke.io
+  parameters:
+    type: pd-balanced
+{% elsif configuration.cloud == 'azure' %}
+  provider: disk.csi.azure.com
+  parameters:
+    skuName: Premium_LRS
+{% endif %}
+
+{% if configuration.cloud == 'aws' %}
+# ate-api-server and atelet reach S3 through EKS Pod Identity associations made by the mgmt stack.
+objectStore:
+  backend: s3
+  snapshotLocation: {{ imports["mgmt"].devbox_snapshot_location }}
+  s3:
+    region: {{ configuration.region }}
+{% elsif configuration.cloud == 'gcp' %}
+apiServer:
+  snapshotTransferServiceAccount: {{ imports["mgmt"].devbox_transfer_service_account }}
+  serviceAccount:
+    annotations:
+      iam.gke.io/gcp-service-account: {{ imports["mgmt"].devbox_api_server_service_account }}
+
+objectStore:
+  backend: gcs
+  snapshotLocation: {{ imports["mgmt"].devbox_snapshot_location }}
+{% elsif configuration.cloud == 'azure' %}
+objectStore:
+  backend: azureBlob
+  snapshotLocation: {{ imports["mgmt"].devbox_snapshot_location }}
+  azureBlob:
+    image:
+      # built from agent-substrate-plugins/objectstore-azure-blob d960af4 by console's objectstore-azure-blob workflow
+      tag: sha-d960af4
+    accountUrl: {{ imports["mgmt"].devbox_account_url }}
+    containers:
+    - snapshots
+    tenantId: {{ imports["mgmt"].devbox_tenant_id }}
+    nodeClientId: {{ imports["mgmt"].devbox_node_client_id }}
+    controlClientId: {{ imports["mgmt"].devbox_control_client_id }}
+{% endif %}

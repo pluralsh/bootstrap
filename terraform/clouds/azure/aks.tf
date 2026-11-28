@@ -41,4 +41,9 @@ module "aks" {
 
   workload_identity_enabled = var.workload_identity_enabled
   oidc_issuer_enabled       = var.workload_identity_enabled
+
+  # devbox homes are Azure managed disks, seeded and moved between zones through VolumeSnapshots
+  storage_profile_enabled                     = true
+  storage_profile_disk_driver_enabled         = true
+  storage_profile_snapshot_controller_enabled = true
 }

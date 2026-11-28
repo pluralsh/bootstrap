@@ -14,6 +14,15 @@ There are three main resources created by these templates:
 * K8s Control Plane + minimal worker node set
 * Postgres DB (will be used for your Plural Console instance)
 
+On AWS, GCP and Azure it also sets up devboxes, Plural's sandboxed coding-agent environments, on the management cluster:
+
+* `terraform/mgmt/cluster/devbox.tf`: a node pool for the sandboxes, which keeps one node running and grows with demand, a bucket for their snapshots, and workload identities to reach it. On AWS the pool is a [Karpenter](https://karpenter.sh) `NodePool` with nested virtualization on (`services/devbox/karpenter.yaml.liquid`), and this file holds Karpenter's IAM, the node role's access entry and the interruption queue. A `NodeOverlay` beside the `NodePool` tells Karpenter its nodes will have `ate.dev/kvm`, which microvm workers request but atelet only advertises once a node runs; it needs the `nodeOverlay` feature gate the Karpenter values turn on. On Azure it's a `NodePool` for AKS's [node auto-provisioning](https://learn.microsoft.com/en-us/azure/aks/node-auto-provisioning) (managed Karpenter), which this file turns on. It runs beside the autoscaled `blue` and `green` pools through the subscription's `AllowClusterAutoscalerAndNAP` feature, which this file registers, so the first apply needs an identity allowed to register features (e.g. subscription Owner or Contributor). Both clouds launch each node in the zone its sandbox's home disk is in, which the cluster autoscaler can't do for a pool spanning zones
+* `bootstrap/devbox`: [Agent Substrate](https://github.com/agent-substrate/substrate), the sandbox runtime, Karpenter on AWS, the devbox `NodePool` on AWS and Azure, and a `devbox` DevboxRunner (`services/devbox`)
+
+Each devbox's `/home/dev` is its own cloud disk (EBS, Persistent Disk or Azure managed disk) from Agent Substrate's block driver, DevboxRunners' default home storage. It needs the cloud's disk CSI driver and the VolumeSnapshot API, which the cluster stacks turn on: the `aws-ebs-csi-driver` and `snapshot-controller` EKS add-ons, GKE's Persistent Disk CSI driver, and AKS's disk driver and snapshot controller.
+
+To leave them out, set `devbox_enabled = false` on the `mgmt` module and delete `bootstrap/devbox`.
+
 Our defaults are meant to be tweaked, feel free to reference the documentation of the underlying modules if you want to make a cluster private, or modify our CIDR range defaults if you want to VPC peer.
 
 

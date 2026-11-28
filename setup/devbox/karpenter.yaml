@@ -1,0 +1,35 @@
+[[- if eq .Provider "aws" ]]
+# Karpenter, which runs the devbox node pool (services/devbox/karpenter.yaml.liquid). Its IAM, Pod Identity
+# association and interruption queue come from the mgmt stack (terraform/mgmt/cluster/devbox.tf).
+apiVersion: deployments.plural.sh/v1alpha1
+kind: ServiceDeployment
+metadata:
+  name: karpenter
+  namespace: infra
+spec:
+  name: karpenter
+  namespace: karpenter
+  git:
+    folder: helm
+    ref: [[ or .Context.Branch "main" ]]
+  repositoryRef:
+    kind: GitRepository
+    name: infra
+    namespace: infra
+  helm:
+    # 1.13 is the first with EC2NodeClass cpuOptions.nestedVirtualization
+    version: "1.13.0"
+    chart: karpenter
+    release: karpenter
+    url: oci://public.ecr.aws/karpenter
+    valuesFiles:
+    - karpenter.yaml.liquid
+  imports:
+  - stackRef:
+      name: mgmt
+      namespace: infra
+  clusterRef:
+    kind: Cluster
+    name: mgmt
+    namespace: infra
+[[- end ]]
