@@ -1,72 +1,42 @@
-# Plural devboxes: a node pool for Agent Substrate's gVisor workers, the bucket Substrate keeps actor snapshots and
-# ZeroFS devbox homes in, and the EKS Pod Identity roles ate-api-server, atelet and the ZeroFS driver reach it with.
-# The services in bootstrap/devbox install Substrate and the DevboxRunner on top.
+# Plural devboxes: Karpenter, which runs the node pool for Agent Substrate's workers, the bucket Substrate keeps
+# actor snapshots in, and the EKS Pod Identity roles ate-api-server and atelet reach it with. Devbox homes are EBS
+# volumes from the EBS CSI driver, snapshotted through the snapshot-controller add-on (runtime.tf). The services in bootstrap/devbox install Karpenter, Substrate and the DevboxRunner on top;
+# the devbox NodePool and EC2NodeClass are in services/devbox.
+#
+# Karpenter rather than a managed node group: a node group spanning zones is one Auto Scaling group whose zone the
+# cluster autoscaler can't choose, while Karpenter launches each node in the zone its pending worker needs. It also
+# turns on nested virtualization, which EKS drops from managed node groups' launch templates, so the pool can run
+# microvm sandboxes as well as gVisor.
 
 variable "devbox_enabled" {
   type    = bool
   default = true
 }
 
-variable "devbox_instance_type" {
-  type        = string
-  default     = "m7i.2xlarge"
-  description = "one instance type, since gVisor snapshots need a single CPU model across the pool"
-}
-
-variable "devbox_max_nodes" {
-  type    = number
-  default = 5
-}
-
-variable "devbox_data_disk_size" {
-  type        = number
-  default     = 200
-  description = "size in GiB of the gp3 volume mounted at /var/lib/ate"
-}
-
 locals {
   devbox       = var.devbox_enabled ? 1 : 0
-  devbox_roles = var.devbox_enabled ? toset(["ate-api-server", "atelet", "devbox-zerofs"]) : toset([])
+  devbox_roles = var.devbox_enabled ? toset(["ate-api-server", "atelet"]) : toset([])
+}
 
-  # Joins module.eks.eks_managed_node_groups, so it gets the node security group the rest of the cluster uses.
-  devbox_node_groups = var.devbox_enabled ? {
-    devbox = {
-      instance_types = [var.devbox_instance_type]
-      min_size       = 0
-      max_size       = var.devbox_max_nodes
-      desired_size   = 0
+module "devbox_karpenter" {
+  count   = local.devbox
+  source  = "terraform-aws-modules/eks/aws//modules/karpenter"
+  version = "~> 20.37"
 
-      labels = {
-        "plural.sh/devbox-pool" = "devbox"
-      }
-      taints = {
-        sandbox = { key = "ate.dev/sandboxClass", value = "gvisor", effect = "NO_SCHEDULE" }
-        # lifted by devbox-disk-prep once the data volume is mounted at /var/lib/ate
-        disk = { key = "plural.sh/devbox-disk", value = "pending", effect = "NO_SCHEDULE" }
-      }
+  cluster_name          = module.eks.cluster_name
+  enable_v1_permissions = true
 
-      block_device_mappings = {
-        root = {
-          device_name = "/dev/xvda"
-          ebs = {
-            volume_size           = 100
-            volume_type           = "gp3"
-            delete_on_termination = true
-            encrypted             = true
-          }
-        }
-        data = {
-          device_name = "/dev/xvdb"
-          ebs = {
-            volume_size           = var.devbox_data_disk_size
-            volume_type           = "gp3"
-            delete_on_termination = true
-            encrypted             = true
-          }
-        }
-      }
-    }
-  } : {}
+  namespace                       = "karpenter"
+  service_account                 = "karpenter"
+  create_pod_identity_association = true
+
+  queue_name = substr("${var.cluster_name}-karpenter", 0, 80)
+
+  node_iam_role_name            = substr("${var.cluster_name}-devbox", 0, 64)
+  node_iam_role_use_name_prefix = false
+  node_iam_role_additional_policies = {
+    AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
 }
 
 resource "aws_s3_bucket" "devbox" {
@@ -138,4 +108,20 @@ resource "aws_eks_pod_identity_association" "devbox" {
 
 output "devbox_snapshot_location" {
   value = try("s3://${aws_s3_bucket.devbox[0].id}/substrate/", "")
+}
+
+output "devbox_karpenter_queue" {
+  value = try(module.devbox_karpenter[0].queue_name, "")
+}
+
+output "devbox_node_role" {
+  value = try(module.devbox_karpenter[0].node_iam_role_name, "")
+}
+
+output "devbox_subnet_ids" {
+  value = join(",", module.vpc.private_subnets)
+}
+
+output "devbox_node_security_group_id" {
+  value = module.eks.node_security_group_id
 }

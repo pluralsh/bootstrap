@@ -1,0 +1,86 @@
+{% if configuration.cloud == 'aws' %}
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: {{ configuration.pool }}
+spec:
+  amiSelectorTerms:
+  - alias: al2023@latest
+  role: {{ imports["mgmt"].devbox_node_role }}
+  subnetSelectorTerms:
+{% assign subnets = imports["mgmt"].devbox_subnet_ids | split: "," %}
+{% for subnet in subnets %}
+  - id: {{ subnet }}
+{% endfor %}
+  securityGroupSelectorTerms:
+  - id: {{ imports["mgmt"].devbox_node_security_group_id }}
+  # Lets the pool run microvm sandboxes as well as gVisor. Karpenter only picks instance types that support it.
+  cpuOptions:
+    nestedVirtualization: enabled
+  metadataOptions:
+    httpEndpoint: enabled
+    httpTokens: required
+    httpPutResponseHopLimit: 1
+  blockDeviceMappings:
+  - deviceName: /dev/xvda
+    ebs:
+      volumeSize: 100Gi
+      volumeType: gp3
+      encrypted: true
+      deleteOnTermination: true
+  # mounted at /var/lib/ate by devbox-disk-prep
+  - deviceName: /dev/xvdb
+    ebs:
+      volumeSize: {{ configuration.dataDiskSize }}
+      volumeType: gp3
+      encrypted: true
+      deleteOnTermination: true
+  tags:
+    plural.sh/devbox-pool: {{ configuration.pool }}
+---
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: {{ configuration.pool }}
+spec:
+  template:
+    metadata:
+      labels:
+        plural.sh/devbox-pool: {{ configuration.pool }}
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: {{ configuration.pool }}
+      taints:
+      - key: ate.dev/sandboxClass
+        value: gvisor
+        effect: NoSchedule
+      # lifted by devbox-disk-prep once the data volume is mounted at /var/lib/ate
+      startupTaints:
+      - key: plural.sh/devbox-disk
+        value: pending
+        effect: NoSchedule
+      requirements:
+      - key: kubernetes.io/arch
+        operator: In
+        values: ["amd64"]
+      - key: karpenter.sh/capacity-type
+        operator: In
+        values: ["on-demand"]
+      # one instance type, since gVisor snapshots need a single CPU model across the pool
+      - key: node.kubernetes.io/instance-type
+        operator: In
+        values: ["{{ configuration.instanceType }}"]
+      # Sandboxes are stateful between snapshots: never expire nodes, and give atelet time to suspend actors when a
+      # node is drained.
+      expireAfter: Never
+      terminationGracePeriod: 1h
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 15m
+    budgets:
+    - nodes: "10%"
+  limits:
+    cpu: "{{ configuration.maxCpu }}"
+{% endif %}

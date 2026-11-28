@@ -19,25 +19,31 @@ atelet:
   nodeSelector:
     plural.sh/devbox-pool: devbox
 
-# Devbox homes (spec.home.storage: ZeroFS on the DevboxRunner) live under devbox-homes-zerofs/ in the snapshot
-# bucket, one encrypted ZeroFS filesystem each, so they follow a devbox from node to node. Its node plugin runs where
-# atelet does.
-zerofs:
+# Devbox homes (spec.home.storage: Block) are one cloud disk each from the cluster's own disk CSI
+# driver, seeded and moved between zones through VolumeSnapshots, which the mgmt stack makes sure the cluster serves.
+# The operator runs a WorkerPool per zone of the devbox nodes and keeps each devbox in its disk's zone.
+block:
   enabled: true
   image:
-    # TODO: drop once a deployment-operator release pins devbox-zerofs in the chart; until then, the head of
-    # console#4741
-    tag: sha-6fe2e1c
-{% if configuration.cloud == 'gcp' %}
-  serviceAccount:
-    annotations:
-      iam.gke.io/gcp-service-account: {{ imports["mgmt"].devbox_zerofs_service_account }}
+    # TODO: drop once a deployment-operator release pins devbox-block in the chart; until then, the head of
+    # console#4742
+    tag: sha-1ee1177
+{% if configuration.cloud == 'aws' %}
+  provider: ebs.csi.aws.com
+  parameters:
+    type: gp3
+{% elsif configuration.cloud == 'gcp' %}
+  provider: pd.csi.storage.gke.io
+  parameters:
+    type: pd-balanced
 {% elsif configuration.cloud == 'azure' %}
-  azureClientId: {{ imports["mgmt"].devbox_zerofs_client_id }}
+  provider: disk.csi.azure.com
+  parameters:
+    skuName: Premium_LRS
 {% endif %}
 
 {% if configuration.cloud == 'aws' %}
-# ate-api-server, atelet and devbox-zerofs reach S3 through EKS Pod Identity associations made by the mgmt stack.
+# ate-api-server and atelet reach S3 through EKS Pod Identity associations made by the mgmt stack.
 objectStore:
   backend: s3
   snapshotLocation: {{ imports["mgmt"].devbox_snapshot_location }}

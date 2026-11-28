@@ -1,0 +1,20 @@
+# Karpenter on the management cluster, which runs the devbox node pool. Values reference:
+# https://github.com/aws/karpenter-provider-aws/blob/main/charts/karpenter/values.yaml
+replicas: 2
+
+settings:
+  clusterName: {{ imports["mgmt"].cluster_name }}
+  clusterEndpoint: {{ imports["mgmt"].cluster_endpoint }}
+  interruptionQueue: {{ imports["mgmt"].devbox_karpenter_queue }}
+
+# the mgmt stack's Pod Identity association grants this ServiceAccount the controller's role
+serviceAccount:
+  name: karpenter
+
+controller:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 1Gi

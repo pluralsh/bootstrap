@@ -15,6 +15,10 @@ module "eks_blueprints_addons" {
         defaultStorageClass = {
           enabled = true
         }
+        # the node plugin mounts devbox homes on the devbox pool, whose nodes carry sandbox and disk-prep taints
+        node = {
+          tolerateAllTaints = true
+        }
       })
     }
     coredns = {
@@ -28,6 +32,10 @@ module "eks_blueprints_addons" {
       most_recent = true
     }
     eks-pod-identity-agent = {
+      most_recent = true
+    }
+    # serves the VolumeSnapshot API devbox homes, EBS volumes, are seeded and moved between zones through
+    snapshot-controller = {
       most_recent = true
     }
   }

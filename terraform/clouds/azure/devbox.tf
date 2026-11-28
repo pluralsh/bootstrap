@@ -1,5 +1,5 @@
 # Plural devboxes: a node pool for Agent Substrate's gVisor workers, the storage account Substrate keeps actor
-# snapshots and ZeroFS devbox homes in, and the Workload Identity identities that reach it. The services in
+# snapshots in, and the Workload Identity identities that reach it. Devbox homes are Azure managed disks. The services in
 # bootstrap/devbox install Substrate and the DevboxRunner on top. Needs workload_identity_enabled.
 
 variable "devbox_enabled" {
@@ -14,8 +14,20 @@ variable "devbox_vm_size" {
 }
 
 variable "devbox_max_nodes" {
-  type    = number
-  default = 5
+  type        = number
+  default     = 5
+  description = "the most nodes each zone's devbox pool may grow to"
+}
+
+variable "devbox_zones" {
+  type        = list(string)
+  default     = ["1", "2", "3"]
+  description = "the availability zones to run a devbox pool in, one each; empty for one regional pool in regions without zones"
+
+  validation {
+    condition     = alltrue([for z in var.devbox_zones : can(regex("^[1-9]$", z))])
+    error_message = "devbox_zones are single digits, e.g. 1, 2, 3."
+  }
 }
 
 variable "devbox_boot_disk_size" {
@@ -28,22 +40,24 @@ locals {
   devbox = var.devbox_enabled ? 1 : 0
   # Storage account names are 3-24 lowercase alphanumerics and globally unique.
   devbox_account_prefix = substr(replace(lower("ate${var.cluster_name}"), "/[^a-z0-9]/", ""), 0, 16)
-  # The objectstore-azure-blob plugin runs next to atelet (node) and ate-api-server (control), and the ZeroFS driver
-  # keeps devbox homes in the same container, each as its own Entra identity federated to that pod's ServiceAccount.
+  # The objectstore-azure-blob plugin runs next to atelet (node) and ate-api-server (control), each as its own Entra
+  # identity federated to that pod's ServiceAccount.
   devbox_identities = var.devbox_enabled ? {
     node    = "atelet"
     control = "ate-api-server"
-    zerofs  = "devbox-zerofs"
   } : {}
 }
 
 data "azurerm_client_config" "devbox" {}
 
+# One pool per zone: a pool spanning zones is one scale set that picks zones itself, and the cluster autoscaler isn't
+# zone-aware, so a worker that must run in one zone could wait on a node in another.
 resource "azurerm_kubernetes_cluster_node_pool" "devbox" {
-  count                 = local.devbox
-  name                  = "devbox"
+  for_each              = var.devbox_enabled ? toset(length(var.devbox_zones) > 0 ? var.devbox_zones : [""]) : toset([])
+  name                  = "devbox${each.key}"
   kubernetes_cluster_id = module.aks.aks_id
   vm_size               = var.devbox_vm_size
+  zones                 = each.key == "" ? null : [each.key]
   orchestrator_version  = local.node_orchestrator_version
   os_sku                = "Ubuntu"
   os_disk_size_gb       = var.devbox_boot_disk_size
@@ -141,8 +155,4 @@ output "devbox_node_client_id" {
 
 output "devbox_control_client_id" {
   value = try(azurerm_user_assigned_identity.devbox["control"].client_id, "")
-}
-
-output "devbox_zerofs_client_id" {
-  value = try(azurerm_user_assigned_identity.devbox["zerofs"].client_id, "")
 }

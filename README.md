@@ -16,8 +16,10 @@ There are three main resources created by these templates:
 
 On AWS, GCP and Azure it also sets up devboxes, Plural's sandboxed coding-agent environments, on the management cluster:
 
-* `terraform/mgmt/cluster/devbox.tf`: a node pool for the sandboxes, which keeps one node running and grows with demand, a bucket for their snapshots, and workload identities to reach it
-* `bootstrap/devbox`: [Agent Substrate](https://github.com/agent-substrate/substrate), the sandbox runtime, and a `devbox` DevboxRunner (`services/devbox`)
+* `terraform/mgmt/cluster/devbox.tf`: a node pool for the sandboxes, which keeps one node running and grows with demand, a bucket for their snapshots, and workload identities to reach it. On AWS the pool is a [Karpenter](https://karpenter.sh) `NodePool` with nested virtualization on (`services/devbox/karpenter.yaml.liquid`), and this file holds Karpenter's IAM and interruption queue; on Azure it's one AKS node pool per availability zone (`devbox_zones`), since the cluster autoscaler can't pick the zone of a pool spanning several
+* `bootstrap/devbox`: [Agent Substrate](https://github.com/agent-substrate/substrate), the sandbox runtime, Karpenter on AWS, and a `devbox` DevboxRunner (`services/devbox`)
+
+Each devbox's `/home/dev` is its own cloud disk (EBS, Persistent Disk or Azure managed disk) from Agent Substrate's block driver, DevboxRunners' default home storage. It needs the cloud's disk CSI driver and the VolumeSnapshot API, which the cluster stacks turn on: the `aws-ebs-csi-driver` and `snapshot-controller` EKS add-ons, GKE's Persistent Disk CSI driver, and AKS's disk driver and snapshot controller.
 
 To leave them out, set `devbox_enabled = false` on the `mgmt` module and delete `bootstrap/devbox`.
 
