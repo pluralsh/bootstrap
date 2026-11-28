@@ -34,6 +34,8 @@ module "devbox_karpenter" {
 
   node_iam_role_name            = substr("${var.cluster_name}-devbox", 0, 64)
   node_iam_role_use_name_prefix = false
+  # Karpenter's nodes authenticate their kubelet through this access entry; without it they launch but never register.
+  create_access_entry = true
   node_iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }

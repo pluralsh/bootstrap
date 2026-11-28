@@ -50,6 +50,9 @@ module "eks" {
 
   create_kms_key = true
 
+  # Access entries only, no aws-auth ConfigMap. EKS creates the managed node groups' entries; Karpenter's devbox node
+  # role gets one from its module (devbox.tf).
+  authentication_mode                      = "API"
   enable_cluster_creator_admin_permissions = false
 
   access_entries = {
